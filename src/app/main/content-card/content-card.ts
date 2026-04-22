@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'app-content-card',
@@ -6,4 +6,11 @@ import { Component } from '@angular/core';
   templateUrl: './content-card.html',
   styleUrl: './content-card.sass',
 })
-export class ContentCard {}
+export class ContentCard {
+
+  @Input() public data: any;
+
+
+
+
+}
