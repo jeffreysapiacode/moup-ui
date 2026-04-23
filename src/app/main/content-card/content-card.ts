@@ -10,7 +10,4 @@ export class ContentCard {
 
   @Input() public data: any;
 
-
-
-
 }
