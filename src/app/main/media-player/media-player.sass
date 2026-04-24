@@ -1,6 +1,8 @@
 .media-player-container
   background: #F9F6E3
-  height: 150px
+  height: 0
+  transition: height 0.05s ease-in
+  max-height: 150px
   width: 100vw
   position: absolute
   bottom: 0
@@ -8,6 +10,21 @@
   overflow: clip
   z-index: 2
 
+.media-player-container-open
+  height: 100%
+
 .media-player-background
   position: absolute
   bottom: 0
+
+.play-button
+  z-index: 1
+
+.button-padding
+  padding: 10px
+  z-index: 2
+  cursor: pointer
+
+.title-text
+  font-weight: 700
+  color: #68654B

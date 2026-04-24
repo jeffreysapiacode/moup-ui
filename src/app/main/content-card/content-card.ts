@@ -1,4 +1,5 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {EventBus} from '../../service/event-bus';
 
 @Component({
   selector: 'app-content-card',
@@ -6,8 +7,26 @@ import {Component, Input} from '@angular/core';
   templateUrl: './content-card.html',
   styleUrl: './content-card.sass',
 })
-export class ContentCard {
+export class ContentCard implements OnInit {
 
-  @Input() public data: any;
+  constructor(private eventBus: EventBus) {
+  }
+
+  ngOnInit(): void {
+    this.eventBus.onPlay.subscribe((content) => {
+      console.log('In content card played');
+    });
+    }
+
+  @Input() public content: any;
+
+  public handleDownload() {
+
+  }
+
+  public handlePlay() {
+    this.eventBus.onPlay.emit(this.content);
+    this.eventBus.onToggle.emit(true);
+  }
 
 }

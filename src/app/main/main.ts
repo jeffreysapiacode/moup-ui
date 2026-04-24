@@ -2,19 +2,22 @@ import {Component, OnInit} from '@angular/core';
 import {MediaPlayer} from './media-player/media-player';
 import {ContentCard} from './content-card/content-card';
 import {HttpClient} from '@angular/common/http';
-import {NgForOf, NgIf} from '@angular/common';
+import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-main',
   imports: [
-    ContentCard
+    ContentCard,
+    AsyncPipe
   ],
   templateUrl: './main.html',
   styleUrl: './main.sass',
 })
 export class Main implements OnInit {
 
-  public dataList: any = [
+  public content$: any;
+  public contentList: any = [];
+  public contentList1: any = [
     {
       "uuid": "12fbfed7-6c20-4538-bbca-eecaf5fea92e",
       "title": "How To Get To Heaven - Episode #1",
@@ -51,14 +54,18 @@ export class Main implements OnInit {
   ;
 
   constructor(private http: HttpClient) {
-    // this.http.get('http://localhost:8080/content')
-    //   .subscribe((contentList : any) => {
-    //     this.dataList = contentList;
-    //     console.log(JSON.stringify(this.dataList));
-    //   });
+    this.http.get('http://localhost:8080/content')
+      .subscribe((contentList : any) => {
+        this.contentList = contentList;
+        console.log(JSON.stringify(this.contentList));
+      });
   }
 
   ngOnInit(): void {
+
+  }
+
+  onClick() {
 
   }
 

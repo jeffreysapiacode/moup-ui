@@ -1,8 +1,15 @@
 <div class="container-fluid p-0 m-0">
-  <div class="media-player-container">
+  <div class="media-player-container" [ngClass]="{'media-player-container-open': isOpen}">
+    <div class="row p-0 m-0 p-3">
+      <div class="col p-0 m-0 d-flex justify-content-center">
+        <span class="title-text">{{this.content?.title}}</span>
+      </div>
+    </div>
     <div class="row p-0 m-0">
-      <div class="col p-0 m-0">
-
+      <div class="col p-0 m-0 d-flex justify-content-center">
+        <div class="button-padding" (click)="onPlay()">
+          <img class="play-button" src="assets/img/svg/play-button.svg"/>
+        </div>
       </div>
     </div>
     <img class="media-player-background" src="assets/img/svg/wave-sand.svg"/>

@@ -2,23 +2,25 @@
   <div class="card-container">
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 px-4 py-3">
-        <span class="title-text">{{data.title}}</span>
+        <span class="title-text">{{content.title}}</span>
       </div>
     </div>
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 px-4 pb-3">
-        <span class="description-text">{{data.description}}</span>
+        <span class="description-text">{{content.description}}</span>
       </div>
     </div>
     <div class="row p-0 m-0 pb-3">
       <div class="col p-0 m-0 px-4 pb-3">
-        <div class="button px-3 d-flex justify-content-center align-items-center">PLAY</div>
+        <div class="button px-3 d-flex justify-content-center align-items-center"
+             (click)="handlePlay()">PLAY</div>
       </div>
       <div class="col p-0 m-0 px-4 pb-3">
 
       </div>
       <div class="col p-0 m-0 px-4 pb-3">
-        <div class="button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div>
+        <div class="button px-3 d-flex justify-content-center align-items-center"
+              (click)="handleDownload()" )>DOWNLOAD</div>
       </div>
     </div>
   </div>
