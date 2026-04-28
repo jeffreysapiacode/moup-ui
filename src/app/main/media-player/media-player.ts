@@ -21,10 +21,10 @@ export class MediaPlayer implements OnInit {
 
   ngOnInit(): void {
     this.eventBus.onPlay.subscribe((content) => {
-      this.content = content;
       if (this.content !== content) {
         this.onPlay();
       }
+      this.content = content;
       // If this.content !== content, run logic to switch track, otherwise, do play/pause logic
     });
 
@@ -34,9 +34,11 @@ export class MediaPlayer implements OnInit {
     }
 
   onPlay() {
+    this.eventBus.onToggle.emit(true);
     this.eventBus.onPlay.emit(this.content);
+    if(!this.content){return;}
     const sound = new Howl({
-      src: ['http://localhost:8080/stream/2026-04-24-how-to-get-to-heaven---episode--1.m4a'],
+      src: ['http://localhost:8080/stream/' + this.content?.filename],
       html5: true
     });
     sound.once('load', () => {
@@ -48,7 +50,7 @@ export class MediaPlayer implements OnInit {
     sound.on('loaderror', ()=> {});
     sound.on('playerror', () => {});
 
-    // sound.play();
+    sound.play();
   }
 
 }

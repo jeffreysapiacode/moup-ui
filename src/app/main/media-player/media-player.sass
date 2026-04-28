@@ -1,7 +1,7 @@
 .media-player-container
   background: #F9F6E3
   height: 0
-  transition: height 1.0s ease-in
+  transition: height 0.2s ease-in
   max-height: 150px
   width: 100vw
   position: absolute
@@ -41,11 +41,12 @@
   width: 25px
   height: 25px
   border-radius: 50px
+  cursor: grab
 
 .playhead-center
   position: relative
-  width: 8px
-  height: 8px
+  width: 9px
+  height: 9px
   border-radius: 50px
   background: #6E7662
 
@@ -58,5 +59,8 @@
   cursor: pointer
 
 .title-text
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
   font-weight: 700
   color: #68654B

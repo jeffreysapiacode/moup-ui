@@ -19,8 +19,7 @@
 
       </div>
       <div class="col p-0 m-0 px-4 pb-3">
-        <div class="button px-3 d-flex justify-content-center align-items-center"
-              (click)="handleDownload()" )>DOWNLOAD</div>
+        <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none;"><div class="button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div></a>
       </div>
     </div>
   </div>

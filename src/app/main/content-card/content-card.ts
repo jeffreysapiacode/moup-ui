@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import {HttpClient} from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-content-card',
@@ -14,7 +15,7 @@ export class ContentCard implements OnInit {
   @Input() public content: any;
   apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient, private eventBus: EventBus,) {
+  constructor(private http: HttpClient, private eventBus: EventBus, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -22,14 +23,8 @@ export class ContentCard implements OnInit {
     });
     }
 
-  public handleDownload() {
-    console.log('Download');
-    this.http.get(this.apiUrl + '/download/' + this.content.filename, { responseType: 'blob' }).subscribe();
-  }
-
   public handlePlay() {
     this.eventBus.onPlay.emit(this.content);
-    this.eventBus.onToggle.emit(true);
   }
 
 }
