@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {Howl, Howler} from 'howler';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Howl} from 'howler';
 import {EventBus} from '../../service/event-bus';
 import {NgClass} from '@angular/common';
 
@@ -29,7 +29,8 @@ export class MediaPlayer implements OnInit {
     });
 
     this.eventBus.onToggle.subscribe((isOpen) => {
-      this.isOpen = isOpen})
+      this.isOpen = isOpen
+    })
     }
 
   onPlay() {

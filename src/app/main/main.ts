@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ContentCard} from './content-card/content-card';
 import {HttpClient} from '@angular/common/http';
 import { environment } from '../../environments/environment';
@@ -15,12 +15,12 @@ export class Main implements OnInit {
 
   public contentList: any = [];
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {
     const apiUrl = environment.apiUrl;
     this.http.get(apiUrl + '/content')
       .subscribe((contentList : any) => {
         this.contentList = contentList;
-        console.log(JSON.stringify(this.contentList));
+        this.cdr.detectChanges();
       });
   }
 
