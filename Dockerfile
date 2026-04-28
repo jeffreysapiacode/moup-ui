@@ -10,3 +10,5 @@ CMD ["nginx", "-g", "daemon off;"]
 #docker kill moup-ui
 #docker rm moup-ui
 #docker run -d --name moup-ui -p 80:80 --restart always moup-ui
+
+#ng build --configuration=production && docker build -t moup-ui . && docker kill moup-ui && docker rm moup-ui && docker run -d --name moup-ui -p 80:80 --restart always moup-ui
