@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
+import {HttpClient} from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-content-card',
@@ -9,19 +11,20 @@ import {EventBus} from '../../service/event-bus';
 })
 export class ContentCard implements OnInit {
 
-  constructor(private eventBus: EventBus) {
+  @Input() public content: any;
+  apiUrl = environment.apiUrl;
+
+  constructor(private http: HttpClient, private eventBus: EventBus,) {
   }
 
   ngOnInit(): void {
     this.eventBus.onPlay.subscribe((content) => {
-      console.log('In content card played');
     });
     }
 
-  @Input() public content: any;
-
   public handleDownload() {
-
+    console.log('Download');
+    this.http.get(this.apiUrl + '/download/' + this.content.filename, { responseType: 'blob' }).subscribe();
   }
 
   public handlePlay() {

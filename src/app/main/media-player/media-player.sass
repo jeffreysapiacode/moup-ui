@@ -1,7 +1,7 @@
 .media-player-container
   background: #F9F6E3
-  height: 100%
-  transition: height 0.05s ease-in
+  height: 0
+  transition: height 1.0s ease-in
   max-height: 150px
   width: 100vw
   position: absolute
@@ -16,13 +16,38 @@
 .media-player-background
   position: absolute
   bottom: 0
+  z-index: 5
+
+.track-bar-container
+  position: relative
+  width: calc(100% - 40px)
+  height: 11px
+  border-radius: 50px
+  background: #DAD6C3
+  z-index: 10
+
+.track-bar
+  background: #8B957D
+  width: 40%
+  height: 100%
+  border-radius: 50px
+
+.playhead
+  position: absolute
+  top: 50%
+  transform: translateY(-50%)
+  left: calc(40% - 12.5px)
+  background: #90C298
+  width: 25px
+  height: 25px
+  border-radius: 50px
 
 .play-button
-  z-index: 1
+  z-index: 50
 
 .button-padding
   padding: 10px
-  z-index: 2
+  z-index: 50
   cursor: pointer
 
 .title-text
