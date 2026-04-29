@@ -2,6 +2,7 @@ import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angu
 import {EventBus} from '../../service/event-bus';
 import {NgClass, NgStyle} from '@angular/common';
 import {GlobalData} from '../../service/global-data';
+import {LocalStorageUtil} from '../../util/local-storage-util';
 
 @Component({
   selector: 'app-media-player',
@@ -50,13 +51,45 @@ export class MediaPlayer implements OnInit {
     }
   }
 
+  count: number = 0;
+
   animate() {
     if (this.globalData.sound && this.globalData.playing && !this.seekMode) {
       this.percentProgress = (this.globalData.sound.seek() / this.content.duration) * 100;
       this.eventBus.onSeek.emit({content: this.content, seek: this.globalData.sound.seek()});
+      const seekFloor = Math.floor(this.globalData.sound.seek())
+      if (seekFloor !== this.count) {
+        this.saveToLocalStorage(seekFloor)
+        this.count = seekFloor;
+      }
+      // write to disk every second of playing to save place
       this.cdr.detectChanges();
     }
     requestAnimationFrame(this.animate.bind(this));
+  }
+
+  saveToLocalStorage(seekFloor: any) {
+    let storage: any;
+    if (!localStorage.getItem('moup') || localStorage.getItem('moup') === 'undefined') {
+      storage = [];
+      storage.push({contentUuid: this.content.uuid, seek: seekFloor});
+      this.pushToStorage(storage)
+    }
+    storage = JSON.parse(<string>localStorage.getItem('moup'));
+    for (let storedInfo of storage) {
+      if (storedInfo.contentUuid === this.content.uuid) {
+        storedInfo.seek = seekFloor;
+        this.pushToStorage(storage);
+        return;
+      }
+    }
+    // Not found
+    storage.push({contentUuid: this.content.uuid, seek: seekFloor});
+    this.pushToStorage(storage)
+  }
+
+  pushToStorage(storage: any) {
+    localStorage.setItem('moup', JSON.stringify(storage));
   }
 
   handleOnMouseEnter() {
