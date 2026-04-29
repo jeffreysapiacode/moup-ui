@@ -10,5 +10,6 @@ export class EventBus {
   public onPause = new EventEmitter();
   public onToggle = new EventEmitter();
   public onSeek = new EventEmitter();
+  public onEnd = new EventEmitter();
 
 }

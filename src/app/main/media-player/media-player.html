@@ -27,8 +27,8 @@
       <div class="col p-0 m-0 d-flex justify-content-center">
         <div class="track-bar-container"
              (mouseenter)="handleOnMouseEnter()"
-             (mouseleave)="handleOnMouseLeave()"
-             (mousemove)="onMouseMove($event)" #trackBarContainer>
+             (mouseleave)="handleOnMouseLeave()" #trackBarContainer>
+<!--             (mousemove)="onMouseMove($event)"-->
           <div class="track-bar" [ngStyle]="{'width': this.percentProgress + '%'}" #trackBar></div>
           <div class="playhead d-flex justify-content-center align-items-center" [ngStyle]="{'left': this.percentProgress + '%'}">
 <!--            <div class="playhead-center"></div>-->

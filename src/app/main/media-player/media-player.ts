@@ -38,7 +38,13 @@ export class MediaPlayer implements OnInit {
     });
     this.eventBus.onSeek.subscribe((data) => {
       this.seek = data.seek;
-    })
+    });
+    this.eventBus.onEnd.subscribe((content) => {
+      this.percentProgress = 0;
+      this.seek = 0;
+      this.cdr.detectChanges();
+      console.log('Ended')
+    });
     }
 
   onPlay() {

@@ -17,7 +17,7 @@
       <div class="col p-0 m-0 ps-4 pb-3">
         <div class="button px-3 d-flex justify-content-center align-items-center"
              (click)="handleLoad()">
-          @if (!this.globalData.playing && this.content === this.globalData.content) {
+          @if (this.globalData.playing && this.content === this.globalData.content) {
             PAUSE
           }
           @else {
