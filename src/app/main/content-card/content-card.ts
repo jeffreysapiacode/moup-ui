@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment';
 import {Howl} from 'howler';
 import {GlobalData} from '../../service/global-data';
 import {TimeUtils} from '../../util/time-utils';
+import {LocalStorageUtil} from '../../util/local-storage-util';
 
 @Component({
   selector: 'app-content-card',
@@ -21,6 +22,10 @@ export class ContentCard implements OnInit {
   }
 
   ngOnInit(): void {
+    const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
+    if (storedInfo) {
+      this.time = TimeUtils.formatTime(storedInfo.seek);
+    }
     this.eventBus.onSeek.subscribe((data) => {
       if (data.content.uuid === this.content.uuid) {
         this.time = TimeUtils.formatTime(data.seek);
@@ -59,7 +64,12 @@ export class ContentCard implements OnInit {
         this.globalData.playing = false;
       });
       this.globalData.setContent(this.content);
+      const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
+      // Check if there is a saved start time
       this.globalData.sound.play()
+      if (storedInfo) {
+        this.globalData.sound.seek(storedInfo.seek);
+      }
     } else {
       if (this.globalData.playing) {
         this.globalData.sound.pause();

@@ -7,9 +7,9 @@ export class TimeUtils {
     let minutes = Math.floor(seconds / 60);
     let hours = Math.floor(seconds / (60 * 60));
     if (hours === 0) {
-      return minutes + ':' + secondsFmt;
+      return minutes + ':' + (secondsFmt - (minutes * 60)) ;
     } else {
-      return hours + ':' + minutes + ':' + secondsFmt;
+      return hours + ':' + (minutes - (hours * 60)) + ':' + (secondsFmt - (minutes * 60));
     }
   }
 
