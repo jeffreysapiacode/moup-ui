@@ -31,7 +31,7 @@ export class ContentCard implements OnInit {
         this.time = TimeUtils.formatTime(data.seek);
         this.cdr.detectChanges();
       } else {
-        this.time = '0:0';
+        this.time = TimeUtils.formatTime(LocalStorageUtil.getStorage(this.content.uuid).seek);
       }
     })
   }
