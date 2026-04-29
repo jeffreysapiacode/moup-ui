@@ -35,4 +35,8 @@ export class MediaPlayer implements OnInit {
     }
   }
 
+  onMouseMove($event: MouseEvent){
+    console.log('Mouse X:', $event.clientX, 'Mouse Y:', $event.clientY);
+  }
+
 }

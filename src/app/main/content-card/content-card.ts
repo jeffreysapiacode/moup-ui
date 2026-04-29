@@ -24,6 +24,7 @@ export class ContentCard implements OnInit {
     if(this.content !== this.globalData.content) {
       // A new track has been selected !!!
       Howler.stop();
+      this.globalData.playing = false;
       this.globalData.sound = new Howl({
         src: ['http://localhost:8080/stream/' + this.content.filename],
         html5: true
@@ -38,9 +39,15 @@ export class ContentCard implements OnInit {
       this.globalData.sound.on('pause', () => {
         this.globalData.playing = false;
       });
-      this.globalData.sound.on('end', ()=> {});
-      this.globalData.sound.on('loaderror', ()=> {});
-      this.globalData.sound.on('playerror', () => {});
+      this.globalData.sound.on('end', ()=> {
+        this.globalData.playing = false;
+      });
+      this.globalData.sound.on('loaderror', ()=> {
+        this.globalData.playing = false;
+      });
+      this.globalData.sound.on('playerror', () => {
+        this.globalData.playing = false;
+      });
       this.globalData.setContent(this.content);
       this.globalData.sound.play()
     } else {
