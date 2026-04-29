@@ -3,6 +3,7 @@ import {EventBus} from '../../service/event-bus';
 import { environment } from '../../../environments/environment';
 import {Howl} from 'howler';
 import {GlobalData} from '../../service/global-data';
+import {TimeUtils} from '../../util/TimeUtil';
 
 @Component({
   selector: 'app-content-card',
@@ -57,6 +58,10 @@ export class ContentCard implements OnInit {
         this.eventBus.onPlay.emit(this.content);
       }
     }
+  }
+
+  formatTime (seconds: Number) {
+    return TimeUtils.formatTime(seconds);
   }
 
 }

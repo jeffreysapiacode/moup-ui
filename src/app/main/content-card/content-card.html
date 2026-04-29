@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="row p-0 m-0 pb-3">
-      <div class="col p-0 m-0 px-4 pb-3">
+      <div class="col p-0 m-0 ps-4 pb-3">
         <div class="button px-3 d-flex justify-content-center align-items-center"
              (click)="handleLoad()">
           @if (!this.globalData.playing && this.content === this.globalData.content) {
@@ -28,8 +28,8 @@
 
         </div>
       </div>
-      <div class="col p-0 m-0 px-4 pb-3">
-
+      <div class="col p-0 m-0 pb-3 d-flex justify-content-start align-items-center">
+        <span class="time-duration">{{this.formatTime(this.content.duration)}}</span>
       </div>
       <div class="col p-0 m-0 px-4 pb-3">
         <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none"><div class="button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div></a>
