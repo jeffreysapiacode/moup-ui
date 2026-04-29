@@ -23,6 +23,7 @@ export class MediaPlayer implements OnInit {
   public isOpen: boolean = false;
   public percentProgress: any = 0;
   public seek: any = 0;
+  public playing: boolean = false;
 
   public seekMode: boolean = false;
 
@@ -35,6 +36,12 @@ export class MediaPlayer implements OnInit {
     });
     this.eventBus.onPlay.subscribe((content) => {
       this.animate();
+      this.playing = true;
+      this.cdr.detectChanges();
+    });
+    this.eventBus.onPause.subscribe((content) => {
+      this.playing = false;
+      this.cdr.detectChanges();
     });
     this.eventBus.onSeek.subscribe((data) => {
       this.seek = data.seek;
@@ -42,6 +49,7 @@ export class MediaPlayer implements OnInit {
     this.eventBus.onEnd.subscribe((content) => {
       this.percentProgress = 0;
       this.seek = 0;
+      this.playing = false;
       this.cdr.detectChanges();
       console.log('Ended')
     });

@@ -20,6 +20,7 @@ export class ContentCard implements OnInit {
   @Input() public content: any;
   apiUrl = environment.apiUrl;
   time: any = '0:0';
+  public playing: boolean = false;
 
   constructor(private eventBus: EventBus, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {
   }
@@ -37,10 +38,19 @@ export class ContentCard implements OnInit {
         this.time = TimeUtils.formatTime(LocalStorageUtil.getStorage(this.content.uuid).seek);
       }
     });
+    this.eventBus.onPlay.subscribe((content) => {
+      this.playing = true;
+      this.cdr.detectChanges();
+    });
+    this.eventBus.onPause.subscribe((content) => {
+      this.playing = false;
+      this.cdr.detectChanges();
+    });
     this.eventBus.onEnd.subscribe((content) => {
       if (this.content.uuid === content.uuid) {
         this.time = TimeUtils.formatTime(0);
         this.globalData.playing = false;
+        this.playing = false;
         this.cdr.detectChanges();
       }
     });
@@ -60,9 +70,12 @@ export class ContentCard implements OnInit {
       this.globalData.sound.on('play', (() => {
         this.globalData.playing = true;
         this.eventBus.onPlay.emit(this.content);
+        console.log('playing');
       }));
       this.globalData.sound.on('pause', () => {
         this.globalData.playing = false;
+        this.eventBus.onPause.emit(this.content);
+        console.log('pause');
       });
       this.globalData.sound.on('end', ()=> {
         this.globalData.playing = false;
