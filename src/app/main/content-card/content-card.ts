@@ -23,7 +23,7 @@ export class ContentCard implements OnInit {
   ngOnInit(): void {
     this.eventBus.onSeek.subscribe((data) => {
       console.log(data.content.uuid +' vs '+this.globalData.content.uuid);
-      if (data.content.uuid === this.globalData.content.uuid) {
+      if (data.content.uuid === this.content.uuid) {
         this.time = TimeUtils.formatTime(data.seek);
         this.cdr.detectChanges();
       } else {
