@@ -15,13 +15,10 @@ export class ContentCard implements OnInit {
   @Input() public content: any;
   apiUrl = environment.apiUrl;
 
-  constructor(private eventBus: EventBus, private globalData: GlobalData) {
+  constructor(private eventBus: EventBus, protected globalData: GlobalData) {
   }
 
-  ngOnInit(): void {
-
-
-  }
+  ngOnInit(): void {}
 
   public handleLoad() {
     if(this.content !== this.globalData.content) {
@@ -36,6 +33,7 @@ export class ContentCard implements OnInit {
       });
       this.globalData.sound.on('play', (() => {
         this.globalData.playing = true;
+
       }));
       this.globalData.sound.on('pause', () => {
         this.globalData.playing = false;

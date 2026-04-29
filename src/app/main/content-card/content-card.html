@@ -13,7 +13,15 @@
     <div class="row p-0 m-0 pb-3">
       <div class="col p-0 m-0 px-4 pb-3">
         <div class="button px-3 d-flex justify-content-center align-items-center"
-             (click)="handleLoad()">PLAY</div>
+             (click)="handleLoad()">
+          @if (!this.globalData.playing && this.content === this.globalData.content) {
+            PAUSE
+          }
+          @else {
+            PLAY
+          }
+
+        </div>
       </div>
       <div class="col p-0 m-0 px-4 pb-3">
 

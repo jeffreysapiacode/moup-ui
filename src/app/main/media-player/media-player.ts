@@ -16,7 +16,7 @@ export class MediaPlayer implements OnInit {
   public content: any;
   public isOpen: boolean = false;
 
-  constructor(private eventBus: EventBus, private globalData: GlobalData) {
+  constructor(private eventBus: EventBus, protected globalData: GlobalData) {
   }
 
   ngOnInit(): void {
