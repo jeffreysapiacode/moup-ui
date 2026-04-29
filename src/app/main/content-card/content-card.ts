@@ -22,7 +22,6 @@ export class ContentCard implements OnInit {
 
   public handleLoad() {
     if(this.content !== this.globalData.content) {
-      // A new track has been selected !!!
       Howler.stop();
       this.globalData.playing = false;
       this.globalData.sound = new Howl({
@@ -34,7 +33,7 @@ export class ContentCard implements OnInit {
       });
       this.globalData.sound.on('play', (() => {
         this.globalData.playing = true;
-
+        this.eventBus.onPlay.emit(this.content);
       }));
       this.globalData.sound.on('pause', () => {
         this.globalData.playing = false;
@@ -55,6 +54,7 @@ export class ContentCard implements OnInit {
         this.globalData.sound.pause();
       } else {
         this.globalData.sound.play();
+        this.eventBus.onPlay.emit(this.content);
       }
     }
   }

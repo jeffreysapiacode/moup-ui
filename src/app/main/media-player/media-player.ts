@@ -1,29 +1,35 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
-import {NgClass} from '@angular/common';
+import {NgClass, NgStyle} from '@angular/common';
 import {GlobalData} from '../../service/global-data';
 
 @Component({
   selector: 'app-media-player',
   imports: [
-    NgClass
+    NgClass,
+    NgStyle
   ],
   templateUrl: './media-player.html',
   styleUrl: './media-player.sass',
 })
 export class MediaPlayer implements OnInit {
 
+  @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
+  @ViewChild('trackBar') trackBar!: ElementRef;
+
   public content: any;
   public isOpen: boolean = false;
+  public percentProgress: any = 0;
 
-  constructor(private eventBus: EventBus, protected globalData: GlobalData) {
-  }
+  constructor(private eventBus: EventBus, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.eventBus.onLoad.subscribe((content) => {
       this.content = content;
       this.isOpen = true;
-      console.log('get here');
+    });
+    this.eventBus.onPlay.subscribe((content) => {
+      this.animate();
     });
     }
 
@@ -32,11 +38,20 @@ export class MediaPlayer implements OnInit {
       this.globalData.sound.pause();
     } else {
       this.globalData.sound.play();
+      this.eventBus.onPlay.emit(this.content);
     }
   }
 
   onMouseMove($event: MouseEvent){
-    console.log('Mouse X:', $event.clientX, 'Mouse Y:', $event.clientY);
+    this.percentProgress = (($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100);
+  }
+
+  animate() {
+    if (this.globalData.sound && this.globalData.playing) {
+      this.percentProgress = (this.globalData.sound.seek() / this.content.duration) * 100;
+      this.cdr.detectChanges();
+    }
+    requestAnimationFrame(this.animate.bind(this));
   }
 
 }

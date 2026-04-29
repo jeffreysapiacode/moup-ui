@@ -4,6 +4,11 @@
       <div class="col p-0 m-0 px-4 py-3">
         <span class="title-text">{{content.title}}</span>
       </div>
+      @if (this.globalData.content === this.content) {
+        <div class="col-auto p-0 m-0 d-flex justify-content-end align-items-center">
+          <span class="playing-text pe-4">Playing</span>
+        </div>
+      }
     </div>
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 px-4 pb-3">
