@@ -53,6 +53,7 @@ export class MediaPlayer implements OnInit {
   animate() {
     if (this.globalData.sound && this.globalData.playing && !this.seekMode) {
       this.percentProgress = (this.globalData.sound.seek() / this.content.duration) * 100;
+      this.eventBus.onSeek.emit({content: this.content, seek: this.globalData.sound.seek()});
       this.cdr.detectChanges();
     }
     requestAnimationFrame(this.animate.bind(this));

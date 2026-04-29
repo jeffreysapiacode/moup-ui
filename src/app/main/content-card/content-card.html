@@ -29,7 +29,17 @@
         </div>
       </div>
       <div class="col p-0 m-0 pb-3 d-flex justify-content-start align-items-center">
-        <span class="time-duration">{{this.formatTime(this.content.duration)}}</span>
+        <div class="row p-0 m-0">
+          <div class="col p-0 m-0">
+            <span class="time-duration">{{ this.time }}</span>
+          </div>
+          <div class="col p-0 m-0">
+            <span class="time-duration">/</span>
+          </div>
+          <div class="col p-0 m-0">
+            <span class="time-duration">{{this.formatTime(this.content.duration)}}</span>
+          </div>
+        </div>
       </div>
       <div class="col p-0 m-0 px-4 pb-3">
         <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none"><div class="button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div></a>

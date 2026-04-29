@@ -9,5 +9,6 @@ export class EventBus {
   public onPlay = new EventEmitter()
   public onPause = new EventEmitter();
   public onToggle = new EventEmitter();
+  public onSeek = new EventEmitter();
 
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import { environment } from '../../../environments/environment';
 import {Howl} from 'howler';
@@ -15,11 +15,22 @@ export class ContentCard implements OnInit {
 
   @Input() public content: any;
   apiUrl = environment.apiUrl;
+  time: any = '0:0';
 
-  constructor(private eventBus: EventBus, protected globalData: GlobalData) {
+  constructor(private eventBus: EventBus, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.eventBus.onSeek.subscribe((data) => {
+      console.log(data.content.uuid +' vs '+this.globalData.content.uuid);
+      if (data.content.uuid === this.globalData.content.uuid) {
+        this.time = TimeUtils.formatTime(data.seek);
+        this.cdr.detectChanges();
+      } else {
+        this.time = '0:0';
+      }
+    })
+  }
 
   public handleLoad() {
     if(this.content !== this.globalData.content) {
