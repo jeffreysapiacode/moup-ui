@@ -56,7 +56,7 @@ export class MediaPlayer implements OnInit {
     }
 
   onPlay() {
-    if (this.globalData.playing) {
+    if (this.playing) {
       this.globalData.sound.pause();
     } else {
       this.globalData.sound.play();
@@ -73,7 +73,7 @@ export class MediaPlayer implements OnInit {
   count: number = 0;
 
   animate() {
-    if (this.globalData.sound && this.globalData.playing && !this.seekMode) {
+    if (this.globalData.sound && this.playing && !this.seekMode) {
       this.percentProgress = (this.globalData.sound.seek() / this.content.duration) * 100;
       this.eventBus.onSeek.emit({content: this.content, seek: this.globalData.sound.seek()});
       const seekFloor = Math.floor(this.globalData.sound.seek())

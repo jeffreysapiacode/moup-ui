@@ -6,7 +6,6 @@ import {EventBus} from './event-bus';
 })
 export class GlobalData {
   public content: any;
-  public playing: boolean = false;
   public sound: any;
 
   constructor(private eventBus: EventBus) {

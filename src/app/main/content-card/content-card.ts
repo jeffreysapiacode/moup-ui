@@ -49,7 +49,6 @@ export class ContentCard implements OnInit {
     this.eventBus.onEnd.subscribe((content) => {
       if (this.content.uuid === content.uuid) {
         this.time = TimeUtils.formatTime(0);
-        this.globalData.playing = false;
         this.playing = false;
         this.cdr.detectChanges();
       }
@@ -59,7 +58,6 @@ export class ContentCard implements OnInit {
   public handleLoad() {
     if(this.content !== this.globalData.content) {
       Howler.stop();
-      this.globalData.playing = false;
       this.globalData.sound = new Howl({
         src: ['http://localhost:8080/stream/' + this.content.filename],
         html5: true
@@ -68,27 +66,20 @@ export class ContentCard implements OnInit {
         // Send play count trigger
       });
       this.globalData.sound.on('play', (() => {
-        this.globalData.playing = true;
         this.eventBus.onPlay.emit(this.content);
-        console.log('playing');
       }));
       this.globalData.sound.on('pause', () => {
-        this.globalData.playing = false;
         this.eventBus.onPause.emit(this.content);
-        console.log('pause');
       });
       this.globalData.sound.on('end', ()=> {
-        this.globalData.playing = false;
         this.globalData.sound.seek(0);
         LocalStorageUtil.reset(this.content.uuid);
         this.eventBus.onEnd.emit(this.content);
 
       });
       this.globalData.sound.on('loaderror', ()=> {
-        this.globalData.playing = false;
       });
       this.globalData.sound.on('playerror', () => {
-        this.globalData.playing = false;
       });
       this.globalData.setContent(this.content);
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
@@ -98,7 +89,7 @@ export class ContentCard implements OnInit {
         this.globalData.sound.seek(storedInfo.seek);
       }
     } else {
-      if (this.globalData.playing) {
+      if (this.playing) {
         this.globalData.sound.pause();
       } else {
         this.globalData.sound.play();
