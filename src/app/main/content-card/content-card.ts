@@ -3,7 +3,7 @@ import {EventBus} from '../../service/event-bus';
 import { environment } from '../../../environments/environment';
 import {Howl} from 'howler';
 import {GlobalData} from '../../service/global-data';
-import {TimeUtils} from '../../util/TimeUtil';
+import {TimeUtils} from '../../util/time-utils';
 
 @Component({
   selector: 'app-content-card',

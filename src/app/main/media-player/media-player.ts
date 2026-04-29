@@ -21,6 +21,8 @@ export class MediaPlayer implements OnInit {
   public isOpen: boolean = false;
   public percentProgress: any = 0;
 
+  public seekMode: boolean = false;
+
   constructor(private eventBus: EventBus, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
@@ -43,15 +45,25 @@ export class MediaPlayer implements OnInit {
   }
 
   onMouseMove($event: MouseEvent){
-    this.percentProgress = (($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100);
+    if (this.seekMode){
+      this.percentProgress = (($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100);
+    }
   }
 
   animate() {
-    if (this.globalData.sound && this.globalData.playing) {
+    if (this.globalData.sound && this.globalData.playing && !this.seekMode) {
       this.percentProgress = (this.globalData.sound.seek() / this.content.duration) * 100;
       this.cdr.detectChanges();
     }
     requestAnimationFrame(this.animate.bind(this));
+  }
+
+  handleOnMouseEnter() {
+    this.seekMode = true;
+  }
+
+  handleOnMouseLeave() {
+    this.seekMode = false;
   }
 
 }
