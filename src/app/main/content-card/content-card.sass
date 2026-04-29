@@ -17,10 +17,19 @@
 .playing-text
   color: #4CAFD6
   font-weight: 500
+  opacity: 0
   letter-spacing: 0.08em
+  transition: opacity 0.2s ease-in
+
+.playing-text-visible
+  opacity: 100%
 
 .time-duration
   color: #7C7965
-  font-weight: 500
+  font-weight: 400
   font-size: 1rem
   padding-left: 0
+  transition: font-weight 0.2s ease-in
+
+.time-duration-active
+  font-weight: 700 !important

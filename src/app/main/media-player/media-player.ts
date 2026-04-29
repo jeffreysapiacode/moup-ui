@@ -3,6 +3,7 @@ import {EventBus} from '../../service/event-bus';
 import {NgClass, NgStyle} from '@angular/common';
 import {GlobalData} from '../../service/global-data';
 import {LocalStorageUtil} from '../../util/local-storage-util';
+import {TimeUtils} from '../../util/time-utils';
 
 @Component({
   selector: 'app-media-player',
@@ -21,6 +22,7 @@ export class MediaPlayer implements OnInit {
   public content: any;
   public isOpen: boolean = false;
   public percentProgress: any = 0;
+  public seek: any = 0;
 
   public seekMode: boolean = false;
 
@@ -34,6 +36,9 @@ export class MediaPlayer implements OnInit {
     this.eventBus.onPlay.subscribe((content) => {
       this.animate();
     });
+    this.eventBus.onSeek.subscribe((data) => {
+      this.seek = data.seek;
+    })
     }
 
   onPlay() {
@@ -98,6 +103,10 @@ export class MediaPlayer implements OnInit {
 
   handleOnMouseLeave() {
     this.seekMode = false;
+  }
+
+  format(elapsed: any) {
+    return TimeUtils.formatTime(elapsed);
   }
 
 }

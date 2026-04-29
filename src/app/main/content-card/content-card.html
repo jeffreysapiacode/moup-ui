@@ -4,11 +4,9 @@
       <div class="col p-0 m-0 px-4 py-3">
         <span class="title-text">{{content.title}}</span>
       </div>
-      @if (this.globalData.content === this.content) {
         <div class="col-auto p-0 m-0 d-flex justify-content-end align-items-center">
-          <span class="playing-text pe-4">Playing</span>
+          <span [ngClass]="{'playing-text-visible':this.globalData.content === this.content}" class="playing-text pe-4">Playing</span>
         </div>
-      }
     </div>
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 px-4 pb-3">
@@ -28,16 +26,16 @@
 
         </div>
       </div>
-      <div class="col p-0 m-0 pb-3 d-flex justify-content-start align-items-center">
+      <div  class="col p-0 m-0 pb-3 d-flex justify-content-start align-items-center">
         <div class="row p-0 m-0">
           <div class="col p-0 m-0">
-            <span class="time-duration">{{ this.time }}</span>
+            <span [ngClass]="{'time-duration-active': this.globalData.content === this.content}" class="time-duration">{{ this.time }}</span>
           </div>
           <div class="col p-0 m-0">
-            <span class="time-duration">/</span>
+            <span [ngClass]="{'time-duration-active': this.globalData.content === this.content}" class="time-duration">/</span>
           </div>
           <div class="col p-0 m-0">
-            <span class="time-duration">{{this.formatTime(this.content.duration)}}</span>
+            <span [ngClass]="{'time-duration-active': this.globalData.content === this.content}" class="time-duration">{{this.formatTime(this.content.duration)}}</span>
           </div>
         </div>
       </div>

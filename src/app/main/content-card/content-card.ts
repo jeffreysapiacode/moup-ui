@@ -5,10 +5,13 @@ import {Howl} from 'howler';
 import {GlobalData} from '../../service/global-data';
 import {TimeUtils} from '../../util/time-utils';
 import {LocalStorageUtil} from '../../util/local-storage-util';
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-content-card',
-  imports: [],
+  imports: [
+    NgClass
+  ],
   templateUrl: './content-card.html',
   styleUrl: './content-card.sass',
 })
@@ -56,6 +59,7 @@ export class ContentCard implements OnInit {
       });
       this.globalData.sound.on('end', ()=> {
         this.globalData.playing = false;
+        this.globalData.sound.seek(0);
       });
       this.globalData.sound.on('loaderror', ()=> {
         this.globalData.playing = false;
