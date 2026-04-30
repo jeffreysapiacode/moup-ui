@@ -52,7 +52,6 @@ export class MediaPlayer implements OnInit {
       this.seek = 0;
       this.playing = false;
       this.cdr.detectChanges();
-      console.log('Ended')
     });
     }
 
@@ -124,6 +123,13 @@ export class MediaPlayer implements OnInit {
 
   format(elapsed: any) {
     return TimeUtils.formatTime(elapsed);
+  }
+
+  calculate(percentProgress: any, seekMode: boolean) {
+    if (seekMode) {
+      return percentProgress - 2;
+    }
+    return percentProgress;
   }
 
 }

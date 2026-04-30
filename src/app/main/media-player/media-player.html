@@ -49,8 +49,8 @@
           (mousemove)="onMouseMove($event)"
           (mouseenter)="handleOnMouseEnter()"
           (mouseleave)="handleOnMouseLeave()" #trackBarContainer>
-          <div class="track-bar" [ngStyle]="{'width': (this.percentProgress - 2)  + '%'}" #trackBar></div>
-          <div class="playhead d-flex justify-content-center align-items-center" [ngStyle]="{'left': this.percentProgress + '%'}">
+          <div class="track-bar" [ngStyle]="{'width': calculate(this.percentProgress, seekMode) + '%'}" #trackBar></div>
+          <div class="playhead playhead-hover d-flex justify-content-center align-items-center" [ngClass]="{'playhead-hover': this.seekMode}" [ngStyle]="{'left': this.percentProgress + '%'}">
 <!--            <div class="playhead-center"></div>-->
           </div>
         </div>

@@ -35,13 +35,16 @@
 .playhead
   position: absolute
   top: 50%
-  transform: translateY(-50%) translateX(-32.25px)
+  transform: translateY(-50%) translateX(-12.25px)
   background: #90C298
   width: 25px
   height: 25px
   border-radius: 50px
   cursor: grab
   transition: left 0.1s ease-out
+
+.playhead-hover
+  transform: translateY(-50%) translateX(-32.25px) !important
 
 .playhead-center
   position: relative
