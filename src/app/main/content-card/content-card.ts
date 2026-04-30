@@ -59,7 +59,7 @@ export class ContentCard implements OnInit {
     if(this.content !== this.globalData.content) {
       Howler.stop();
       this.globalData.sound = new Howl({
-        src: ['http://localhost:8080/stream/' + this.content.filename],
+        src: [this.apiUrl + '/stream/' + this.content.filename],
         html5: true
       });
       this.globalData.sound.once('load', () => {
