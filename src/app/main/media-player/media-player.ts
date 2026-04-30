@@ -26,6 +26,7 @@ export class MediaPlayer implements OnInit {
   public playing: boolean = false;
 
   public seekMode: boolean = false;
+  public storedSeek: number = 0;
 
   constructor(private eventBus: EventBus, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {}
 
@@ -61,12 +62,6 @@ export class MediaPlayer implements OnInit {
     } else {
       this.globalData.sound.play();
       this.eventBus.onPlay.emit(this.content);
-    }
-  }
-
-  onMouseMove($event: MouseEvent){
-    if (this.seekMode){
-      this.percentProgress = (($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100);
     }
   }
 
@@ -113,10 +108,18 @@ export class MediaPlayer implements OnInit {
 
   handleOnMouseEnter() {
     this.seekMode = true;
+    this.storedSeek = this.percentProgress;
   }
 
   handleOnMouseLeave() {
     this.seekMode = false;
+    this.percentProgress = this.storedSeek;
+  }
+
+  onMouseMove($event: MouseEvent){
+    if (this.seekMode) {
+      this.percentProgress = (($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100);
+    }
   }
 
   format(elapsed: any) {
