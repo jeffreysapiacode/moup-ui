@@ -46,6 +46,7 @@
     <div class="row p-0 m-0 pt-1">
       <div class="col p-0 m-0 d-flex justify-content-center">
         <div class="track-bar-container"
+           (click)="handleClick()"
           (mousemove)="onMouseMove($event)"
           (mouseenter)="handleOnMouseEnter()"
           (mouseleave)="handleOnMouseLeave()" #trackBarContainer>
