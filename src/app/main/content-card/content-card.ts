@@ -81,7 +81,6 @@ export class ContentCard implements OnInit {
         this.globalData.sound.seek(0);
         LocalStorageUtil.reset(this.content.uuid);
         this.eventBus.onEnd.emit(this.content);
-
       });
       this.globalData.sound.on('loaderror', ()=> {
       });

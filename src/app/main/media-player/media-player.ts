@@ -138,8 +138,7 @@ export class MediaPlayer implements OnInit {
   }
 
   handleClick() {
-
-    this.globalData.sound.seek(this.playheadSeconds);
+    this.globalData.sound.seek(this.playheadSeconds - 1);
     this.globalData.sound.play();
   }
 
