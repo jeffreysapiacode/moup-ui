@@ -35,7 +35,6 @@
                 </clipPath>
               </defs>
             </svg>
-<!--            <img class="audio-control-button" src="assets/img/svg/play-button.svg"/>-->
           }
         </div>
       </div>
@@ -50,7 +49,6 @@
           (mousemove)="onMouseMove($event)"
           (mouseenter)="handleOnMouseEnter()"
           (mouseleave)="handleOnMouseLeave()" #trackBarContainer>
-<!--             (mousemove)="onMouseMove($event)"-->
           <div class="track-bar" [ngStyle]="{'width': this.percentProgress + '%'}" #trackBar></div>
           <div class="playhead d-flex justify-content-center align-items-center" [ngStyle]="{'left': this.percentProgress + '%'}">
 <!--            <div class="playhead-center"></div>-->
