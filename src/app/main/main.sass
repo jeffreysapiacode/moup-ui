@@ -9,10 +9,12 @@
   width: 100vw
   scrollbar-width: none
   -ms-overflow-style: none
-  padding-bottom: 150px
   position: relative
   overflow-x: clip
   z-index: 10
+
+.content-card-container-padding
+  padding-bottom: 150px
 
 .content-card-container::-webkit-scrollbar
   display: none
@@ -20,13 +22,15 @@
 .app-container-background
   position: fixed
   bottom: 0
-  z-index: 0
+  z-index: -1
 
 .no-content-block
   background: #F9F6E3
   height: auto
-  width: 450px
+  max-width: 450px
   font-weight: 700
   color: #68654B
   border: solid 10px #68654B
-  z-index: 5
+
+.no-content-block-z-index
+  z-index: 50

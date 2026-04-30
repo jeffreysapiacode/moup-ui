@@ -2,11 +2,15 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ContentCard} from './content-card/content-card';
 import {HttpClient} from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import {MediaPlayer} from './media-player/media-player';
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-main',
   imports: [
-    ContentCard
+    ContentCard,
+    MediaPlayer,
+    NgClass
   ],
   templateUrl: './main.html',
   styleUrl: './main.sass',
@@ -25,10 +29,6 @@ export class Main implements OnInit {
   }
 
   ngOnInit(): void {
-
-  }
-
-  onClick() {
 
   }
 
