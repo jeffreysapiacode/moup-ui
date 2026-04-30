@@ -35,7 +35,13 @@ export class ContentCard implements OnInit {
         this.time = TimeUtils.formatTime(data.seek);
         this.cdr.detectChanges();
       } else {
-        this.time = TimeUtils.formatTime(LocalStorageUtil.getStorage(this.content.uuid).seek);
+        const storage = LocalStorageUtil.getStorage(this.content.uuid);
+        if (storage) {
+          this.time = TimeUtils.formatTime(storage.seek);
+        } else {
+          this.time = TimeUtils.formatTime(0);
+        }
+
       }
     });
     this.eventBus.onPlay.subscribe((content) => {

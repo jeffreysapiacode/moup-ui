@@ -22,11 +22,13 @@ export class MediaPlayer implements OnInit {
   public content: any;
   public isOpen: boolean = false;
   public percentProgress: any = 0;
-  public seek: any = 0;
   public playing: boolean = false;
 
   public seekMode: boolean = false;
+  public seek: any = 0;
   public storedSeek: number = 0;
+
+  public playheadTime: any = TimeUtils.formatTime(0);
 
   constructor(private eventBus: EventBus, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {}
 
@@ -118,6 +120,7 @@ export class MediaPlayer implements OnInit {
   onMouseMove($event: MouseEvent){
     if (this.seekMode) {
       this.percentProgress = (($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100);
+      this.playheadTime = TimeUtils.formatTime((this.percentProgress / 100) * this.content.duration);
     }
   }
 

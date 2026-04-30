@@ -50,8 +50,13 @@
           (mouseenter)="handleOnMouseEnter()"
           (mouseleave)="handleOnMouseLeave()" #trackBarContainer>
           <div class="track-bar" [ngStyle]="{'width': calculate(this.percentProgress, seekMode) + '%'}" #trackBar></div>
-          <div class="playhead playhead-hover d-flex justify-content-center align-items-center" [ngClass]="{'playhead-hover': this.seekMode}" [ngStyle]="{'left': this.percentProgress + '%'}">
-<!--            <div class="playhead-center"></div>-->
+          <div class="playhead d-flex justify-content-center align-items-center" [ngClass]="{'playhead-hover': this.seekMode}" [ngStyle]="{'left': this.percentProgress + '%'}">
+          @if (this.seekMode) {
+            <div class="playhead-time d-flex justify-content-center align-items-center">
+              {{ this.playheadTime }}
+            </div>
+          }
+            <!--            <div class="playhead-center"></div>-->
           </div>
         </div>
       </div>
