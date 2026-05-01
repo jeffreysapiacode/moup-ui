@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, OnInit} from '@angular/core';
 import {ContentCard} from './content-card/content-card';
 import {HttpClient} from '@angular/common/http';
 import { environment } from '../../environments/environment';
@@ -18,7 +18,7 @@ import {GlobalData} from '../service/global-data';
 })
 export class Main implements OnInit {
 
-  public contentList: any = [];
+  public innerWidth: any;
 
   constructor(private http: HttpClient, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {
     const apiUrl = environment.apiUrl;
@@ -31,6 +31,11 @@ export class Main implements OnInit {
 
   ngOnInit(): void {
 
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.innerWidth = window.innerWidth;
   }
 
 }

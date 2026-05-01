@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="row p-0 m-0">
       <div class="col p-0 m-0">
-        <div class="content-card-container no-content-block-z-index pt-3" [ngClass]="{'content-card-container-padding': this.globalData.contentList.length > 0}">
+        <div class="content-card-container no-content-block-z-index pt-3" [ngClass]="{'content-card-container-padding': this.globalData.content}">
           @if (this.globalData.contentList.length === 0) {
             <div class="row p-0 m-0 w-100 h-100">
               <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
@@ -12,11 +12,9 @@
           }
           @if (this.globalData.contentList.length > 0) {
             @for (content of this.globalData.contentList; track content.uuid) {
-              <div class="content-card">
-                <div class="row p-0 m-0 pb-3 px-3">
-                  <div class="col p-0 m-0">
-                    <app-content-card [content]="content"></app-content-card>
-                  </div>
+              <div class="row p-0 m-0 pb-3 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
+                <div class="col p-0 m-0">
+                  <app-content-card [innerWidth]="innerWidth" [content]="content"></app-content-card>
                 </div>
               </div>
             }

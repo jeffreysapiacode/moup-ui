@@ -5,12 +5,13 @@ import {Howl} from 'howler';
 import {GlobalData} from '../../service/global-data';
 import {TimeUtils} from '../../util/time-utils';
 import {LocalStorageUtil} from '../../util/local-storage-util';
-import {NgClass} from '@angular/common';
+import {NgClass, NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-content-card',
   imports: [
-    NgClass
+    NgClass,
+    NgStyle
   ],
   templateUrl: './content-card.html',
   styleUrl: './content-card.sass',
@@ -18,6 +19,7 @@ import {NgClass} from '@angular/common';
 export class ContentCard implements OnInit {
 
   @Input() public content: any;
+  @Input() public innerWidth: any;
   apiUrl = environment.apiUrl;
   time: any = '0:0';
   public playing: boolean = false;
