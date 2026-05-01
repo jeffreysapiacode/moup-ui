@@ -142,4 +142,56 @@ export class MediaPlayer implements OnInit {
     this.globalData.sound.play();
   }
 
+  handlePrevious() {
+  // If less than 3 seconds, go to previous track, if greater, restart
+    if (this.globalData.sound.seek() < 3) {
+      const index = this.getTrackIndex(this.content.uuid);
+      if (index > 0) {
+        this.seekTrack(index - 1);
+        return;
+      }
+    }
+    this.globalData.sound.seek(0);
+  }
+
+  handleNext() {
+    const index = this.getTrackIndex(this.content.uuid);
+    if (index < (this.globalData.contentList.length - 1)) {
+      this.seekTrack(index + 1);
+    }
+  }
+
+  getTrackIndex(uuid: string): any {
+    let index = 0;
+    for (let content of this.globalData.contentList) {
+      if (uuid === content.uuid) {
+        return index;
+      }
+      index++;
+    }
+  }
+
+  getContentByIndex(index: number): any {
+    let indexStr = 0;
+    for (let content of this.globalData.contentList) {
+      if (indexStr === index) {
+        return content;
+      }
+      indexStr++;
+    }
+  }
+
+  seekTrack(index: number) {
+    const content = this.getContentByIndex(index);
+    this.globalData.setContent(content);
+    Howler.stop();
+    const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
+    console.log(storedInfo);
+    // Check if there is a saved start time
+    this.globalData.sound.play()
+    if (storedInfo) {
+      this.globalData.sound.seek(storedInfo.seek);
+    }
+  }
+
 }

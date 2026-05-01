@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import {MediaPlayer} from './media-player/media-player';
 import {NgClass} from '@angular/common';
+import {GlobalData} from '../service/global-data';
 
 @Component({
   selector: 'app-main',
@@ -19,11 +20,11 @@ export class Main implements OnInit {
 
   public contentList: any = [];
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {
+  constructor(private http: HttpClient, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {
     const apiUrl = environment.apiUrl;
     this.http.get(apiUrl + '/content')
       .subscribe((contentList : any) => {
-        this.contentList = contentList;
+        this.globalData.contentList  = contentList;
         this.cdr.detectChanges();
       });
   }

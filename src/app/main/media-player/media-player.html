@@ -10,9 +10,9 @@
         <span class="time-duration">{{format(this.seek)}}</span>
       </div>
       <div class="col p-0 m-0 d-flex justify-content-end d-flex align-items-center">
-        <div class="previous-button button-padding">
+        <div class="previous-button button-padding" (click)="handlePrevious()">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 33.75H11.25V11.25H15M33.75 33.75L17.8125 22.5L33.75 11.25V33.75Z" fill="#68654B"/>
+            <path d="M13.3333 30H10V10H13.3333M30 30L15.8333 20L30 10V30Z" fill="#68654B"/>
           </svg>
         </div>
       </div>
@@ -45,9 +45,9 @@
         </div>
       </div>
       <div class="col p-0 m-0 d-flex align-items-center">
-        <div class="next-button button-padding">
+        <div class="next-button button-padding" (click)="handleNext()">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M30 33.75H33.75V11.25H30M11.25 33.75L27.1875 22.5L11.25 11.25V33.75Z" fill="#68654B"/>
+            <path d="M26.6667 30H30V10H26.6667M10 30L24.1667 20L10 10V30Z" fill="#68654B"/>
           </svg>
         </div>
       </div>
