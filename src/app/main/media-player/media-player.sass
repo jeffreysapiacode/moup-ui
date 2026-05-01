@@ -4,7 +4,7 @@
   transition: height 0.2s ease-in
   max-height: 150px
   width: 100vw
-  position: absolute
+  position: fixed
   bottom: 0
   border-top: solid 6px #D2CFB4
   overflow: clip
@@ -78,6 +78,11 @@
   text-overflow: ellipsis
   font-weight: 700
   color: #68654B
+  font-size: 1.15rem
+
+@media (min-width: 576px)
+  .title-text
+    font-size: 1.0rem
 
 .time-duration
   z-index: 100

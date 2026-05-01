@@ -5,21 +5,30 @@
   box-shadow: 7px 7px 0 0 rgba(104, 101, 75, 1.0)
 
 .title-text
-  font-size: 1rem
+  font-size: 1.3rem
   font-weight: 700 !important
   color: #7C7965
 
 .description-text
-  font-size: 0.9rem
+  font-size: 1.0rem
   font-weight: 500 !important
   color: #A5A190
 
 .playing-text
   color: #4CAFD6
   font-weight: 500
+  font-size: 1.2rem
   opacity: 0
   letter-spacing: 0.08em
   transition: opacity 0.2s ease-in
+
+@media (min-width: 576px)
+  .title-text
+    font-size: 1rem
+  .description-text
+    font-size: 0.9rem
+  .playing-text
+    font-size: 1rem
 
 .playing-text-visible
   opacity: 100%
