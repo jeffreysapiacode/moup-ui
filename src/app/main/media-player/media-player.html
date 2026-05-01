@@ -9,7 +9,13 @@
       <div class="col p-0 m-0 ps-4 d-flex justify-content-start align-items-end">
         <span class="time-duration">{{format(this.seek)}}</span>
       </div>
-      <div class="col p-0 m-0"></div>
+      <div class="col p-0 m-0 d-flex justify-content-end d-flex align-items-center">
+        <div class="previous-button">
+          <svg width="45" height="45" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 33.75H11.25V11.25H15M33.75 33.75L17.8125 22.5L33.75 11.25V33.75Z" fill="#68654B"/>
+          </svg>
+        </div>
+      </div>
       <div class="col p-0 m-0 d-flex justify-content-center">
         <div class="button-padding" (click)="onPlay()">
           @if (this.playing) {
@@ -38,7 +44,13 @@
           }
         </div>
       </div>
-      <div class="col p-0 m-0"></div>
+      <div class="col p-0 m-0 d-flex align-items-center">
+        <div class="next-button">
+          <svg width="45" height="45" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M30 33.75H33.75V11.25H30M11.25 33.75L27.1875 22.5L11.25 11.25V33.75Z" fill="#68654B"/>
+          </svg>
+        </div>
+      </div>
       <div class="col p-0 m-0 pe-4 d-flex justify-content-end align-items-end">
         <span class="time-duration">{{format(this.content?.duration)}}</span>
       </div>

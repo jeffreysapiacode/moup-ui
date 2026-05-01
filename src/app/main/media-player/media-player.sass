@@ -16,7 +16,7 @@
 .media-player-background
   position: absolute
   bottom: 0
-  z-index: 5
+  z-index: -1
 
 .track-bar-container
   position: relative
@@ -82,10 +82,16 @@
 
 @media (min-width: 576px)
   .title-text
-    font-size: 1.0rem
+    font-size: 1.1rem
 
 .time-duration
   z-index: 100
   color: #68654B
   font-weight: 600
   font-size: 1rem
+
+.next-button
+  z-index: 500
+
+.previous-button
+  z-index: 500
