@@ -71,9 +71,8 @@ export class MediaPlayer implements OnInit {
 
   animate() {
     if (this.globalData.sound && this.playing && !this.seekMode) {
-      this.percentProgress = (this.globalData.sound.seek() / this.content.duration) * 100;
+      setTimeout(() => (this.percentProgress =  (this.globalData.sound.seek() / this.content.duration) * 100), 0);
       this.eventBus.onSeek.emit({content: this.content, seek: this.globalData.sound.seek()});
-      console.log(this.globalData.sound.seek());
       const seekFloor = Math.floor(this.globalData.sound.seek())
       if (seekFloor !== this.count) {
         this.saveToLocalStorage(seekFloor)
