@@ -186,12 +186,11 @@ export class MediaPlayer implements OnInit {
     this.globalData.setContent(content);
     Howler.stop();
     const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
-    console.log(storedInfo);
     // Check if there is a saved start time
-    this.globalData.sound.play()
     if (storedInfo) {
       this.globalData.sound.seek(storedInfo.seek);
     }
+    this.globalData.sound.play()
   }
 
 }
