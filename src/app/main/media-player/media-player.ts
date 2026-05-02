@@ -89,6 +89,9 @@ export class MediaPlayer implements OnInit {
   }
 
   saveToLocalStorage(seekFloor: any) {
+    if (!this.content) {
+      return;
+    }
     let storage: any;
     if (!localStorage.getItem('moup') || localStorage.getItem('moup') === 'undefined') {
       storage = [];
@@ -97,14 +100,14 @@ export class MediaPlayer implements OnInit {
     }
     storage = JSON.parse(<string>localStorage.getItem('moup'));
     for (let storedInfo of storage) {
-      if (storedInfo.contentUuid === this.content.uuid) {
+      if (storedInfo.contentUuid === this.content?.uuid) {
         storedInfo.seek = seekFloor;
         this.pushToStorage(storage);
         return;
       }
     }
     // Not found
-    storage.push({contentUuid: this.content.uuid, seek: seekFloor});
+    storage.push({contentUuid: this.content?.uuid, seek: seekFloor});
     this.pushToStorage(storage)
   }
 
@@ -137,6 +140,7 @@ export class MediaPlayer implements OnInit {
       } else {
         this.percentProgress = percentProgressTmp;
       }
+      console.log(percentProgressTmp);
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
       this.percentSeek = (this.globalData.sound.seek() / this.content.duration) * 100;
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
