@@ -1,7 +1,6 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import { environment } from '../../../environments/environment';
-import {Howl} from 'howler';
 import {GlobalData} from '../../service/global-data';
 import {TimeUtils} from '../../util/time-utils';
 import {LocalStorageUtil} from '../../util/local-storage-util';
@@ -69,27 +68,6 @@ export class ContentCard implements OnInit {
 
   public handleLoad() {
     if(this.content !== this.globalData.content) {
-      Howler.stop();
-      this.globalData.sound = new Howl({
-        src: [this.apiUrl + '/stream/' + this.content.filename],
-        html5: true
-      });
-      this.globalData.sound.once('load', () => {
-        // Send play count trigger
-      });
-      this.globalData.sound.on('play', (() => {
-        this.eventBus.onPlay.emit(this.content);
-      }));
-      this.globalData.sound.on('pause', () => {
-        this.eventBus.onPause.emit(this.content);
-      });
-      this.globalData.sound.on('end', ()=> {
-        this.eventBus.onEnd.emit(this.content);
-      });
-      this.globalData.sound.on('loaderror', ()=> {
-      });
-      this.globalData.sound.on('playerror', () => {
-      });
       this.globalData.setContent(this.content);
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
       // Check if there is a saved start time

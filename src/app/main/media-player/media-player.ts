@@ -136,13 +136,13 @@ export class MediaPlayer implements OnInit {
         this.percentProgress = 1.93;
       } else if (percentProgressTmp > 100.97) {
         this.percentProgress = 100.97;
-        // this.percentProgress = percentProgressTmp;
       } else {
         this.percentProgress = percentProgressTmp;
       }
-      console.log(percentProgressTmp);
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
-      this.percentSeek = (this.globalData.sound.seek() / this.content.duration) * 100;
+      if (this.globalData.sound) {
+        this.percentSeek = (this.globalData.sound.seek() / this.content.duration) * 100;
+      }
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
     }
   }
@@ -208,7 +208,6 @@ export class MediaPlayer implements OnInit {
   seekTrack(index: number) {
     const content = this.getContentByIndex(index);
     this.globalData.setContent(content);
-    Howler.stop();
     const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
     // Check if there is a saved start time
     if (storedInfo) {
