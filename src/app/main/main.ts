@@ -18,28 +18,27 @@ import {GlobalData} from '../service/global-data';
 })
 export class Main implements OnInit {
 
-  public innerWidth: any;
-  public loading: boolean = false;
+  innerWidth: any;
+  loading: boolean = false;
 
-  constructor(private http: HttpClient, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {
+  constructor(protected http: HttpClient,
+              protected globalData: GlobalData,
+              protected cdr: ChangeDetectorRef) {
     const apiUrl = environment.apiUrl;
     this.loading = true;
     this.http.get(apiUrl + '/content')
       .subscribe((contentList : any) => {
         this.globalData.contentList  = contentList;
-        setTimeout(()=> {this.loading = false; this.cdr.detectChanges();}, 750);
-
-
+        setTimeout(()=> {this.loading = false; this.cdr.detectChanges();}, 150);
       });
   }
 
   ngOnInit(): void {
-
+    this.innerWidth = window.innerWidth;
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.innerWidth = window.innerWidth;
   }
-
 }

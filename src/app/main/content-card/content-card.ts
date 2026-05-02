@@ -18,13 +18,15 @@ import {NgClass, NgStyle} from '@angular/common';
 })
 export class ContentCard implements OnInit {
 
-  @Input() public content: any;
-  @Input() public innerWidth: any;
+  @Input() content: any;
+  @Input() innerWidth: any;
+  playing: boolean = false;
+  time: any = TimeUtils.formatTime(0);
   apiUrl = environment.apiUrl;
-  time: any = '0:0';
-  public playing: boolean = false;
 
-  constructor(private eventBus: EventBus, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {
+  constructor(protected eventBus: EventBus,
+              protected globalData: GlobalData,
+              protected cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {

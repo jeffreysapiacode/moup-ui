@@ -19,26 +19,27 @@ export class MediaPlayer implements OnInit {
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
 
-  public content: any;
-  public isOpen: boolean = false;
-  public percentProgress: any = 0;
-  public percentSeek: any = 0;
-  public playing: boolean = false;
+  open: boolean = false;
+  seek: any = 0;
+  playing: boolean = false;
+  content: any;
+  seekMode: boolean = false;
+  percentSeek: any = 0;
+  percentProgress: any = 0;
+  playheadTime: any = TimeUtils.formatTime(0);
 
-  public seekMode: boolean = false;
-  public seekModeLock: boolean = false;
-  public seek: any = 0;
-  public storedSeek: number = 0;
+  private seekModeLock: boolean = false;
+  private storedSeek: number = 0;
+  private playheadSeconds: number = 0
 
-  public playheadTime: any = TimeUtils.formatTime(0);
-  public playheadSeconds: number = 0
-
-  constructor(private eventBus: EventBus, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {}
+  constructor(protected eventBus: EventBus,
+              protected globalData: GlobalData,
+              protected cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.eventBus.onLoad.subscribe((content) => {
       this.content = content;
-      this.isOpen = true;
+      this.open = true;
     });
     this.eventBus.onPlay.subscribe((content) => {
       this.animate();
@@ -128,15 +129,15 @@ export class MediaPlayer implements OnInit {
   onMouseMove($event: MouseEvent){
     if (this.seekMode && !this.seekModeLock) {
       let percentProgressTmp = ($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100;
-      console.log(percentProgressTmp)
       if (percentProgressTmp < 1.93) {
         this.percentProgress = 1.93;
       } else if (percentProgressTmp > 100.97) {
-        this.percentProgress = 100.97;
+        // this.percentProgress = 100.97;
+        this.percentProgress = percentProgressTmp;
       } else {
         this.percentProgress = percentProgressTmp;
       }
-
+      console.log(percentProgressTmp);
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
       this.percentSeek = (this.globalData.sound.seek() / this.content.duration) * 100;
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
@@ -155,11 +156,16 @@ export class MediaPlayer implements OnInit {
   }
 
   handleSeek() {
-    this.globalData.sound.seek(this.playheadSeconds * 0.98);
+    let targetTime = this.playheadSeconds * 0.92
+    this.globalData.sound.seek(targetTime);
     this.globalData.sound.play();
     this.seekMode = false;
     this.seekModeLock = true;
-    // TODO need to turn of seekmode until user exits hover area and then allow the user to reenter and enable seekmode again
+
+    setTimeout(() => {
+      let seek = this.globalData.sound.seek();
+      console.log(seek - targetTime - 0.1);
+    }, 100);
   }
 
   handlePrevious() {
