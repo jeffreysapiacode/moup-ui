@@ -28,6 +28,7 @@ export class MediaPlayer implements OnInit {
   percentProgress: any = 0;
   playheadTime: any = TimeUtils.formatTime(0);
 
+  private seekModeLock: boolean = false;
   private storedSeek: number = 0;
   private playheadSeconds: number = 0
 
@@ -112,17 +113,21 @@ export class MediaPlayer implements OnInit {
   }
 
   handleOnMouseEnter() {
+    this.seekModeLock = false;
     this.seekMode = true;
     this.storedSeek = this.percentProgress;
   }
 
   handleOnMouseLeave() {
+    if (this.seekModeLock){
+      return;
+    }
     this.seekMode = false;
     this.percentProgress = this.storedSeek;
   }
 
   onMouseMove($event: MouseEvent){
-    if (this.seekMode) {
+    if (this.seekMode && !this.seekModeLock) {
       let percentProgressTmp = ($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100;
       if (percentProgressTmp < 1.93) {
         this.percentProgress = 1.93;
@@ -155,6 +160,7 @@ export class MediaPlayer implements OnInit {
     this.globalData.sound.seek(targetTime);
     this.globalData.sound.play();
     this.seekMode = false;
+    this.seekModeLock = true;
 
     setTimeout(() => {
       let seek = this.globalData.sound.seek();
