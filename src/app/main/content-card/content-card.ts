@@ -56,7 +56,9 @@ export class ContentCard implements OnInit {
     });
     this.eventBus.onEnd.subscribe((content) => {
       if (this.content.uuid === content.uuid) {
-        this.time = TimeUtils.formatTime(0);
+        this.globalData.sound.seek(0);
+        LocalStorageUtil.reset(this.globalData.content.uuid);
+        setTimeout(()=> this.time = TimeUtils.formatTime(0));
         this.playing = false;
         this.cdr.detectChanges();
       }
@@ -80,8 +82,6 @@ export class ContentCard implements OnInit {
         this.eventBus.onPause.emit(this.content);
       });
       this.globalData.sound.on('end', ()=> {
-        this.globalData.sound.seek(0);
-        LocalStorageUtil.reset(this.content.uuid);
         this.eventBus.onEnd.emit(this.content);
       });
       this.globalData.sound.on('loaderror', ()=> {

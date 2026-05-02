@@ -17,9 +17,10 @@ export class LocalStorageUtil {
       for (let storedInfo of storage) {
         if (storedInfo.contentUuid === uuid) {
           storedInfo.seek = 0;
+          localStorage.setItem('moup', JSON.stringify(storage));
+          return;
         }
       }
     }
-    localStorage.setItem('moup', JSON.stringify(storage));
   }
 }

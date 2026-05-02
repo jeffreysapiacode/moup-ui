@@ -22,6 +22,7 @@ export class MediaPlayer implements OnInit {
   public content: any;
   public isOpen: boolean = false;
   public percentProgress: any = 0;
+  public percentSeek: any = 0;
   public playing: boolean = false;
 
   public seekMode: boolean = false;
@@ -123,6 +124,7 @@ export class MediaPlayer implements OnInit {
     if (this.seekMode) {
       this.percentProgress = (($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100);
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
+      this.percentSeek = (this.globalData.sound.seek() / this.content.duration) * 100;
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
     }
   }

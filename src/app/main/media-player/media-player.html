@@ -62,6 +62,9 @@
          (mouseleave)="handleOnMouseLeave()">
       <div class="col p-0 m-0 d-flex justify-content-center">
         <div class="track-bar-container" #trackBarContainer>
+          @if(this.seekMode) {
+            <div class="track-bar-seek" [ngStyle]="{'width': calculate(this.percentSeek, seekMode) + '%'}" #trackBarSeek></div>
+          }
           <div class="track-bar" [ngStyle]="{'width': calculate(this.percentProgress, seekMode) + '%'}" #trackBar></div>
           <div class="playhead d-flex justify-content-center align-items-center" [ngClass]="{'playhead-hover': this.seekMode}" [ngStyle]="{'left': this.percentProgress + '%'}">
           @if (this.seekMode) {
