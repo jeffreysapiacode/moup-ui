@@ -54,6 +54,7 @@ export class MediaPlayer implements OnInit {
       this.percentProgress = 0;
       this.seek = 0;
       this.playing = false;
+      this.handleNext();
       this.cdr.detectChanges();
     });
     }
@@ -137,7 +138,7 @@ export class MediaPlayer implements OnInit {
     return percentProgress;
   }
 
-  handleClick() {
+  handleSeek() {
     this.globalData.sound.seek(this.playheadSeconds * 0.98);
     this.globalData.sound.play();
   }
