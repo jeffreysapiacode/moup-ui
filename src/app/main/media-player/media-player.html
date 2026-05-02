@@ -1,13 +1,13 @@
 <div class="container-fluid p-0 m-0">
   <div class="media-player-container" [ngClass]="{'media-player-container-open': isOpen}">
-    <div class="row p-0 m-0 pt-3 px-3">
+    <div class="row p-0 m-0 pt-2 px-3">
       <div class="col p-0 m-0 d-flex justify-content-center">
         <span class="title-text">{{this.content?.title}}</span>
       </div>
     </div>
     <div class="row p-0 m-0">
-      <div class="col p-0 m-0 ps-4 d-flex justify-content-start align-items-end">
-        <span class="time-duration">{{format(this.seek)}}</span>
+      <div class="col p-0 m-0 ps-4 d-flex justify-content-start align-items-end position-relative">
+        <span class="time-duration-elapsed">{{format(this.seek)}}</span>
       </div>
       <div class="col p-0 m-0 pe-3 d-flex justify-content-end d-flex align-items-center">
         <div class="previous-button button-padding" style="z-index: 5;" (click)="handlePrevious()">
@@ -51,11 +51,11 @@
           </svg>
         </div>
       </div>
-      <div class="col p-0 m-0 pe-4 d-flex justify-content-end align-items-end">
-        <span class="time-duration">{{format(this.content?.duration)}}</span>
+      <div class="col p-0 m-0 pe-4 d-flex justify-content-end align-items-end position-relative">
+        <span class="time-duration-total">{{format(this.content?.duration)}}</span>
       </div>
     </div>
-    <div class="row p-0 m-0 pt-2 pb-5"
+    <div class="row p-0 m-0 pt-3 pb-5"
          (click)="handleSeek()"
          (mousemove)="onMouseMove($event)"
          (mouseenter)="handleOnMouseEnter()"

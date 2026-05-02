@@ -26,6 +26,7 @@ export class MediaPlayer implements OnInit {
   public playing: boolean = false;
 
   public seekMode: boolean = false;
+  public seekModeLock: boolean = false;
   public seek: any = 0;
   public storedSeek: number = 0;
 
@@ -73,9 +74,9 @@ export class MediaPlayer implements OnInit {
 
   animate() {
     if (this.globalData.sound && this.playing && !this.seekMode) {
-      setTimeout(() => (this.percentProgress =  (this.globalData.sound.seek() / this.content.duration) * 100), 0);
+      setTimeout(() => (this.percentProgress = (this.globalData.sound.seek() / this.content.duration) * 100), 0);
       this.eventBus.onSeek.emit({content: this.content, seek: this.globalData.sound.seek()});
-      const seekFloor = Math.floor(this.globalData.sound.seek())
+      const seekFloor = Math.floor(this.globalData.sound.seek());
       if (seekFloor !== this.count) {
         this.saveToLocalStorage(seekFloor)
         this.count = seekFloor;
@@ -111,18 +112,29 @@ export class MediaPlayer implements OnInit {
   }
 
   handleOnMouseEnter() {
+    this.seekModeLock = false;
     this.seekMode = true;
     this.storedSeek = this.percentProgress;
   }
 
   handleOnMouseLeave() {
+    if (this.seekModeLock){
+      return;
+    }
     this.seekMode = false;
     this.percentProgress = this.storedSeek;
   }
 
   onMouseMove($event: MouseEvent){
-    if (this.seekMode) {
-      this.percentProgress = (($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100);
+    if (this.seekMode && !this.seekModeLock) {
+      let percentProgressTmp = ($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100;
+      if (percentProgressTmp < 1.93) {
+        this.percentProgress = 1.93;
+      } else if (percentProgressTmp > 100.97) {
+        this.percentProgress = 100.97;
+      } else {
+        this.percentProgress = percentProgressTmp;
+      }
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
       this.percentSeek = (this.globalData.sound.seek() / this.content.duration) * 100;
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
@@ -143,6 +155,9 @@ export class MediaPlayer implements OnInit {
   handleSeek() {
     this.globalData.sound.seek(this.playheadSeconds * 0.98);
     this.globalData.sound.play();
+    this.seekMode = false;
+    this.seekModeLock = true;
+    // TODO need to turn of seekmode until user exits hover area and then allow the user to reenter and enable seekmode again
   }
 
   handlePrevious() {

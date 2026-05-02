@@ -19,13 +19,17 @@ import {GlobalData} from '../service/global-data';
 export class Main implements OnInit {
 
   public innerWidth: any;
+  public loading: boolean = false;
 
   constructor(private http: HttpClient, protected globalData: GlobalData, private cdr: ChangeDetectorRef) {
     const apiUrl = environment.apiUrl;
+    this.loading = true;
     this.http.get(apiUrl + '/content')
       .subscribe((contentList : any) => {
         this.globalData.contentList  = contentList;
-        this.cdr.detectChanges();
+        setTimeout(()=> {this.loading = false; this.cdr.detectChanges();}, 750);
+
+
       });
   }
 
