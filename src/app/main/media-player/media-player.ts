@@ -132,12 +132,11 @@ export class MediaPlayer implements OnInit {
       if (percentProgressTmp < 1.93) {
         this.percentProgress = 1.93;
       } else if (percentProgressTmp > 100.97) {
-        // this.percentProgress = 100.97;
-        this.percentProgress = percentProgressTmp;
+        this.percentProgress = 100.97;
+        // this.percentProgress = percentProgressTmp;
       } else {
         this.percentProgress = percentProgressTmp;
       }
-      console.log(percentProgressTmp);
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
       this.percentSeek = (this.globalData.sound.seek() / this.content.duration) * 100;
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
@@ -156,16 +155,10 @@ export class MediaPlayer implements OnInit {
   }
 
   handleSeek() {
-    let targetTime = this.playheadSeconds * 0.92
-    this.globalData.sound.seek(targetTime);
+    this.globalData.sound.seek(this.playheadSeconds);
     this.globalData.sound.play();
     this.seekMode = false;
     this.seekModeLock = true;
-
-    setTimeout(() => {
-      let seek = this.globalData.sound.seek();
-      console.log(seek - targetTime - 0.5);
-    }, 500);
   }
 
   handlePrevious() {
