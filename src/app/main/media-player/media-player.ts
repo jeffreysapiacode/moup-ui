@@ -128,6 +128,7 @@ export class MediaPlayer implements OnInit {
   onMouseMove($event: MouseEvent){
     if (this.seekMode && !this.seekModeLock) {
       let percentProgressTmp = ($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100;
+      console.log(percentProgressTmp)
       if (percentProgressTmp < 1.93) {
         this.percentProgress = 1.93;
       } else if (percentProgressTmp > 100.97) {
@@ -135,6 +136,7 @@ export class MediaPlayer implements OnInit {
       } else {
         this.percentProgress = percentProgressTmp;
       }
+
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
       this.percentSeek = (this.globalData.sound.seek() / this.content.duration) * 100;
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
@@ -170,6 +172,7 @@ export class MediaPlayer implements OnInit {
       }
     }
     this.globalData.sound.seek(0);
+    this.percentProgress = 0;
   }
 
   handleNext() {
