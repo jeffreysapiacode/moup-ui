@@ -6,7 +6,7 @@ import {Howl} from 'howler';
 @Injectable({
   providedIn: 'root',
 })
-export class GlobalData {
+export class AudioData {
   public content: any;
   public contentList: any = [];
   public sound: any;
@@ -27,6 +27,9 @@ export class GlobalData {
 
   resetSound(filename: any) {
     Howler.stop();
+    if (this.sound) {
+      this.sound.stop();
+    }
     this.sound = new Howl({
       src: [this.apiUrl + '/stream/' + filename],
       html5: true

@@ -1,10 +1,10 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import { environment } from '../../../environments/environment';
-import {GlobalData} from '../../service/global-data';
 import {TimeUtils} from '../../util/time-utils';
 import {LocalStorageUtil} from '../../util/local-storage-util';
 import {NgClass, NgStyle} from '@angular/common';
+import {AudioData} from '../../service/audio-data';
 
 @Component({
   selector: 'app-content-card',
@@ -24,7 +24,7 @@ export class ContentCard implements OnInit {
   apiUrl = environment.apiUrl;
 
   constructor(protected eventBus: EventBus,
-              protected globalData: GlobalData,
+              protected audioData: AudioData,
               protected cdr: ChangeDetectorRef) {
   }
 
@@ -57,8 +57,8 @@ export class ContentCard implements OnInit {
     });
     this.eventBus.onEnd.subscribe((content) => {
       if (this.content.uuid === content.uuid) {
-        this.globalData.sound.seek(0);
-        LocalStorageUtil.reset(this.globalData.content.uuid);
+        this.audioData.sound.seek(0);
+        LocalStorageUtil.reset(this.audioData.content.uuid);
         setTimeout(()=> this.time = TimeUtils.formatTime(0));
         this.playing = false;
         this.cdr.detectChanges();
@@ -67,19 +67,19 @@ export class ContentCard implements OnInit {
   }
 
   public handleLoad() {
-    if(this.content !== this.globalData.content) {
-      this.globalData.setContent(this.content);
+    if(this.content !== this.audioData.content) {
+      this.audioData.setContent(this.content);
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
       // Check if there is a saved start time
-      this.globalData.sound.play()
+      this.audioData.sound.play()
       if (storedInfo) {
-        this.globalData.sound.seek(storedInfo.seek);
+        this.audioData.sound.seek(storedInfo.seek);
       }
     } else {
       if (this.playing) {
-        this.globalData.sound.pause();
+        this.audioData.sound.pause();
       } else {
-        this.globalData.sound.play();
+        this.audioData.sound.play();
         this.eventBus.onPlay.emit(this.content);
       }
     }

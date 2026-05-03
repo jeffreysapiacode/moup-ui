@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import {NgClass, NgStyle} from '@angular/common';
-import {GlobalData} from '../../service/global-data';
+import {AudioData} from '../../service/audio-data';
 import {LocalStorageUtil} from '../../util/local-storage-util';
 import {TimeUtils} from '../../util/time-utils';
 
@@ -33,7 +33,7 @@ export class MediaPlayer implements OnInit {
   private playheadSeconds: number = 0
 
   constructor(protected eventBus: EventBus,
-              protected globalData: GlobalData,
+              protected audioData: AudioData,
               protected cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
@@ -64,9 +64,9 @@ export class MediaPlayer implements OnInit {
 
   onPlay() {
     if (this.playing) {
-      this.globalData.sound.pause();
+      this.audioData.sound.pause();
     } else {
-      this.globalData.sound.play();
+      this.audioData.sound.play();
       this.eventBus.onPlay.emit(this.content);
     }
   }
@@ -74,10 +74,10 @@ export class MediaPlayer implements OnInit {
   count: number = 0;
 
   animate() {
-    if (this.globalData.sound && this.playing && !this.seekMode) {
-      setTimeout(() => (this.percentProgress = (this.globalData.sound.seek() / this.content.duration) * 100), 0);
-      this.eventBus.onSeek.emit({content: this.content, seek: this.globalData.sound.seek()});
-      const seekFloor = Math.floor(this.globalData.sound.seek());
+    if (this.audioData.sound && this.playing && !this.seekMode) {
+      setTimeout(() => (this.percentProgress = (this.audioData.sound.seek() / this.content.duration) * 100), 0);
+      this.eventBus.onSeek.emit({content: this.content, seek: this.audioData.sound.seek()});
+      const seekFloor = Math.floor(this.audioData.sound.seek());
       if (seekFloor !== this.count) {
         this.saveToLocalStorage(seekFloor)
         this.count = seekFloor;
@@ -140,8 +140,8 @@ export class MediaPlayer implements OnInit {
         this.percentProgress = percentProgressTmp;
       }
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
-      if (this.globalData.sound) {
-        this.percentSeek = (this.globalData.sound.seek() / this.content.duration) * 100;
+      if (this.audioData.sound) {
+        this.percentSeek = (this.audioData.sound.seek() / this.content.duration) * 100;
       }
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
     }
@@ -159,35 +159,35 @@ export class MediaPlayer implements OnInit {
   }
 
   handleSeek() {
-    this.globalData.sound.seek(this.playheadSeconds);
-    this.globalData.sound.play();
+    this.audioData.sound.seek(this.playheadSeconds);
+    this.audioData.sound.play();
     this.seekMode = false;
     this.seekModeLock = true;
   }
 
   handlePrevious() {
   // If less than 3 seconds, go to previous track, if greater, restart
-    if (this.globalData.sound.seek() < 3) {
+    if (this.audioData.sound.seek() < 3) {
       const index = this.getTrackIndex(this.content.uuid);
       if (index > 0) {
         this.seekTrack(index - 1);
         return;
       }
     }
-    this.globalData.sound.seek(0);
+    this.audioData.sound.seek(0);
     this.percentProgress = 0;
   }
 
   handleNext() {
     const index = this.getTrackIndex(this.content.uuid);
-    if (index < (this.globalData.contentList.length - 1)) {
+    if (index < (this.audioData.contentList.length - 1)) {
       this.seekTrack(index + 1);
     }
   }
 
   getTrackIndex(uuid: string): any {
     let index = 0;
-    for (let content of this.globalData.contentList) {
+    for (let content of this.audioData.contentList) {
       if (uuid === content.uuid) {
         return index;
       }
@@ -197,7 +197,7 @@ export class MediaPlayer implements OnInit {
 
   getContentByIndex(index: number): any {
     let indexStr = 0;
-    for (let content of this.globalData.contentList) {
+    for (let content of this.audioData.contentList) {
       if (indexStr === index) {
         return content;
       }
@@ -207,13 +207,12 @@ export class MediaPlayer implements OnInit {
 
   seekTrack(index: number) {
     const content = this.getContentByIndex(index);
-    this.globalData.setContent(content);
+    this.audioData.setContent(content);
     const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
     // Check if there is a saved start time
     if (storedInfo) {
-      this.globalData.sound.seek(storedInfo.seek);
+      this.audioData.sound.seek(storedInfo.seek);
     }
-    this.globalData.sound.play()
+    this.audioData.sound.play()
   }
-
 }

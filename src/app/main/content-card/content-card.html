@@ -5,7 +5,7 @@
         <span class="title-text">{{content.title}}</span>
       </div>
         <div class="col-auto p-0 m-0 d-flex justify-content-end align-items-center">
-          <span [ngClass]="{'playing-text-visible':this.globalData.content === this.content}" class="playing-text pe-4">Playing</span>
+          <span [ngClass]="{'playing-text-visible':this.audioData.content === this.content}" class="playing-text pe-4">Playing</span>
         </div>
     </div>
     <div class="row p-0 m-0">
@@ -17,7 +17,7 @@
       <div class="col p-0 m-0 ps-4 d-flex align-items-center">
         <div class="button px-3 d-flex justify-content-center align-items-center"
              (click)="handleLoad()">
-          @if (this.playing && this.content === this.globalData.content) {
+          @if (this.playing && this.content === this.audioData.content) {
             PAUSE
           }
           @else {
@@ -29,13 +29,13 @@
       <div  class="col p-0 m-0 ps-3 d-flex justify-content-start align-items-center">
         <div class="row p-0 m-0">
           <div class="col p-0 m-0">
-            <span [ngClass]="{'time-duration-active': this.globalData.content === this.content}" class="time-duration">{{ this.time }}</span>
+            <span [ngClass]="{'time-duration-active': this.audioData.content === this.content}" class="time-duration">{{ this.time }}</span>
           </div>
           <div class="col p-0 m-0">
-            <span [ngClass]="{'time-duration-active': this.globalData.content === this.content}" class="time-duration">/</span>
+            <span [ngClass]="{'time-duration-active': this.audioData.content === this.content}" class="time-duration">/</span>
           </div>
           <div class="col p-0 m-0">
-            <span [ngClass]="{'time-duration-active': this.globalData.content === this.content}" class="time-duration">{{this.formatTime(this.content.duration)}}</span>
+            <span [ngClass]="{'time-duration-active': this.audioData.content === this.content}" class="time-duration">{{this.formatTime(this.content.duration)}}</span>
           </div>
         </div>
       </div>

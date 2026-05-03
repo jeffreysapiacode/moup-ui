@@ -3,19 +3,19 @@
   <div class="app-container">
     <div class="row p-0 m-0">
       <div class="col p-0 m-0">
-        <div class="content-card-container no-content-block-z-index pt-3" [ngClass]="{'content-card-container-padding': this.globalData.content}">
+        <div class="content-card-container no-content-block-z-index pt-3" [ngClass]="{'content-card-container-padding': this.audioData.content}">
           @if (this.loading) {
             <!--Do loading screen stuff here-->
           } @else {
-              @if (this.globalData.contentList.length === 0) {
+              @if (this.audioData.contentList.length === 0) {
                 <div class="row p-0 m-0 w-100 h-100">
                   <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
                     <div class="no-content-block px-5 py-5 mx-3">I have decided to delete all of the episodes. It's nothing personal. In fact, I did it because I love you, and just as importantly, I want you to love me.</div>
                   </div>
                 </div>
               }
-              @if (this.globalData.contentList.length > 0) {
-                @for (content of this.globalData.contentList; track content.uuid) {
+              @if (this.audioData.contentList.length > 0) {
+                @for (content of this.audioData.contentList; track content.uuid) {
                   <div class="row p-0 m-0 pb-3 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
                     <div class="col p-0 m-0">
                       <app-content-card [innerWidth]="innerWidth" [content]="content"></app-content-card>
@@ -30,6 +30,6 @@
     </div>
   </div>
 </div>
-@if(this.globalData.contentList.length > 0) {
+@if(this.audioData.contentList.length > 0) {
   <app-media-player></app-media-player>
 }
