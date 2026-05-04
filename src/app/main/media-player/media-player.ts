@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import {NgClass, NgStyle} from '@angular/common';
 import {AudioData} from '../../service/audio-data';
@@ -31,10 +31,18 @@ export class MediaPlayer implements OnInit {
   private seekModeLock: boolean = false;
   private storedSeek: number = 0;
   private playheadSeconds: number = 0
+  private innerWidth: any = window.innerWidth;
+  private startOffset: any = 0;
+  private endOffset: any = 0;
 
   constructor(protected eventBus: EventBus,
               protected audioData: AudioData,
               protected cdr: ChangeDetectorRef) {}
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.innerWidth = window.innerWidth;
+  }
 
   ngOnInit(): void {
     this.eventBus.onLoad.subscribe((content) => {

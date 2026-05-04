@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="row p-0 m-0 pb-3">
-      <div class="col p-0 m-0 ps-4 d-flex align-items-center">
+      <div class="col-auto p-0 m-0 ps-4 d-flex align-items-center">
         <div class="button px-3 d-flex justify-content-center align-items-center"
              (click)="handleLoad()">
           @if (this.playing && this.content === this.audioData.content) {
@@ -39,7 +39,7 @@
           </div>
         </div>
       </div>
-      <div class="col p-0 m-0 ps-4 pt-1 pe-3">
+      <div class="col p-0 m-0 ps-4 pt-1 pe-3 d-flex justify-content-end">
         <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none"><div class="button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div></a>
       </div>
     </div>
