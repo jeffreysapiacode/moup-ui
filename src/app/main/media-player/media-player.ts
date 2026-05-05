@@ -42,7 +42,6 @@ export class MediaPlayer implements OnInit {
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.innerWidth = window.innerWidth;
-    // Calculate start and end offsets here
     this.calculateOffset();
   }
 
@@ -74,8 +73,8 @@ export class MediaPlayer implements OnInit {
     }
 
   calculateOffset() {
-    this.startOffset = (0.000002 * (this.innerWidth^2)) - (0.0063 * this.innerWidth) + 6.8816;
-    this.endOffset = (0.000004 * (this.innerWidth^2)) - (0.0096 * this.innerWidth) + 107.55;
+    this.startOffset = (0.000002 * (this.innerWidth ** 2)) - (0.0063 * this.innerWidth) + 6.8816;
+    this.endOffset = (0.000004 * (this.innerWidth ** 2)) - (0.0096 * this.innerWidth) + 107.55;
     console.log('Start Offset:', this.startOffset);
     console.log('End Offset:', this.endOffset);
   }
@@ -150,10 +149,10 @@ export class MediaPlayer implements OnInit {
   onMouseMove($event: MouseEvent){
     if (this.seekMode && !this.seekModeLock) {
       let percentProgressTmp = ($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100;
-      if (percentProgressTmp < 1.93) {
-        this.percentProgress = 1.93;
-      } else if (percentProgressTmp > 100.97) {
-        this.percentProgress = 100.97;
+      if (percentProgressTmp < this.startOffset) {
+        this.percentProgress = this.startOffset;
+      } else if (percentProgressTmp > this.endOffset) {
+        this.percentProgress = this.endOffset;
       } else {
         this.percentProgress = percentProgressTmp;
       }
