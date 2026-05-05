@@ -23,7 +23,6 @@
           @else {
             PLAY
           }
-
         </div>
       </div>
       <div  class="col p-0 m-0 ps-3 d-flex justify-content-start align-items-center">
@@ -39,7 +38,7 @@
           </div>
         </div>
       </div>
-      <div class="col p-0 m-0 ps-4 pt-1 pe-3 d-flex justify-content-end">
+      <div class="col p-0 m-0 ps-4 pt-1 pe-3 d-flex " [ngClass]="{'justify-content-end': this.innerWidth >= 576, 'justify-content-start': this.innerWidth < 576}">
         <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none"><div class="button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div></a>
       </div>
     </div>

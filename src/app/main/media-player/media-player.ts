@@ -42,9 +42,12 @@ export class MediaPlayer implements OnInit {
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.innerWidth = window.innerWidth;
+    // Calculate start and end offsets here
+    this.calculateOffset();
   }
 
   ngOnInit(): void {
+    this.calculateOffset();
     this.eventBus.onLoad.subscribe((content) => {
       this.content = content;
       this.open = true;
@@ -69,6 +72,13 @@ export class MediaPlayer implements OnInit {
       this.cdr.detectChanges();
     });
     }
+
+  calculateOffset() {
+    this.startOffset = (0.000002 * (this.innerWidth^2)) - (0.0063 * this.innerWidth) + 6.8816;
+    this.endOffset = (0.000004 * (this.innerWidth^2)) - (0.0096 * this.innerWidth) + 107.55;
+    console.log('Start Offset:', this.startOffset);
+    console.log('End Offset:', this.endOffset);
+  }
 
   onPlay() {
     if (this.playing) {
