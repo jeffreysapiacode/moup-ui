@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import {NgClass, NgStyle} from '@angular/common';
-import {AudioData} from '../../service/audio-data';
+import {AudioGlobal} from '../../service/audio-global';
 import {LocalStorageUtil} from '../../util/local-storage-util';
 import {TimeUtils} from '../../util/time-utils';
 
@@ -15,6 +15,15 @@ import {TimeUtils} from '../../util/time-utils';
   styleUrl: './media-player.sass',
 })
 export class MediaPlayer implements OnInit {
+
+  // Plan for auto dictate
+  // on content load, fetch fist 10 words, put it in map with page number as the key
+  //
+  // On UI display, fetch (n) number of words at a time: n, n+1, n+2, n+... ["this", "is", "an", "example"] -> ["<span class='bold'>This</span>"]
+
+  // Each word will be in a string array and the UI will have a function to break it down with a "join". This array will be the thing that makes it so we add <span></span> around the currently spoken word in order to make it bold
+  //
+  // Find end time for last word, subtract 2 seconds, and have that be when we call for the next chunk of 10 words, until we have reached the last page which we will store as a variable
 
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
@@ -36,7 +45,7 @@ export class MediaPlayer implements OnInit {
   private endOffset: any = 0;
 
   constructor(protected eventBus: EventBus,
-              protected audioData: AudioData,
+              protected audioGlobal: AudioGlobal,
               protected cdr: ChangeDetectorRef) {}
 
   @HostListener('window:resize', ['$event'])
@@ -75,15 +84,13 @@ export class MediaPlayer implements OnInit {
   calculateOffset() {
     this.startOffset = (0.000002 * (this.innerWidth ** 2)) - (0.0063 * this.innerWidth) + 6.8816;
     this.endOffset = (0.000004 * (this.innerWidth ** 2)) - (0.0096 * this.innerWidth) + 107.55;
-    console.log('Start Offset:', this.startOffset);
-    console.log('End Offset:', this.endOffset);
   }
 
   onPlay() {
     if (this.playing) {
-      this.audioData.sound.pause();
+      this.audioGlobal.pause();
     } else {
-      this.audioData.sound.play();
+      this.audioGlobal.play();
       this.eventBus.onPlay.emit(this.content);
     }
   }
@@ -91,15 +98,14 @@ export class MediaPlayer implements OnInit {
   count: number = 0;
 
   animate() {
-    if (this.audioData.sound && this.playing && !this.seekMode) {
-      setTimeout(() => (this.percentProgress = (this.audioData.sound.seek() / this.content.duration) * 100), 0);
-      this.eventBus.onSeek.emit({content: this.content, seek: this.audioData.sound.seek()});
-      const seekFloor = Math.floor(this.audioData.sound.seek());
+    if (this.audioGlobal.sound && this.playing && !this.seekMode) {
+      setTimeout(() => (this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100), 0);
+      this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
+      const seekFloor = Math.floor(this.audioGlobal.seek());
       if (seekFloor !== this.count) {
         this.saveToLocalStorage(seekFloor)
         this.count = seekFloor;
       }
-      // write to disk every second of playing to save place
       this.cdr.detectChanges();
     }
     requestAnimationFrame(this.animate.bind(this));
@@ -157,8 +163,8 @@ export class MediaPlayer implements OnInit {
         this.percentProgress = percentProgressTmp;
       }
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
-      if (this.audioData.sound) {
-        this.percentSeek = (this.audioData.sound.seek() / this.content.duration) * 100;
+      if (this.audioGlobal.sound) {
+        this.percentSeek = (this.audioGlobal.seek() / this.content.duration) * 100;
       }
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
     }
@@ -176,35 +182,35 @@ export class MediaPlayer implements OnInit {
   }
 
   handleSeek() {
-    this.audioData.sound.seek(this.playheadSeconds);
-    this.audioData.sound.play();
+    this.audioGlobal.sound.seek(this.playheadSeconds);
+    this.audioGlobal.play();
     this.seekMode = false;
     this.seekModeLock = true;
   }
 
   handlePrevious() {
   // If less than 3 seconds, go to previous track, if greater, restart
-    if (this.audioData.sound.seek() < 3) {
+    if (this.audioGlobal.seek() < 3) {
       const index = this.getTrackIndex(this.content.uuid);
       if (index > 0) {
         this.seekTrack(index - 1);
         return;
       }
     }
-    this.audioData.sound.seek(0);
+    this.audioGlobal.sound.seek(0);
     this.percentProgress = 0;
   }
 
   handleNext() {
     const index = this.getTrackIndex(this.content.uuid);
-    if (index < (this.audioData.contentList.length - 1)) {
+    if (index < (this.audioGlobal.contentList.length - 1)) {
       this.seekTrack(index + 1);
     }
   }
 
   getTrackIndex(uuid: string): any {
     let index = 0;
-    for (let content of this.audioData.contentList) {
+    for (let content of this.audioGlobal.contentList) {
       if (uuid === content.uuid) {
         return index;
       }
@@ -214,7 +220,7 @@ export class MediaPlayer implements OnInit {
 
   getContentByIndex(index: number): any {
     let indexStr = 0;
-    for (let content of this.audioData.contentList) {
+    for (let content of this.audioGlobal.contentList) {
       if (indexStr === index) {
         return content;
       }
@@ -224,12 +230,12 @@ export class MediaPlayer implements OnInit {
 
   seekTrack(index: number) {
     const content = this.getContentByIndex(index);
-    this.audioData.setContent(content);
+    this.audioGlobal.setContent(content);
     const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
     // Check if there is a saved start time
     if (storedInfo) {
-      this.audioData.sound.seek(storedInfo.seek);
+      this.audioGlobal.sound.seek(storedInfo.seek);
     }
-    this.audioData.sound.play()
+    this.audioGlobal.play()
   }
 }

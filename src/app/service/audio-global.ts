@@ -6,7 +6,7 @@ import {Howl} from 'howler';
 @Injectable({
   providedIn: 'root',
 })
-export class AudioData {
+export class AudioGlobal {
   public content: any;
   public contentList: any = [];
   public sound: any;
@@ -23,6 +23,18 @@ export class AudioData {
       console.error('Content not found');
     }
     this.eventBus.onLoad.emit(this.content);
+  }
+
+  play() {
+    this.sound.play();
+  }
+
+  pause() {
+    this.sound.pause();
+  }
+
+  seek() {
+    return this.sound.seek();
   }
 
   resetSound(filename: any) {

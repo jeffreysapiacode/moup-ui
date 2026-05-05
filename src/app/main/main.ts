@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import {MediaPlayer} from './media-player/media-player';
 import {NgClass} from '@angular/common';
-import {AudioData} from '../service/audio-data';
+import {AudioGlobal} from '../service/audio-global';
 
 @Component({
   selector: 'app-main',
@@ -22,13 +22,13 @@ export class Main implements OnInit {
   loading: boolean = false;
 
   constructor(protected http: HttpClient,
-              protected audioData: AudioData,
+              protected audioGlobal: AudioGlobal,
               protected cdr: ChangeDetectorRef) {
     const apiUrl = environment.apiUrl;
     this.loading = true;
     this.http.get(apiUrl + '/content')
       .subscribe((contentList : any) => {
-        this.audioData.contentList  = contentList;
+        this.audioGlobal.contentList  = contentList;
         setTimeout(()=> {this.loading = false; this.cdr.detectChanges();}, 150);
       });
   }

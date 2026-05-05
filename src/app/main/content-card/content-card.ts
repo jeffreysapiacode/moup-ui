@@ -4,7 +4,7 @@ import { environment } from '../../../environments/environment';
 import {TimeUtils} from '../../util/time-utils';
 import {LocalStorageUtil} from '../../util/local-storage-util';
 import {NgClass, NgStyle} from '@angular/common';
-import {AudioData} from '../../service/audio-data';
+import {AudioGlobal} from '../../service/audio-global';
 
 @Component({
   selector: 'app-content-card',
@@ -24,7 +24,7 @@ export class ContentCard implements OnInit {
   apiUrl = environment.apiUrl;
 
   constructor(protected eventBus: EventBus,
-              protected audioData: AudioData,
+              protected audioGlobal: AudioGlobal,
               protected cdr: ChangeDetectorRef) {
   }
 
@@ -57,8 +57,8 @@ export class ContentCard implements OnInit {
     });
     this.eventBus.onEnd.subscribe((content) => {
       if (this.content.uuid === content.uuid) {
-        this.audioData.sound.seek(0);
-        LocalStorageUtil.reset(this.audioData.content.uuid);
+        this.audioGlobal.sound.seek(0);
+        LocalStorageUtil.reset(this.audioGlobal.content.uuid);
         setTimeout(()=> this.time = TimeUtils.formatTime(0));
         this.playing = false;
         this.cdr.detectChanges();
@@ -67,19 +67,19 @@ export class ContentCard implements OnInit {
   }
 
   public handleLoad() {
-    if(this.content !== this.audioData.content) {
-      this.audioData.setContent(this.content);
+    if(this.content !== this.audioGlobal.content) {
+      this.audioGlobal.setContent(this.content);
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
       // Check if there is a saved start time
-      this.audioData.sound.play()
+      this.audioGlobal.play()
       if (storedInfo) {
-        this.audioData.sound.seek(storedInfo.seek);
+        this.audioGlobal.sound.seek(storedInfo.seek);
       }
     } else {
       if (this.playing) {
-        this.audioData.sound.pause();
+        this.audioGlobal.pause();
       } else {
-        this.audioData.sound.play();
+        this.audioGlobal.play();
         this.eventBus.onPlay.emit(this.content);
       }
     }
@@ -88,5 +88,4 @@ export class ContentCard implements OnInit {
   formatTime (seconds: Number) {
     return TimeUtils.formatTime(seconds);
   }
-
 }
