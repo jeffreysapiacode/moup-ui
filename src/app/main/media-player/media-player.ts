@@ -17,16 +17,20 @@ import {TimeUtils} from '../../util/time-utils';
 export class MediaPlayer implements OnInit {
 
   // Plan for auto dictate
-  // on content load, fetch fist 10 words, put it in map with page number as the key
+  // On content load, fetch fist 12 words, put it in map with page number as the key
   //
   // On UI display, fetch (n) number of words at a time: n, n+1, n+2, n+... ["this", "is", "an", "example"] -> ["<span class='bold'>This</span>"]
 
   // Each word will be in a string array and the UI will have a function to break it down with a "join". This array will be the thing that makes it so we add <span></span> around the currently spoken word in order to make it bold
   //
-  // Find end time for last word, subtract 2 seconds, and have that be when we call for the next chunk of 10 words, until we have reached the last page which we will store as a variable
+  // Find end time for last word of the last segment, subtract 2 seconds, and have that be when we call for the next chunk of 10 words, until we have reached the last page which we will store as a variable
+// The other checker splits up the 12 words fetch into segments of n to match the max words allowed on screen at any time,
+
 
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
+
+  private innerWidth: any = window.innerWidth;
 
   open: boolean = false;
   seek: any = 0;
@@ -37,10 +41,21 @@ export class MediaPlayer implements OnInit {
   percentProgress: any = 0;
   playheadTime: any = TimeUtils.formatTime(0);
 
+  // Auto-Dictate
+  static MAX_WORDS_ON_SCREEN: number = 3;
+
+  transcriptEnabled: boolean = false;
+  currentPage: number = 0;
+  totalPages: number = 0;
+  wordList: any = [];
+  wordSubList: any = [];
+  currentDisplay: any;
+
+
+  // Seek Bar
   private seekModeLock: boolean = false;
   private storedSeek: number = 0;
-  private playheadSeconds: number = 0
-  private innerWidth: any = window.innerWidth;
+  private playheadSeconds: number = 0;
   private startOffset: any = 0;
   private endOffset: any = 0;
 
@@ -98,7 +113,10 @@ export class MediaPlayer implements OnInit {
   count: number = 0;
 
   animate() {
-    if (this.audioGlobal.sound && this.playing && !this.seekMode) {
+    if (this.audioGlobal.available() && this.playing && !this.seekMode) {
+
+
+
       setTimeout(() => (this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100), 0);
       this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
       const seekFloor = Math.floor(this.audioGlobal.seek());

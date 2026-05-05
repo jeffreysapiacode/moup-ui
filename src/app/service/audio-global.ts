@@ -25,6 +25,10 @@ export class AudioGlobal {
     this.eventBus.onLoad.emit(this.content);
   }
 
+  available() {
+    return this.content && this.sound;
+  }
+
   play() {
     this.sound.play();
   }
