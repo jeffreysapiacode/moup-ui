@@ -19,14 +19,6 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 })
 export class MediaPlayer implements OnInit {
 
-  // Plan for auto dictate
-  // On content load, fetch fist 10 seconds, put it in map with second chuck as the key
-  // On UI display, fetch (n) number of words at a time: n, n+1, n+2, n+... ["this", "is", "an", "example"] -> ["<span class='bold'>This</span>"]
-  // Each word will be in a string array and the UI will have a function to break it down with a "join". This array will be the thing that makes it so we add <span></span> around the currently spoken word in order to make it bold
-  // Find end time for last word of the last segment, subtract 2 seconds, and have that be when we call for the next chunk of 10 seconds, until we have reached the last page which we will derive from the duration of the track
-  // The other checker splits up the 10 seconds fetch into segments of n to match the max words allowed on screen at any time,
-
-
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
 
@@ -121,8 +113,12 @@ export class MediaPlayer implements OnInit {
   count: number = 0;
 
   animate() {
-    if (this.audioGlobal.available() && this.playing && !this.seekMode) {
-      setTimeout(() => (this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100), 0);
+    if (this.audioGlobal.available() && this.playing) {
+      setTimeout(() => {
+        if (!this.seekMode) {
+          this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
+        }
+      }, 0);
       this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       if (this.displayArray && this.displayArray.length > 0) {
@@ -194,6 +190,7 @@ export class MediaPlayer implements OnInit {
   }
 
   getWords(start: any, end: any, compKey: string) {
+    console.log('Getting word: ' + start + ' and ' + end + ' and ' + compKey );
     this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + end).subscribe((response: any) => {
       if (response.length > 0) {
         this.wordMap.set(compKey, response);
@@ -298,10 +295,23 @@ export class MediaPlayer implements OnInit {
   }
 
   handleSeek() {
+    if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
+      console.log('Getting current chunk');
+      this.getCurrentChunk = true;
+    }
     this.audioGlobal.sound.seek(this.playheadSeconds);
     this.audioGlobal.play();
     this.seekMode = false;
     this.seekModeLock = true;
+  }
+
+  getCurrentChuckRequired(seconds: number) {
+    const seekFloor = (Math.floor(seconds / 10) * 10);
+    const compKey = seekFloor + '-' + this.audioGlobal.content.uuid;
+    const keyExists = this.wordMap.has(compKey);
+    console.log('Does key '+compKey+' exist: ' + keyExists);
+    console.log(JSON.stringify(this.wordMap));
+    return !keyExists;
   }
 
   handlePrevious() {
@@ -313,6 +323,7 @@ export class MediaPlayer implements OnInit {
         return;
       }
     }
+    this.getCurrentChunk = true;
     this.audioGlobal.sound.seek(0);
     this.percentProgress = 0;
   }

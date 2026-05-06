@@ -1,6 +1,6 @@
 <div class="container-fluid p-0 m-0">
   <div class="media-player-container" [ngClass]="{'media-player-container-open': open}">
-    <div class="row p-0 m-0 pt-2 px-3">
+    <div class="row p-0 m-0 pt-2 px-4">
       <div class="col p-0 m-0 d-flex justify-content-center">
         <span class="title-text">{{this.content?.title}}</span>
       </div>
@@ -79,7 +79,8 @@
     </div>
     @if (this.audioGlobal.available()) {
       @if (transcriptEnabled) {
-        <div [innerHTML]="currentDisplay" class="transcript-container d-flex justify-content-center align-items-center" [ngClass]="{'transcript-container-open': this.audioGlobal.available(), 'transcript-container-visible': this.transcriptVisible}">
+        <div [innerHTML]="currentDisplay" class="transcript-container px-3 d-flex justify-content-center align-items-center" [ngClass]="{'transcript-container-open': this.audioGlobal.available(), 'transcript-container-visible': this.transcriptVisible}">
+
         </div>
       }
       <img class="media-player-background" src="assets/img/svg/wave-sand.svg"/>
