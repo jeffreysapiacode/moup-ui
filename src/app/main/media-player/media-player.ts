@@ -4,6 +4,8 @@ import {NgClass, NgStyle} from '@angular/common';
 import {AudioGlobal} from '../../service/audio-global';
 import {LocalStorageUtil} from '../../util/local-storage-util';
 import {TimeUtils} from '../../util/time-utils';
+import {environment} from '../../../environments/environment';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-media-player',
@@ -17,22 +19,30 @@ import {TimeUtils} from '../../util/time-utils';
 export class MediaPlayer implements OnInit {
 
   // Plan for auto dictate
-  // On content load, fetch fist 12 words, put it in map with page number as the key
-  //
+  // On content load, fetch fist 10 seconds, put it in map with second chuck as the key
   // On UI display, fetch (n) number of words at a time: n, n+1, n+2, n+... ["this", "is", "an", "example"] -> ["<span class='bold'>This</span>"]
-
   // Each word will be in a string array and the UI will have a function to break it down with a "join". This array will be the thing that makes it so we add <span></span> around the currently spoken word in order to make it bold
-  //
-  // Find end time for last word of the last segment, subtract 2 seconds, and have that be when we call for the next chunk of 10 words, until we have reached the last page which we will store as a variable
-// The other checker splits up the 12 words fetch into segments of n to match the max words allowed on screen at any time,
+  // Find end time for last word of the last segment, subtract 2 seconds, and have that be when we call for the next chunk of 10 seconds, until we have reached the last page which we will derive from the duration of the track
+  // The other checker splits up the 10 seconds fetch into segments of n to match the max words allowed on screen at any time,
 
 
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
 
   private innerWidth: any = window.innerWidth;
+  apiUrl = environment.apiUrl;
 
   open: boolean = false;
+
+  // Auto-Dictate
+  MAX_WORDS_ON_SCREEN: number = 3;
+
+  transcriptEnabled: boolean = true;
+  wordList: any = [];
+  wordSubList: any = [];
+  wordMap: Map<string, any> = new Map();
+  currentDisplay: any = "Current Text.";
+
   seek: any = 0;
   playing: boolean = false;
   content: any;
@@ -41,17 +51,6 @@ export class MediaPlayer implements OnInit {
   percentProgress: any = 0;
   playheadTime: any = TimeUtils.formatTime(0);
 
-  // Auto-Dictate
-  static MAX_WORDS_ON_SCREEN: number = 3;
-
-  transcriptEnabled: boolean = false;
-  currentPage: number = 0;
-  totalPages: number = 0;
-  wordList: any = [];
-  wordSubList: any = [];
-  currentDisplay: any;
-
-
   // Seek Bar
   private seekModeLock: boolean = false;
   private storedSeek: number = 0;
@@ -59,8 +58,12 @@ export class MediaPlayer implements OnInit {
   private startOffset: any = 0;
   private endOffset: any = 0;
 
+  private seekFloor: any = 0;
+  private getCurrentChunk: boolean = true;
+
   constructor(protected eventBus: EventBus,
               protected audioGlobal: AudioGlobal,
+              protected http: HttpClient,
               protected cdr: ChangeDetectorRef) {}
 
   @HostListener('window:resize', ['$event'])
@@ -78,6 +81,9 @@ export class MediaPlayer implements OnInit {
     this.eventBus.onPlay.subscribe((content) => {
       this.animate();
       this.playing = true;
+      this.getCurrentChunk = true;
+      this.seekFloor = Math.floor(this.audioGlobal.seek());
+      this.fetchAndCacheTranscript(this.seekFloor);
       this.cdr.detectChanges();
     });
     this.eventBus.onPause.subscribe((content) => {
@@ -114,19 +120,86 @@ export class MediaPlayer implements OnInit {
 
   animate() {
     if (this.audioGlobal.available() && this.playing && !this.seekMode) {
-
-
-
       setTimeout(() => (this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100), 0);
       this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
-      const seekFloor = Math.floor(this.audioGlobal.seek());
-      if (seekFloor !== this.count) {
-        this.saveToLocalStorage(seekFloor)
-        this.count = seekFloor;
+      this.seekFloor = Math.floor(this.audioGlobal.seek());
+      if (this.seekFloor !== this.count) {
+        if (this.seekFloor % 10 === 0) {
+          this.fetchAndCacheTranscript(this.seekFloor);
+          const wordList = this.getTranscript(this.seekFloor);
+          this.chunkData(wordList);
+          console.log(this.getText(this.seekFloor));
+        }
+        this.saveToLocalStorage(this.seekFloor)
+        this.count = this.seekFloor;
       }
       this.cdr.detectChanges();
     }
     requestAnimationFrame(this.animate.bind(this));
+  }
+
+  fetchAndCacheTranscript(seekFloor: any) {
+    const seekFloorFloor = (Math.floor(seekFloor / 10) * 10);
+    let start = seekFloorFloor;
+    let end = seekFloorFloor + 10;
+    const compKey =  seekFloorFloor + '-' + this.audioGlobal.content.uuid;
+    if (this.getCurrentChunk && !this.wordMap.has(compKey)) {
+      this.getWords(start, end, compKey);
+      this.getCurrentChunk = false;
+    }
+    const compKey2 = (seekFloorFloor + 10) + '-' + this.audioGlobal.content.uuid;
+    if (!this.wordMap.has(compKey2)) {
+      this.getWords(start + 10, end + 10, compKey2);
+    }
+  }
+
+  chunkData(wordList: any) {
+    let nestedArray: any[] = [];
+    let tempArray: any[] = [];
+    let counter = 0;
+    const length = wordList.length;
+    for (const [index, word] of wordList.entries()) {
+      tempArray.push(word);
+      if (index === (length - 1)) {
+        nestedArray.push(tempArray);
+      }
+      if (counter >= (this.MAX_WORDS_ON_SCREEN - 1)) {
+        counter = 0;
+        nestedArray.push(tempArray);
+        tempArray = [];
+      } else {
+        counter++;
+      }
+    }
+    console.log(JSON.stringify(nestedArray));
+  }
+
+  getWords(start: any, end: any, compKey: string) {
+    this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + end).subscribe((response: any) => {
+      if (response.length > 0) {
+        this.wordMap.set(compKey, response);
+        return response;
+      }
+    });
+  }
+
+  getTranscript(seekFloor: any) {
+    const compKey =  (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
+    return this.wordMap.get(compKey)
+  }
+
+  getText(seekFloor: any) {
+    const compKey =  (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
+    const words = this.wordMap.get(compKey)
+    if (words) {
+      let text: string = '';
+      for (let word of words) {
+        text = text + ' ' + word.word;
+      }
+      return text;
+    }
+    console.log('Key not found: ' + compKey);
+    return '';
   }
 
   saveToLocalStorage(seekFloor: any) {

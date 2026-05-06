@@ -7,7 +7,7 @@
   position: fixed
   bottom: 0
   border-top: solid 6px #EAE8D1CC
-  overflow: clip
+  overflow: visible
   z-index: 500
   backdrop-filter: blur(30px)
   -webkit-backdrop-filter: blur(30px)
@@ -130,3 +130,18 @@
 
 .button-adjustment
   transform: translateY(5px)
+
+.transcript-container
+  z-index: 500
+  position: absolute
+  top: -56px
+  left: 50%
+  transform: translateX(-50%)
+  background: #EBE8D0
+  width: 100%
+  max-width: 350px
+  height: 50px
+  transition: bottom 0.2s ease-in
+
+.transcript-container-open
+  bottom: 155px

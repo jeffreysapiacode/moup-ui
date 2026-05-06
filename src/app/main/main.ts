@@ -5,6 +5,8 @@ import { environment } from '../../environments/environment';
 import {MediaPlayer} from './media-player/media-player';
 import {NgClass} from '@angular/common';
 import {AudioGlobal} from '../service/audio-global';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import {EventBus} from '../service/event-bus';
 
 @Component({
   selector: 'app-main',
@@ -20,13 +22,14 @@ export class Main implements OnInit {
 
   innerWidth: any;
   loading: boolean = false;
+  apiUrl = environment.apiUrl;
 
   constructor(protected http: HttpClient,
               protected audioGlobal: AudioGlobal,
+              protected eventBus: EventBus,
               protected cdr: ChangeDetectorRef) {
-    const apiUrl = environment.apiUrl;
     this.loading = true;
-    this.http.get(apiUrl + '/content')
+    this.http.get(this.apiUrl + '/content')
       .subscribe((contentList : any) => {
         this.audioGlobal.contentList  = contentList;
         setTimeout(()=> {this.loading = false; this.cdr.detectChanges();}, 150);

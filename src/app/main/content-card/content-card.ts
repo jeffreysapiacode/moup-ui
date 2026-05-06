@@ -71,10 +71,10 @@ export class ContentCard implements OnInit {
       this.audioGlobal.setContent(this.content);
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
       // Check if there is a saved start time
-      this.audioGlobal.play()
       if (storedInfo) {
         this.audioGlobal.sound.seek(storedInfo.seek);
       }
+      this.audioGlobal.play()
     } else {
       if (this.playing) {
         this.audioGlobal.pause();
