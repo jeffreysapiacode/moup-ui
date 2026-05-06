@@ -171,7 +171,6 @@ export class MediaPlayer implements OnInit {
 
   chunkData(wordList: any) {
     if (!wordList) {
-      console.log('Word list not found');
       return;
     }
     let nestedArray: any[] = [];
@@ -198,6 +197,8 @@ export class MediaPlayer implements OnInit {
     this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + end).subscribe((response: any) => {
       if (response.length > 0) {
         this.wordMap.set(compKey, response);
+        this.wordList = this.getTranscript(this.seekFloor);
+        this.displayArray = this.chunkData(this.wordList);
         return response;
       }
     });
