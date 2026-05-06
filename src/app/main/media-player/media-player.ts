@@ -214,9 +214,9 @@ export class MediaPlayer implements OnInit {
       for (let chunk of displayChunk) {
         if (this.audioGlobal.seek() >= chunk.start && this.audioGlobal.seek() < chunk.end) {
           this.transcriptVisible = true;
-          text = text + "<span class='text-highlight'>" + chunk.word + "</span>&nbsp;";
+          text = text + "<span class='text-transition text-highlight'>" + chunk.word + "</span>&nbsp;";
         } else {
-          text = text + "<span>" + chunk.word + "</span>&nbsp;";
+          text = text + "<span class='text-transition'>" + chunk.word + "</span>&nbsp;";
         }
       }
     } else {
