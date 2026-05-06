@@ -35,6 +35,7 @@ export class MediaPlayer implements OnInit {
   wordMap: Map<string, any> = new Map();
   currentDisplay: any = "";
   transcriptVisible: boolean = false;
+  highlightText: boolean = false;
 
   seek: any = 0;
   playing: boolean = false;
@@ -124,7 +125,6 @@ export class MediaPlayer implements OnInit {
       if (this.displayArray && this.displayArray.length > 0) {
         let displayChunk = this.getDisplayChunk(this.displayArray);
         this.getText(displayChunk);
-        // console.log(displayChunk);
       }
       if (this.seekFloor !== this.count) {
         if (this.seekFloor % 10 === 0) {
@@ -209,12 +209,14 @@ export class MediaPlayer implements OnInit {
   getText(displayChunk: any) {
     let text: string = '';
     if (displayChunk && displayChunk.length > 0) {
+      console.log(JSON.stringify(displayChunk));
       for (let chunk of displayChunk) {
+        this.transcriptVisible = true;
         if (this.audioGlobal.seek() >= chunk.start && this.audioGlobal.seek() < chunk.end) {
-          this.transcriptVisible = true;
-          text = text + "<span class='text-transition text-highlight'>" + chunk.word + "</span>&nbsp;";
+          this.highlightText = true;
+          // text = text + "<span class='text-highlight'>" + chunk.word + "</span>&nbsp;";
         } else {
-          text = text + "<span class='text-transition'>" + chunk.word + "</span>&nbsp;";
+          // text = text + "<span>" + chunk.word + "</span>&nbsp;";
         }
       }
     } else {

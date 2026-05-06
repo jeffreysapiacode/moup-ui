@@ -79,7 +79,7 @@
     </div>
     @if (this.audioGlobal.available()) {
       @if (transcriptEnabled) {
-        <div [innerHTML]="currentDisplay" class="transcript-container px-3 d-flex justify-content-center align-items-center" [ngClass]="{'transcript-container-open': this.audioGlobal.available(), 'transcript-container-visible': this.transcriptVisible}">
+        <div [innerHTML]="currentDisplay" class="transcript-container px-3 d-flex justify-content-center align-items-center" [ngClass]="{'transcript-container-open': this.audioGlobal.available(), 'transcript-container-visible': this.transcriptVisible && this.playing}">
 
         </div>
       }
