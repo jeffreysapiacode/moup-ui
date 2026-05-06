@@ -79,8 +79,7 @@
     </div>
     @if (this.audioGlobal.available()) {
       @if (transcriptEnabled) {
-        <div  class="transcript-container d-flex justify-content-center align-items-center" [ngClass]="{'transcript-container-open': this.audioGlobal.available()}">
-          {{currentDisplay}}
+        <div [innerHTML]="currentDisplay" class="transcript-container d-flex justify-content-center align-items-center" [ngClass]="{'transcript-container-open': this.audioGlobal.available(), 'transcript-container-visible': this.transcriptVisible}">
         </div>
       }
       <img class="media-player-background" src="assets/img/svg/wave-sand.svg"/>

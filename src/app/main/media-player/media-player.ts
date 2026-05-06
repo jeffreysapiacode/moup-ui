@@ -6,6 +6,7 @@ import {LocalStorageUtil} from '../../util/local-storage-util';
 import {TimeUtils} from '../../util/time-utils';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-media-player',
@@ -36,13 +37,12 @@ export class MediaPlayer implements OnInit {
 
   // Auto-Dictate
   MAX_WORDS_ON_SCREEN: number = 3;
-
   transcriptEnabled: boolean = true;
   wordList: any = [];
   displayArray: any = [];
-  wordSubList: any = [];
   wordMap: Map<string, any> = new Map();
-  currentDisplay: any = "Current Text.";
+  currentDisplay: any = "";
+  transcriptVisible: boolean = false;
 
   seek: any = 0;
   playing: boolean = false;
@@ -65,6 +65,7 @@ export class MediaPlayer implements OnInit {
   constructor(protected eventBus: EventBus,
               protected audioGlobal: AudioGlobal,
               protected http: HttpClient,
+              protected sanitizer: DomSanitizer,
               protected cdr: ChangeDetectorRef) {}
 
   @HostListener('window:resize', ['$event'])
@@ -190,7 +191,6 @@ export class MediaPlayer implements OnInit {
         counter++;
       }
     }
-    console.log(JSON.stringify(nestedArray));
     return nestedArray;
   }
 
@@ -212,10 +212,17 @@ export class MediaPlayer implements OnInit {
     let text: string = '';
     if (displayChunk && displayChunk.length > 0) {
       for (let chunk of displayChunk) {
-        text = text + chunk.word;
+        if (this.audioGlobal.seek() >= chunk.start && this.audioGlobal.seek() < chunk.end) {
+          this.transcriptVisible = true;
+          text = text + "<span class='text-highlight'>" + chunk.word + "</span>&nbsp;";
+        } else {
+          text = text + "<span>" + chunk.word + "</span>&nbsp;";
+        }
       }
+    } else {
+      this.transcriptVisible = false;
     }
-    this.currentDisplay = text;
+    this.currentDisplay = this.sanitizer.bypassSecurityTrustHtml(text);
     return text;
   }
 
