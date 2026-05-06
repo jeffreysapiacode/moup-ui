@@ -26,7 +26,6 @@ export class Main implements OnInit {
 
   constructor(protected http: HttpClient,
               protected audioGlobal: AudioGlobal,
-              protected eventBus: EventBus,
               protected cdr: ChangeDetectorRef) {
     this.loading = true;
     this.http.get(this.apiUrl + '/content')

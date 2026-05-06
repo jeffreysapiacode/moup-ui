@@ -39,6 +39,7 @@ export class MediaPlayer implements OnInit {
 
   transcriptEnabled: boolean = true;
   wordList: any = [];
+  displayArray: any = [];
   wordSubList: any = [];
   wordMap: Map<string, any> = new Map();
   currentDisplay: any = "Current Text.";
@@ -123,12 +124,16 @@ export class MediaPlayer implements OnInit {
       setTimeout(() => (this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100), 0);
       this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
       this.seekFloor = Math.floor(this.audioGlobal.seek());
+      if (this.displayArray && this.displayArray.length > 0) {
+        let displayChunk = this.getDisplayChunk(this.displayArray);
+        this.getText(displayChunk);
+        // console.log(displayChunk);
+      }
       if (this.seekFloor !== this.count) {
         if (this.seekFloor % 10 === 0) {
           this.fetchAndCacheTranscript(this.seekFloor);
-          const wordList = this.getTranscript(this.seekFloor);
-          this.chunkData(wordList);
-          console.log(this.getText(this.seekFloor));
+          this.wordList = this.getTranscript(this.seekFloor);
+          this.displayArray = this.chunkData(this.wordList);
         }
         this.saveToLocalStorage(this.seekFloor)
         this.count = this.seekFloor;
@@ -136,6 +141,16 @@ export class MediaPlayer implements OnInit {
       this.cdr.detectChanges();
     }
     requestAnimationFrame(this.animate.bind(this));
+  }
+
+  getDisplayChunk(displayArray: any) {
+    for (let displayChunk of displayArray) {
+      let start = displayChunk[0].start;
+      let end = displayChunk[displayChunk.length - 1].end;
+      if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
+        return displayChunk;
+      }
+    }
   }
 
   fetchAndCacheTranscript(seekFloor: any) {
@@ -154,13 +169,17 @@ export class MediaPlayer implements OnInit {
   }
 
   chunkData(wordList: any) {
+    if (!wordList) {
+      console.log('Word list not found');
+      return;
+    }
     let nestedArray: any[] = [];
     let tempArray: any[] = [];
     let counter = 0;
     const length = wordList.length;
     for (const [index, word] of wordList.entries()) {
       tempArray.push(word);
-      if (index === (length - 1)) {
+      if (index === (length - 1) && tempArray.length < this.MAX_WORDS_ON_SCREEN) {
         nestedArray.push(tempArray);
       }
       if (counter >= (this.MAX_WORDS_ON_SCREEN - 1)) {
@@ -172,6 +191,7 @@ export class MediaPlayer implements OnInit {
       }
     }
     console.log(JSON.stringify(nestedArray));
+    return nestedArray;
   }
 
   getWords(start: any, end: any, compKey: string) {
@@ -188,18 +208,15 @@ export class MediaPlayer implements OnInit {
     return this.wordMap.get(compKey)
   }
 
-  getText(seekFloor: any) {
-    const compKey =  (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
-    const words = this.wordMap.get(compKey)
-    if (words) {
-      let text: string = '';
-      for (let word of words) {
-        text = text + ' ' + word.word;
+  getText(displayChunk: any) {
+    let text: string = '';
+    if (displayChunk && displayChunk.length > 0) {
+      for (let chunk of displayChunk) {
+        text = text + chunk.word;
       }
-      return text;
     }
-    console.log('Key not found: ' + compKey);
-    return '';
+    this.currentDisplay = text;
+    return text;
   }
 
   saveToLocalStorage(seekFloor: any) {
