@@ -6,7 +6,6 @@ import {LocalStorageUtil} from '../../util/local-storage-util';
 import {TimeUtils} from '../../util/time-utils';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-media-player',
@@ -57,13 +56,18 @@ export class MediaPlayer implements OnInit {
   constructor(protected eventBus: EventBus,
               protected audioGlobal: AudioGlobal,
               protected http: HttpClient,
-              protected sanitizer: DomSanitizer,
               protected cdr: ChangeDetectorRef) {}
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.innerWidth = window.innerWidth;
     this.calculateOffset();
+  }
+
+  @HostListener('document:keydown.space', ['$event'])
+  handleGlobalSpacebar(event: any) {
+    event.preventDefault();
+    this.onPlay();
   }
 
   ngOnInit(): void {
@@ -105,8 +109,10 @@ export class MediaPlayer implements OnInit {
     if (this.playing) {
       this.audioGlobal.pause();
     } else {
-      this.audioGlobal.play();
-      this.eventBus.onPlay.emit(this.content);
+      if (this.audioGlobal.available()) {
+        this.audioGlobal.play();
+        this.eventBus.onPlay.emit(this.content);
+      }
     }
   }
 
@@ -128,8 +134,11 @@ export class MediaPlayer implements OnInit {
       if (this.seekFloor !== this.count) {
         if (this.seekFloor % 10 === 0) {
           this.fetchAndCacheTranscript(this.seekFloor);
-          this.wordList = this.getTranscript(this.seekFloor);
-          this.displayArray = this.chunkData(this.wordList);
+          const wordListTmp = this.getTranscript(this.seekFloor);
+          if (wordListTmp) {
+            this.wordList = wordListTmp;
+            this.displayArray = this.chunkData(this.wordList);
+          }
         }
         this.saveToLocalStorage(this.seekFloor)
         this.count = this.seekFloor;
@@ -282,17 +291,18 @@ export class MediaPlayer implements OnInit {
     }
     this.audioGlobal.sound.seek(this.playheadSeconds);
     this.audioGlobal.play();
-    this.seekMode = false;
-    this.seekModeLock = true;
+    // this.seekMode = false;
+    // this.seekModeLock = true;
   }
 
   getCurrentChuckRequired(seconds: number) {
     const seekFloor = (Math.floor(seconds / 10) * 10);
     const compKey = seekFloor + '-' + this.audioGlobal.content.uuid;
     const keyExists = this.wordMap.has(compKey);
+    console.log(this.wordMap.keys());
     console.log('Does key '+compKey+' exist: ' + keyExists);
     console.log(JSON.stringify(this.wordMap));
-    return !keyExists;
+    return true;
   }
 
   handlePrevious() {
