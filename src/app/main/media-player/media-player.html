@@ -79,8 +79,12 @@
     </div>
     @if (this.audioGlobal.available()) {
       @if (transcriptEnabled) {
-        <div [innerHTML]="currentDisplay" class="transcript-container px-3 d-flex justify-content-center align-items-center" [ngClass]="{'transcript-container-open': this.audioGlobal.available(), 'transcript-container-visible': this.transcriptVisible && this.playing}">
-
+        <div class="transcript-container px-3 d-flex justify-content-center align-items-center" [ngClass]="{'transcript-container-open': this.audioGlobal.available(), 'transcript-container-visible': this.transcriptVisible}">
+        @if (this.displayChunk) {
+          @for (chunk of this.displayChunk; track chunk.start) {
+            <span class="text-transition" [ngClass]="{'text-highlight': this.audioGlobal.seek() >= chunk.start && this.audioGlobal.seek() < chunk.end}">{{chunk.word}}</span>&nbsp;
+          }
+        }
         </div>
       }
       <img class="media-player-background" src="assets/img/svg/wave-sand.svg"/>

@@ -33,9 +33,8 @@ export class MediaPlayer implements OnInit {
   wordList: any = [];
   displayArray: any = [];
   wordMap: Map<string, any> = new Map();
-  currentDisplay: any = "";
   transcriptVisible: boolean = false;
-  highlightText: boolean = false;
+  displayChunk: any;
 
   seek: any = 0;
   playing: boolean = false;
@@ -123,8 +122,8 @@ export class MediaPlayer implements OnInit {
       this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       if (this.displayArray && this.displayArray.length > 0) {
-        let displayChunk = this.getDisplayChunk(this.displayArray);
-        this.getText(displayChunk);
+        this.displayChunk = this.getDisplayChunk(this.displayArray);
+        this.transcriptVisible = !!(this.displayChunk && this.displayChunk.length > 0);
       }
       if (this.seekFloor !== this.count) {
         if (this.seekFloor % 10 === 0) {
@@ -204,26 +203,6 @@ export class MediaPlayer implements OnInit {
   getTranscript(seekFloor: any) {
     const compKey =  (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
     return this.wordMap.get(compKey)
-  }
-
-  getText(displayChunk: any) {
-    let text: string = '';
-    if (displayChunk && displayChunk.length > 0) {
-      console.log(JSON.stringify(displayChunk));
-      for (let chunk of displayChunk) {
-        this.transcriptVisible = true;
-        if (this.audioGlobal.seek() >= chunk.start && this.audioGlobal.seek() < chunk.end) {
-          this.highlightText = true;
-          // text = text + "<span class='text-highlight'>" + chunk.word + "</span>&nbsp;";
-        } else {
-          // text = text + "<span>" + chunk.word + "</span>&nbsp;";
-        }
-      }
-    } else {
-      this.transcriptVisible = false;
-    }
-    this.currentDisplay = this.sanitizer.bypassSecurityTrustHtml(text);
-    return text;
   }
 
   saveToLocalStorage(seekFloor: any) {

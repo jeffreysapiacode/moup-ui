@@ -30,18 +30,6 @@
     </div>
   </div>
 </div>
-<!--@if (this.transcriptEnabled) {-->
-<!--  <div class="row p-0 m-0">-->
-<!--    <div class="col p-0 m-0">-->
-<!--      <div  class="transcript-container d-flex justify-content-center align-items-center" [ngClass]="{'transcript-container-open': this.audioGlobal.available()}">-->
-<!--        {{currentDisplay}}-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--}-->
-<!--<div class="col closed-caption-button p-0 m-0 d-flex justify-content-end align-items-start" (click)="this.transcriptEnabled = !this.transcriptEnabled">-->
-<!--  <img src="assets/img/svg/closed-caption-button.svg"/>-->
-<!--</div>-->
 @if (this.audioGlobal.contentList.length > 0) {
   <app-media-player></app-media-player>
 }
