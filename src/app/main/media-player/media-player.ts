@@ -252,7 +252,9 @@ export class MediaPlayer implements OnInit {
 
   handleOnMouseEnter() {
     this.seekModeLock = false;
-    this.seekMode = true;
+    if (this.innerWidth >= 576) {
+      this.seekMode = true;
+    }
     this.storedSeek = this.percentProgress;
   }
 
@@ -273,7 +275,7 @@ export class MediaPlayer implements OnInit {
 
   onTouchEnd(event: TouchEvent) {
     this.touchMode = false;
-    this.handleSeek();
+    this.seekToTime();
   }
 
   onMouseMove($event: any){
@@ -307,6 +309,13 @@ export class MediaPlayer implements OnInit {
   }
 
   handleSeek() {
+    if (this.innerWidth < 576) {
+      return;
+    }
+    this.seekToTime();
+  }
+
+  seekToTime() {
     if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
       console.log('Getting current chunk');
       this.getCurrentChunk = true;
