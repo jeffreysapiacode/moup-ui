@@ -125,6 +125,9 @@ export class MediaPlayer implements OnInit {
           this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
         }
       }, 0);
+      if (this.seekMode) {
+        this.percentSeek = (this.audioGlobal.seek() / this.content.duration) * 100;
+      }
       this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       if (this.displayArray && this.displayArray.length > 0) {
@@ -133,11 +136,13 @@ export class MediaPlayer implements OnInit {
       }
       if (this.seekFloor !== this.count) {
         if (this.seekFloor % 10 === 0) {
-          this.fetchAndCacheTranscript(this.seekFloor);
-          const wordListTmp = this.getTranscript(this.seekFloor);
-          if (wordListTmp) {
-            this.wordList = wordListTmp;
-            this.displayArray = this.chunkData(this.wordList);
+          if (this.transcriptEnabled) {
+            this.fetchAndCacheTranscript(this.seekFloor);
+            const wordListTmp = this.getTranscript(this.seekFloor);
+            if (wordListTmp) {
+              this.wordList = wordListTmp;
+              this.displayArray = this.chunkData(this.wordList);
+            }
           }
         }
         this.saveToLocalStorage(this.seekFloor)
@@ -211,7 +216,10 @@ export class MediaPlayer implements OnInit {
 
   getTranscript(seekFloor: any) {
     const compKey =  (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
-    return this.wordMap.get(compKey)
+    let wordMap = this.wordMap.get(compKey);
+    console.log('In getTranscript');
+    console.log(JSON.stringify(wordMap));
+    return wordMap;
   }
 
   saveToLocalStorage(seekFloor: any) {
@@ -267,7 +275,7 @@ export class MediaPlayer implements OnInit {
       }
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
       if (this.audioGlobal.sound) {
-        this.percentSeek = (this.audioGlobal.seek() / this.content.duration) * 100;
+
       }
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
     }
@@ -289,10 +297,12 @@ export class MediaPlayer implements OnInit {
       console.log('Getting current chunk');
       this.getCurrentChunk = true;
     }
+    console.log(JSON.stringify(this.wordMap));
     this.audioGlobal.sound.seek(this.playheadSeconds);
     this.audioGlobal.play();
-    // this.seekMode = false;
-    // this.seekModeLock = true;
+    if (this.innerWidth < 576) {
+      this.seekMode = false;
+    }
   }
 
   getCurrentChuckRequired(seconds: number) {
