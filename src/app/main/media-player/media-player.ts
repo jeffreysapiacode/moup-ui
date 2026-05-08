@@ -82,13 +82,33 @@ export class MediaPlayer implements OnInit {
     this.onPlay();
   }
 
+  @HostListener('window:keydown.arrowLeft', ['$event'])
+  handleLeftArrow(event: any) {
+    // Seek to previous 10 seconds
+    event.preventDefault();
+    const seekTo = this.audioGlobal.seek() - 10;
+    this.audioGlobal.sound.seek(seekTo < 0 ? 0 : seekTo);
+    this.resetTranscript();
+  }
+
+  @HostListener('window:keydown.arrowRight', ['$event'])
+  handleRightArrow(event: any) {
+    // Seek to next 10 seconds
+    event.preventDefault();
+    const seekTo = this.audioGlobal.seek() + 10;
+    if (seekTo < this.audioGlobal.content.duration) {
+      this.audioGlobal.sound.seek(seekTo);
+      this.resetTranscript();
+    }
+  }
+
   @HostListener('document:visibilitychange', [])
   handleVisibilityChange() {
     if (this.document.visibilityState === 'hidden') {
       this.screenVisible = false;
     } else {
       this.screenVisible = true;
-      if (this.playing) {
+      if (this.transcriptEnabled && this.playing) {
         this.getCurrentChunk = true;
         this.seekFloor = Math.floor(this.audioGlobal.seek());
         this.fetchAndCacheTranscript(this.seekFloor);
@@ -126,6 +146,12 @@ export class MediaPlayer implements OnInit {
       this.cdr.detectChanges();
     });
     }
+
+  resetTranscript() {
+    this.getCurrentChunk = true;
+    this.seekFloor = Math.floor(this.audioGlobal.seek());
+    this.fetchAndCacheTranscript(this.seekFloor);
+  }
 
   calculateOffset() {
     this.startOffset = (0.000002 * (this.innerWidth ** 2)) - (0.0063 * this.innerWidth) + 6.8816;
@@ -230,7 +256,6 @@ export class MediaPlayer implements OnInit {
   }
 
   getWords(start: any, end: any, compKey: string) {
-    console.log('Getting word: ' + start + ' and ' + end + ' and ' + compKey );
     this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + end).subscribe((response: any) => {
       if (response.length > 0) {
         this.wordMap.set(compKey, response);
@@ -244,8 +269,6 @@ export class MediaPlayer implements OnInit {
   getTranscript(seekFloor: any) {
     const compKey =  (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
     let wordMap = this.wordMap.get(compKey);
-    console.log('In getTranscript');
-    console.log(JSON.stringify(wordMap));
     return wordMap;
   }
 
@@ -343,10 +366,8 @@ export class MediaPlayer implements OnInit {
 
   seekToTime() {
     if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
-      console.log('Getting current chunk');
       this.getCurrentChunk = true;
     }
-    console.log(JSON.stringify(this.wordMap));
     this.audioGlobal.sound.seek(this.playheadSeconds);
     this.audioGlobal.play();
   }
@@ -355,9 +376,6 @@ export class MediaPlayer implements OnInit {
     const seekFloor = (Math.floor(seconds / 10) * 10);
     const compKey = seekFloor + '-' + this.audioGlobal.content.uuid;
     const keyExists = this.wordMap.has(compKey);
-    console.log(this.wordMap.keys());
-    console.log('Does key '+compKey+' exist: ' + keyExists);
-    console.log(JSON.stringify(this.wordMap));
     return true;
   }
 
