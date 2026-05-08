@@ -89,6 +89,11 @@ export class MediaPlayer implements OnInit {
     const seekTo = this.audioGlobal.seek() - 10;
     this.audioGlobal.sound.seek(seekTo < 0 ? 0 : seekTo);
     this.resetTranscript();
+    if (!this.playing) {
+      this.transcriptVisible = false;
+      this.seek = seekTo;
+      this.percentProgress = (seekTo / this.content.duration) * 100;
+    }
   }
 
   @HostListener('window:keydown.arrowRight', ['$event'])
@@ -99,6 +104,12 @@ export class MediaPlayer implements OnInit {
     if (seekTo < this.audioGlobal.content.duration) {
       this.audioGlobal.sound.seek(seekTo);
       this.resetTranscript();
+      if (!this.playing) {
+        // Turn off caption window
+        this.transcriptVisible = false;
+        this.seek = seekTo;
+        this.percentProgress = (seekTo / this.content.duration) * 100;
+      }
     }
   }
 
