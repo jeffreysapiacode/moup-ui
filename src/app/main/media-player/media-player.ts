@@ -252,7 +252,7 @@ export class MediaPlayer implements OnInit {
 
   handleOnMouseEnter() {
     this.seekModeLock = false;
-    if (this.innerWidth >= 576) {
+    if (!this.touchMode) {
       this.seekMode = true;
     }
     this.storedSeek = this.percentProgress;
