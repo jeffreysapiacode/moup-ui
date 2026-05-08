@@ -120,9 +120,7 @@ export class MediaPlayer implements OnInit {
     } else {
       this.screenVisible = true;
       if (this.transcriptEnabled && this.playing) {
-        this.getCurrentChunk = true;
-        this.seekFloor = Math.floor(this.audioGlobal.seek());
-        this.fetchAndCacheTranscript(this.seekFloor);
+        this.resetTranscript();
       }
       this.cdr.detectChanges();
     }
@@ -137,9 +135,7 @@ export class MediaPlayer implements OnInit {
     this.eventBus.onPlay.subscribe((content) => {
       this.animate();
       this.playing = true;
-      this.getCurrentChunk = true;
-      this.seekFloor = Math.floor(this.audioGlobal.seek());
-      this.fetchAndCacheTranscript(this.seekFloor);
+      this.resetTranscript();
       this.cdr.detectChanges();
     });
     this.eventBus.onPause.subscribe((content) => {
@@ -377,7 +373,7 @@ export class MediaPlayer implements OnInit {
 
   seekToTime() {
     if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
-      this.getCurrentChunk = true;
+      this.resetTranscript();
     }
     this.audioGlobal.sound.seek(this.playheadSeconds);
     this.audioGlobal.play();
@@ -399,7 +395,7 @@ export class MediaPlayer implements OnInit {
         return;
       }
     }
-    this.getCurrentChunk = true;
+    this.resetTranscript();
     this.audioGlobal.sound.seek(0);
     this.percentProgress = 0;
   }
