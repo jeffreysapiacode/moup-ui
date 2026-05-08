@@ -10,14 +10,14 @@
         <span class="time-duration-elapsed">{{format(this.seek)}}</span>
       </div>
       <div class="col button-adjustment p-0 m-0 pe-3 d-flex justify-content-end d-flex align-items-center">
-        <div class="previous-button button-padding" style="z-index: 5;" (click)="handlePrevious()">
+        <div class="previous-button button-padding" style="z-index: 5;" (pointerdown)="handlePrevious()">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M13.3333 30H10V10H13.3333M30 30L15.8333 20L30 10V30Z" fill="#68654B"/>
           </svg>
         </div>
       </div>
       <div class="col-auto button-adjustment p-0 m-0 d-flex justify-content-center">
-        <div class="button-padding" (click)="onPlay()">
+        <div class="button-padding" (pointerdown)="onPlay()">
           @if (this.playing) {
             <svg class="audio-control-button" width="55" height="55" viewBox="0 0 55 55" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_119_28)">
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="col button-adjustment p-0 m-0 ps-3 d-flex align-items-center">
-        <div class="next-button button-padding" style="z-index: 5;" (click)="handleNext()">
+        <div class="next-button button-padding" style="z-index: 5;" (pointerdown)="handleNext()">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M26.6667 30H30V10H26.6667M10 30L24.1667 20L10 10V30Z" fill="#68654B"/>
           </svg>
@@ -56,7 +56,10 @@
       </div>
     </div>
     <div class="row p-0 m-0 pt-3 pb-5 px-3"
-         (click)="handleSeek()"
+         (pointerdown)="handleSeek()"
+         (touchstart)="this.touchMode = true"
+         (touchend)="onTouchEnd($event)"
+         (touchmove)="onTouchMove($event)"
          (mousemove)="onMouseMove($event)"
          (mouseenter)="handleOnMouseEnter()"
          (mouseleave)="handleOnMouseLeave()">
@@ -67,7 +70,7 @@
           }
           <div class="track-bar" [ngStyle]="{'width': calculate(this.percentProgress, seekMode) + '%'}" #trackBar></div>
           <div class="playhead d-flex justify-content-center align-items-center" [ngClass]="{'playhead-hover': this.seekMode}" [ngStyle]="{'left': this.percentProgress + '%'}">
-          @if (this.seekMode) {
+          @if (this.seekMode || this.touchMode) {
             <div class="playhead-time d-flex justify-content-center align-items-center">
               {{ this.playheadTime }}
             </div>

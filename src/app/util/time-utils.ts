@@ -2,14 +2,16 @@
 
 export class TimeUtils {
 
-  static formatTime (seconds: any) {
-    let secondsFmt = Math.floor(seconds);
-    let minutes = Math.floor(seconds / 60);
-    let hours = Math.floor(seconds / (60 * 60));
+  static formatTime (totalSeconds: any) {
+    const seconds = Math.floor(totalSeconds);
+    const minutes = Math.floor(totalSeconds / 60);
+    const hours = Math.floor(totalSeconds / (60 * 60));
+    const mm = String((minutes - (hours * 60))).padStart(2, '0');
+    const ss = String(seconds - (minutes * 60)).padStart(2, '0');
     if (hours === 0) {
-      return minutes + ':' + (secondsFmt - (minutes * 60)) ;
+      return minutes + ':' + ss;
     } else {
-      return hours + ':' + (minutes - (hours * 60)) + ':' + (secondsFmt - (minutes * 60));
+      return hours + ':' + mm + ':' + ss;
     }
   }
 

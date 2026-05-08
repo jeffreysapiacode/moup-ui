@@ -35,15 +35,16 @@ export class MediaPlayer implements OnInit {
   transcriptVisible: boolean = false;
   displayChunk: any;
 
-  seek: any = 0;
   playing: boolean = false;
   content: any;
+
+  // Seek Bar
   seekMode: boolean = false;
+  touchMode: boolean = false;
   percentSeek: any = 0;
   percentProgress: any = 0;
   playheadTime: any = TimeUtils.formatTime(0);
-
-  // Seek Bar
+  seek: any = 0;
   private seekModeLock: boolean = false;
   private storedSeek: number = 0;
   private playheadSeconds: number = 0;
@@ -121,11 +122,11 @@ export class MediaPlayer implements OnInit {
   animate() {
     if (this.audioGlobal.available() && this.playing) {
       setTimeout(() => {
-        if (!this.seekMode) {
+        if (!this.seekMode && !this.touchMode) {
           this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
         }
       }, 0);
-      if (this.seekMode) {
+      if (this.seekMode && this.touchMode) {
         this.percentSeek = (this.audioGlobal.seek() / this.content.duration) * 100;
       }
       this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
@@ -251,7 +252,9 @@ export class MediaPlayer implements OnInit {
 
   handleOnMouseEnter() {
     this.seekModeLock = false;
-    this.seekMode = true;
+    if (this.innerWidth >= 576) {
+      this.seekMode = true;
+    }
     this.storedSeek = this.percentProgress;
   }
 
@@ -263,8 +266,33 @@ export class MediaPlayer implements OnInit {
     this.percentProgress = this.storedSeek;
   }
 
-  onMouseMove($event: MouseEvent){
-    if (this.seekMode && !this.seekModeLock) {
+  onTouchMove(event: TouchEvent) {
+    event.preventDefault();
+    if (this.touchMode) {
+      let percentProgressTmp = (event.touches[0].clientX / this.trackBarContainer.nativeElement.clientWidth) * 100;
+      if (percentProgressTmp < this.startOffset) {
+        this.percentProgress = this.startOffset;
+      } else if (percentProgressTmp > this.endOffset) {
+        this.percentProgress = this.endOffset;
+      } else {
+        this.percentProgress = percentProgressTmp;
+      }
+      this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
+      this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
+    }
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    this.touchMode = false;
+    if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
+      this.getCurrentChunk = true;
+    }
+    this.audioGlobal.sound.seek(this.playheadSeconds);
+    this.audioGlobal.play();
+  }
+
+  onMouseMove($event: any){
+    if (this.seekMode && !this.touchMode && !this.seekModeLock) {
       let percentProgressTmp = ($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100;
       if (percentProgressTmp < this.startOffset) {
         this.percentProgress = this.startOffset;
@@ -274,9 +302,6 @@ export class MediaPlayer implements OnInit {
         this.percentProgress = percentProgressTmp;
       }
       this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
-      if (this.audioGlobal.sound) {
-
-      }
       this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
     }
   }
@@ -293,6 +318,9 @@ export class MediaPlayer implements OnInit {
   }
 
   handleSeek() {
+    if (this.innerWidth < 576) {
+      return;
+    }
     if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
       console.log('Getting current chunk');
       this.getCurrentChunk = true;
@@ -300,9 +328,6 @@ export class MediaPlayer implements OnInit {
     console.log(JSON.stringify(this.wordMap));
     this.audioGlobal.sound.seek(this.playheadSeconds);
     this.audioGlobal.play();
-    if (this.innerWidth < 576) {
-      this.seekMode = false;
-    }
   }
 
   getCurrentChuckRequired(seconds: number) {
