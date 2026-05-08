@@ -269,16 +269,7 @@ export class MediaPlayer implements OnInit {
   onTouchMove(event: TouchEvent) {
     event.preventDefault();
     if (this.touchMode) {
-      let percentProgressTmp = (event.touches[0].clientX / this.trackBarContainer.nativeElement.clientWidth) * 100;
-      if (percentProgressTmp < this.startOffset) {
-        this.percentProgress = this.startOffset;
-      } else if (percentProgressTmp > this.endOffset) {
-        this.percentProgress = this.endOffset;
-      } else {
-        this.percentProgress = percentProgressTmp;
-      }
-      this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
-      this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
+      this.processInput(event.touches[0].clientX);
     }
   }
 
@@ -289,17 +280,21 @@ export class MediaPlayer implements OnInit {
 
   onMouseMove($event: any){
     if (this.seekMode && !this.touchMode && !this.seekModeLock) {
-      let percentProgressTmp = ($event.clientX / this.trackBarContainer.nativeElement.clientWidth) * 100;
-      if (percentProgressTmp < this.startOffset) {
-        this.percentProgress = this.startOffset;
-      } else if (percentProgressTmp > this.endOffset) {
-        this.percentProgress = this.endOffset;
-      } else {
-        this.percentProgress = percentProgressTmp;
-      }
-      this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
-      this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
+      this.processInput($event.clientX);
     }
+  }
+
+  processInput(value: any) {
+    let percentProgressTmp = (value / this.trackBarContainer.nativeElement.clientWidth) * 100;
+    if (percentProgressTmp < this.startOffset) {
+      this.percentProgress = this.startOffset;
+    } else if (percentProgressTmp > this.endOffset) {
+      this.percentProgress = this.endOffset;
+    } else {
+      this.percentProgress = percentProgressTmp;
+    }
+    this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
+    this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
   }
 
   format(elapsed: any) {
