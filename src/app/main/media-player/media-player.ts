@@ -1,4 +1,13 @@
-import {ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  DOCUMENT,
+  ElementRef,
+  HostListener,
+  Inject,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import {NgClass, NgStyle} from '@angular/common';
 import {AudioGlobal} from '../../service/audio-global';
@@ -22,6 +31,7 @@ export class MediaPlayer implements OnInit {
   @ViewChild('trackBar') trackBar!: ElementRef;
 
   private innerWidth: any = window.innerWidth;
+  private screenVisible: boolean = true;
   apiUrl = environment.apiUrl;
 
   open: boolean = false;
@@ -57,6 +67,7 @@ export class MediaPlayer implements OnInit {
   constructor(protected eventBus: EventBus,
               protected audioGlobal: AudioGlobal,
               protected http: HttpClient,
+              @Inject(DOCUMENT) private document: Document,
               protected cdr: ChangeDetectorRef) {}
 
   @HostListener('window:resize', ['$event'])
@@ -69,6 +80,21 @@ export class MediaPlayer implements OnInit {
   handleGlobalSpacebar(event: any) {
     event.preventDefault();
     this.onPlay();
+  }
+
+  @HostListener('document:visibilitychange', [])
+  handleVisibilityChange() {
+    if (this.document.visibilityState === 'hidden') {
+      this.screenVisible = false;
+    } else {
+      this.screenVisible = true;
+      if (this.playing) {
+        this.getCurrentChunk = true;
+        this.seekFloor = Math.floor(this.audioGlobal.seek());
+        this.fetchAndCacheTranscript(this.seekFloor);
+      }
+      this.cdr.detectChanges();
+    }
   }
 
   ngOnInit(): void {
@@ -137,7 +163,7 @@ export class MediaPlayer implements OnInit {
       }
       if (this.seekFloor !== this.count) {
         if (this.seekFloor % 10 === 0) {
-          if (this.transcriptEnabled) {
+          if (this.transcriptEnabled && this.screenVisible) {
             this.fetchAndCacheTranscript(this.seekFloor);
             const wordListTmp = this.getTranscript(this.seekFloor);
             if (wordListTmp) {
