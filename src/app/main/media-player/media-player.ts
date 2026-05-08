@@ -284,11 +284,7 @@ export class MediaPlayer implements OnInit {
 
   onTouchEnd(event: TouchEvent) {
     this.touchMode = false;
-    if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
-      this.getCurrentChunk = true;
-    }
-    this.audioGlobal.sound.seek(this.playheadSeconds);
-    this.audioGlobal.play();
+    this.handleSeek();
   }
 
   onMouseMove($event: any){
@@ -318,9 +314,6 @@ export class MediaPlayer implements OnInit {
   }
 
   handleSeek() {
-    if (this.innerWidth < 576) {
-      return;
-    }
     if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
       console.log('Getting current chunk');
       this.getCurrentChunk = true;
