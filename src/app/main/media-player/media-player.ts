@@ -83,14 +83,14 @@ export class MediaPlayer implements OnInit {
   handleLeftArrow(event: any) {
     // Seek to previous 10 seconds
     event.preventDefault();
-    this.seekTo(this.audioGlobal.seek() - 10);
+    this.seekToTime(this.audioGlobal.seek() - 10);
   }
 
   @HostListener('window:keydown.arrowRight', ['$event'])
   handleRightArrow(event: any) {
     // Seek to next 10 seconds
     event.preventDefault();
-    this.seekTo(this.audioGlobal.seek() + 10);
+    this.seekToTime(this.audioGlobal.seek() + 10);
   }
 
   @HostListener('document:visibilitychange', [])
@@ -174,19 +174,19 @@ export class MediaPlayer implements OnInit {
   handleNext() {
     const index = this.getTrackIndex(this.content.uuid);
     if (index < (this.audioGlobal.contentList.length - 1)) {
-      this.seekTrack(index + 1);
+      this.seekToTrack(index + 1);
     }
   }
 
   handleNextTap($event: MouseEvent) {
     $event.preventDefault();
-    this.seekTo(this.audioGlobal.seek() + 10);
+    this.seekToTime(this.audioGlobal.seek() + 10);
   }
 
   // Previous
   handlePreviousTap($event: MouseEvent) {
     $event.preventDefault();
-    this.seekTo(this.audioGlobal.seek() - 10);
+    this.seekToTime(this.audioGlobal.seek() - 10);
   }
 
   handlePrevious() {
@@ -194,7 +194,7 @@ export class MediaPlayer implements OnInit {
     if (this.audioGlobal.seek() < 3) {
       const index = this.getTrackIndex(this.content.uuid);
       if (index > 0) {
-        this.seekTrack(index - 1);
+        this.seekToTrack(index - 1);
         return;
       }
     }
@@ -236,19 +236,6 @@ export class MediaPlayer implements OnInit {
     }
   }
 
-  seekTo(seekTo: any) {
-    if (seekTo < this.audioGlobal.content.duration) {
-      this.audioGlobal.sound.seek(seekTo);
-      this.resetTranscript();
-      if (!this.playing) {
-        // Turn off caption window
-        this.transcriptVisible = false;
-        this.seek = seekTo;
-        this.percentProgress = (seekTo / this.content.duration) * 100;
-      }
-    }
-  }
-
   // Local Storage
   saveToLocalStorage(seekFloor: any) {
     if (!this.content) {
@@ -278,7 +265,7 @@ export class MediaPlayer implements OnInit {
   }
 
   // Seek Bar
-  seekTrack(index: number) {
+  seekToTrack(index: number) {
     const content = this.getContentByIndex(index);
     this.audioGlobal.setContent(content);
     const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
@@ -289,10 +276,16 @@ export class MediaPlayer implements OnInit {
     this.audioGlobal.play()
   }
 
-  seekToTime(time: any) {
+  seekToTime(seek: any) {
     this.resetTranscript();
-    this.audioGlobal.sound.seek(time);
+    this.audioGlobal.sound.seek(seek);
     this.audioGlobal.play();
+    if (!this.playing) {
+      // Turn off caption window
+      this.transcriptVisible = false;
+      this.seek = seek;
+      this.percentProgress = (seek / this.content.duration) * 100;
+    }
   }
 
   handleSeek() {
