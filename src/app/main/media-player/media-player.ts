@@ -248,8 +248,6 @@ export class MediaPlayer implements OnInit {
         } else {
           nestedArray.push(tempArray);
         }
-
-        console.log(JSON.stringify(array));
       }
       if (counter >= (this.MAX_WORDS_ON_SCREEN - 1)) {
         counter = 0;
