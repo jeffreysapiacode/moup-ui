@@ -29,15 +29,20 @@ export class MediaPlayer implements OnInit {
 
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
+  @ViewChild('playheadTimer') playheadTimer!: ElementRef;
 
-  private innerWidth: any = window.innerWidth;
-  private screenVisible: boolean = true;
+  // Universal
+  innerWidth: any = window.innerWidth;
+  screenVisible: boolean = true;
   apiUrl = environment.apiUrl;
-
   open: boolean = false;
+  content: any;
 
-  // Auto-Dictate
-  MAX_WORDS_ON_SCREEN: number = 3;
+  // Track Navigation
+  playing: boolean = false;
+
+  // Transcript
+  maxWordsOnScreen: number = 3;
   transcriptEnabled: boolean = true;
   wordList: any = [];
   displayArray: any = [];
@@ -45,23 +50,22 @@ export class MediaPlayer implements OnInit {
   transcriptVisible: boolean = false;
   displayChunk: any;
 
-  playing: boolean = false;
-  content: any;
-
   // Seek Bar
+  rectLeftX = 0;
+  rectRightX = 0;
   seekMode: boolean = false;
   touchMode: boolean = false;
   percentSeek: any = 0;
   percentProgress: any = 0;
   playheadTime: any = TimeUtils.formatTime(0);
   seek: any = 0;
-  private seekModeLock: boolean = false;
-  private storedSeek: number = 0;
-  private playheadSeconds: number = 0;
-  protected previousHolding: boolean = false;
-  protected nextHolding: boolean = false;
-  private seekFloor: any = 0;
-  private getCurrentChunk: boolean = true;
+  storedSeek: number = 0;
+  playheadSeconds: number = 0;
+  seekFloor: any = 0;
+  getCurrentChunk: boolean = true;
+
+  // Timer
+  count: number = 0;
 
   constructor(protected eventBus: EventBus,
               protected audioGlobal: AudioGlobal,
@@ -70,9 +74,9 @@ export class MediaPlayer implements OnInit {
               protected cdr: ChangeDetectorRef) {}
 
   @HostListener('document:keydown.space', ['$event'])
-  handleGlobalSpacebar(event: any) {
+  handleGlobalSpaceBar(event: any) {
     event.preventDefault();
-    this.onPlay();
+    this.handlePlay();
   }
 
   @HostListener('window:keydown.arrowLeft', ['$event'])
@@ -129,38 +133,7 @@ export class MediaPlayer implements OnInit {
     });
     }
 
-  seekTo(seekTo: any) {
-    if (seekTo < this.audioGlobal.content.duration) {
-      this.audioGlobal.sound.seek(seekTo);
-      this.resetTranscript();
-      if (!this.playing) {
-        // Turn off caption window
-        this.transcriptVisible = false;
-        this.seek = seekTo;
-        this.percentProgress = (seekTo / this.content.duration) * 100;
-      }
-    }
-  }
-
-  resetTranscript() {
-    this.getCurrentChunk = true;
-    this.seekFloor = Math.floor(this.audioGlobal.seek());
-    this.fetchAndCacheTranscript(this.seekFloor);
-  }
-
-  onPlay() {
-    if (this.playing) {
-      this.audioGlobal.pause();
-    } else {
-      if (this.audioGlobal.available()) {
-        this.audioGlobal.play();
-        this.eventBus.onPlay.emit(this.content);
-      }
-    }
-  }
-
-  count: number = 0;
-
+  // Animation Loop
   animate() {
     if (this.audioGlobal.available() && this.playing) {
       setTimeout(() => {
@@ -178,16 +151,6 @@ export class MediaPlayer implements OnInit {
         this.transcriptVisible = !!(this.displayChunk && this.displayChunk.length > 0);
       }
       if (this.seekFloor !== this.count) {
-        if (this.seekFloor % 0.3 === 0) {
-          if (this.previousHolding) {
-            this.seekTo(this.audioGlobal.seek() - 10);
-          }
-          if (this.nextHolding) {
-            this.seekTo(this.audioGlobal.seek() + 10);
-          }
-        }
-
-
         if (this.seekFloor % 10 === 0) {
           if (this.transcriptEnabled && this.screenVisible) {
             this.fetchAndCacheTranscript(this.seekFloor);
@@ -206,77 +169,87 @@ export class MediaPlayer implements OnInit {
     requestAnimationFrame(this.animate.bind(this));
   }
 
-  getDisplayChunk(displayArray: any) {
-    for (let displayChunk of displayArray) {
-      let start = displayChunk[0].start;
-      let end = displayChunk[displayChunk.length - 1].end;
-      if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
-        return displayChunk;
+  // Track Navigation
+  //// Next
+  handleNext() {
+    const index = this.getTrackIndex(this.content.uuid);
+    if (index < (this.audioGlobal.contentList.length - 1)) {
+      this.seekTrack(index + 1);
+    }
+  }
+
+  handleNextTap($event: MouseEvent) {
+    $event.preventDefault();
+    this.seekTo(this.audioGlobal.seek() + 10);
+  }
+
+  //// Previous
+  handlePreviousTap($event: MouseEvent) {
+    $event.preventDefault();
+    this.seekTo(this.audioGlobal.seek() - 10);
+  }
+
+  handlePrevious() {
+    // If less than 3 seconds, go to previous track, if greater, restart
+    if (this.audioGlobal.seek() < 3) {
+      const index = this.getTrackIndex(this.content.uuid);
+      if (index > 0) {
+        this.seekTrack(index - 1);
+        return;
+      }
+    }
+    this.resetTranscript();
+    this.audioGlobal.sound.seek(0);
+    this.percentProgress = 0;
+  }
+
+  //// Play/Pause
+  handlePlay() {
+    if (this.playing) {
+      this.audioGlobal.pause();
+    } else {
+      if (this.audioGlobal.available()) {
+        this.audioGlobal.play();
+        this.eventBus.onPlay.emit(this.content);
       }
     }
   }
 
-  fetchAndCacheTranscript(seekFloor: any) {
-    const seekFloorFloor = (Math.floor(seekFloor / 10) * 10);
-    let start = seekFloorFloor;
-    let end = seekFloorFloor + 10;
-    const compKey =  seekFloorFloor + '-' + this.audioGlobal.content.uuid;
-    if (this.getCurrentChunk && !this.wordMap.has(compKey)) {
-      this.getWords(start, end, compKey);
-      this.getCurrentChunk = false;
-    }
-    const compKey2 = (seekFloorFloor + 10) + '-' + this.audioGlobal.content.uuid;
-    if (!this.wordMap.has(compKey2)) {
-      this.getWords(start + 10, end + 10, compKey2);
+  //// Utilities
+  private getTrackIndex(uuid: string): any {
+    let index = 0;
+    for (let content of this.audioGlobal.contentList) {
+      if (uuid === content.uuid) {
+        return index;
+      }
+      index++;
     }
   }
 
-  chunkData(wordList: any) {
-    if (!wordList) {
-      return;
-    }
-    let nestedArray: any[] = [];
-    let tempArray: any[] = [];
-    let counter = 0;
-    const length = wordList.length;
-    for (const [index, word] of wordList.entries()) {
-      tempArray.push(word);
-      if (index === (length - 1) && tempArray.length < this.MAX_WORDS_ON_SCREEN) {
-        const array = nestedArray.at(nestedArray.length - 1)
-        if (tempArray.length === 1) {
-          array.push(tempArray[0]);
-        } else {
-          nestedArray.push(tempArray);
-        }
+  private getContentByIndex(index: number): any {
+    let indexStr = 0;
+    for (let content of this.audioGlobal.contentList) {
+      if (indexStr === index) {
+        return content;
       }
-      if (counter >= (this.MAX_WORDS_ON_SCREEN - 1)) {
-        counter = 0;
-        nestedArray.push(tempArray);
-        tempArray = [];
-      } else {
-        counter++;
+      indexStr++;
+    }
+  }
+
+  seekTo(seekTo: any) {
+    if (seekTo < this.audioGlobal.content.duration) {
+      this.audioGlobal.sound.seek(seekTo);
+      this.resetTranscript();
+      if (!this.playing) {
+        // Turn off caption window
+        this.transcriptVisible = false;
+        this.seek = seekTo;
+        this.percentProgress = (seekTo / this.content.duration) * 100;
       }
     }
-    return nestedArray;
   }
 
-  getWords(start: any, end: any, compKey: string) {
-    this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + end).subscribe((response: any) => {
-      if (response.length > 0) {
-        this.wordMap.set(compKey, response);
-        this.wordList = this.getTranscript(this.seekFloor);
-        this.displayArray = this.chunkData(this.wordList);
-        return response;
-      }
-    });
-  }
-
-  getTranscript(seekFloor: any) {
-    const compKey =  (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
-    let wordMap = this.wordMap.get(compKey);
-    return wordMap;
-  }
-
+  // Local Storage
   saveToLocalStorage(seekFloor: any) {
     if (!this.content) {
       return;
@@ -304,8 +277,60 @@ export class MediaPlayer implements OnInit {
     localStorage.setItem('moup', JSON.stringify(storage));
   }
 
+  // Seek Bar
+  seekTrack(index: number) {
+    const content = this.getContentByIndex(index);
+    this.audioGlobal.setContent(content);
+    const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
+    // Check if there is a saved start time
+    if (storedInfo) {
+      this.audioGlobal.sound.seek(storedInfo.seek);
+    }
+    this.audioGlobal.play()
+  }
+
+  seekToTime() {
+    this.resetTranscript();
+    this.audioGlobal.sound.seek(this.playheadSeconds);
+    this.audioGlobal.play();
+  }
+
+  handleSeek() {
+    if (this.innerWidth < 576) {
+      this.seekMode = false;
+      this.touchMode = false;
+      return;
+    }
+    this.seekToTime();
+  }
+
+  processInput(value: any) {
+    let percentProgressTmp = (value / this.trackBarContainer.nativeElement.clientWidth) * 100;
+    if (percentProgressTmp < 0) {
+      this.percentProgress = 0;
+    } else if (percentProgressTmp > 100) {
+      this.percentProgress = 100;
+    } else {
+      this.percentProgress = percentProgressTmp;
+    }
+    this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
+    this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
+  }
+
+  //// Handle seek w/ mouse
+  onMouseMove($event: MouseEvent){
+    if (this.seekMode && !this.touchMode) {
+      const rect = ($event.currentTarget as HTMLElement).getBoundingClientRect();
+      const x = $event.clientX - rect.left;
+      this.processInput(x);
+      this.rectLeftX = (this.playheadTimer.nativeElement as HTMLElement).getBoundingClientRect().left;
+      this.rectRightX = (this.playheadTimer.nativeElement as HTMLElement).getBoundingClientRect().right;
+      // console.log('Left:' + this.rectLeftX);
+      // console.log('Right:' + this.rectRightX);
+    }
+  }
+
   handleOnMouseEnter() {
-    this.seekModeLock = false;
     if (!this.touchMode) {
       this.seekMode = true;
     }
@@ -313,13 +338,11 @@ export class MediaPlayer implements OnInit {
   }
 
   handleOnMouseLeave() {
-    if (this.seekModeLock){
-      return;
-    }
     this.seekMode = false;
     this.percentProgress = this.storedSeek;
   }
 
+  //// Handle seek on mobile
   onTouchMove(event: TouchEvent) {
     event.preventDefault();
     if (this.touchMode) {
@@ -339,50 +362,90 @@ export class MediaPlayer implements OnInit {
     this.seekToTime();
   }
 
-  onMouseMove($event: MouseEvent){
-    if (this.seekMode && !this.touchMode && !this.seekModeLock) {
-      const rect = ($event.currentTarget as HTMLElement).getBoundingClientRect();
-      const x = $event.clientX - rect.left;
-      this.processInput(x);
-    }
-  }
-
-  calculate(value: any, touchMode: boolean, offset: number) {
+  calculateOffset(value: any, touchMode: boolean, offset: number) {
     return touchMode ? value - offset : value;
   }
 
-  processInput(value: any) {
-    let percentProgressTmp = (value / this.trackBarContainer.nativeElement.clientWidth) * 100;
-    if (percentProgressTmp < 0) {
-      this.percentProgress = 0;
-    } else if (percentProgressTmp > 100) {
-      this.percentProgress = 100;
-    } else {
-      this.percentProgress = percentProgressTmp;
+  // Transcript
+  fetchAndCacheTranscript(seekFloor: any) {
+    const seekFloorFloor = (Math.floor(seekFloor / 10) * 10);
+    let start = seekFloorFloor;
+    let end = seekFloorFloor + 10;
+    const compKey =  seekFloorFloor + '-' + this.audioGlobal.content.uuid;
+    if (this.getCurrentChunk && !this.wordMap.has(compKey)) {
+      this.getWords(start, end, compKey);
+      this.getCurrentChunk = false;
     }
-    this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
-    this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
+    const compKey2 = (seekFloorFloor + 10) + '-' + this.audioGlobal.content.uuid;
+    if (!this.wordMap.has(compKey2)) {
+      this.getWords(start + 10, end + 10, compKey2);
+    }
   }
 
-  format(elapsed: any) {
-    return TimeUtils.formatTime(elapsed);
-  }
-
-  handleSeek() {
-    if (this.innerWidth < 576) {
-      this.seekMode = false;
-      this.touchMode = false;
+  chunkData(wordList: any) {
+    if (!wordList) {
       return;
     }
-    this.seekToTime();
+    let nestedArray: any[] = [];
+    let tempArray: any[] = [];
+    let counter = 0;
+    const length = wordList.length;
+    for (const [index, word] of wordList.entries()) {
+      tempArray.push(word);
+      if (index === (length - 1) && tempArray.length < this.maxWordsOnScreen) {
+        const array = nestedArray.at(nestedArray.length - 1)
+        if (tempArray.length === 1) {
+          array.push(tempArray[0]);
+        } else {
+          nestedArray.push(tempArray);
+        }
+      }
+      if (counter >= (this.maxWordsOnScreen - 1)) {
+        counter = 0;
+        nestedArray.push(tempArray);
+        tempArray = [];
+      } else {
+        counter++;
+      }
+    }
+    return nestedArray;
   }
 
-  seekToTime() {
-    if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
-      this.resetTranscript();
+  getWords(start: any, end: any, compKey: string) {
+    this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + end).subscribe((response: any) => {
+      if (response.length > 0) {
+        this.wordMap.set(compKey, response);
+        this.wordList = this.getTranscript(this.seekFloor);
+        this.displayArray = this.chunkData(this.wordList);
+        console.log(this.wordList);
+        return response;
+      }
+    });
+  }
+
+  getDisplayChunk(displayArray: any) {
+    for (let displayChunk of displayArray) {
+      let start = displayChunk[0].start;
+      let end = displayChunk[displayChunk.length - 1].end;
+      if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
+        return displayChunk;
+      }
     }
-    this.audioGlobal.sound.seek(this.playheadSeconds);
-    this.audioGlobal.play();
+  }
+
+  getTranscript(seekFloor: any) {
+    const compKey =  (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
+    let wordMap = this.wordMap.get(compKey);
+    return wordMap;
+  }
+
+  resetTranscript()
+  {
+    if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
+      this.getCurrentChunk = true;
+    }
+    this.seekFloor = Math.floor(this.audioGlobal.seek());
+    this.fetchAndCacheTranscript(this.seekFloor);
   }
 
   getCurrentChuckRequired(seconds: number) {
@@ -392,67 +455,7 @@ export class MediaPlayer implements OnInit {
     return true;
   }
 
-  handlePrevious() {
-  // If less than 3 seconds, go to previous track, if greater, restart
-    if (this.audioGlobal.seek() < 3) {
-      const index = this.getTrackIndex(this.content.uuid);
-      if (index > 0) {
-        this.seekTrack(index - 1);
-        return;
-      }
-    }
-    this.resetTranscript();
-    this.audioGlobal.sound.seek(0);
-    this.percentProgress = 0;
-  }
+  // Utilities
 
-  handlePreviousTouchStart($event: TouchEvent) {
-    this.previousHolding = true;
-    // $event.stopPropagation();
-
-  }
-
-  handleNext() {
-    const index = this.getTrackIndex(this.content.uuid);
-    if (index < (this.audioGlobal.contentList.length - 1)) {
-      this.seekTrack(index + 1);
-    }
-  }
-
-  handleNextTouchStart($event: TouchEvent) {
-    this.nextHolding = true;
-    // $event.stopPropagation();
-
-  }
-
-  getTrackIndex(uuid: string): any {
-    let index = 0;
-    for (let content of this.audioGlobal.contentList) {
-      if (uuid === content.uuid) {
-        return index;
-      }
-      index++;
-    }
-  }
-
-  getContentByIndex(index: number): any {
-    let indexStr = 0;
-    for (let content of this.audioGlobal.contentList) {
-      if (indexStr === index) {
-        return content;
-      }
-      indexStr++;
-    }
-  }
-
-  seekTrack(index: number) {
-    const content = this.getContentByIndex(index);
-    this.audioGlobal.setContent(content);
-    const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
-    // Check if there is a saved start time
-    if (storedInfo) {
-      this.audioGlobal.sound.seek(storedInfo.seek);
-    }
-    this.audioGlobal.play()
-  }
+  protected readonly TimeUtils = TimeUtils;
 }

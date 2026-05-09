@@ -54,17 +54,18 @@
   z-index: 100 !important
   font-weight: 700
   color: #8B957D
-  transform: scaleY(1) translateX(-50%) !important
+  transform: scaleY(1) translateX(-70%) !important
+  transition: left 0.1s ease-out
 
 .playhead
   position: absolute
   top: 50%
-  transform: translateY(-50%) translateX(-50%)
+  transform: translateY(-50%) translateX(-100%)
   background: #90C298
   width: 27px
   height: 27px
   border-radius: 50px
-  cursor: grab
+  cursor: default
   transition: left 0.1s ease-out, transform 0.2s ease-out
 @media (min-width: 576px)
   .playhead
