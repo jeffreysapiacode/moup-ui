@@ -64,24 +64,24 @@
     </div>
     <div class="row p-0 m-0 d-flex justify-content-center align-items-center">
       <div class="col pt-3 pb-5 px-3 p-0 m-0"
-           (mouseenter)="handleOnMouseEnter()"
-           (mouseleave)="handleOnMouseLeave()"
-           (mousemove)="onMouseMove($event)"
+           (mouseenter)="handleSeekBarMouseEnter()"
+           (mouseleave)="handleSeekBarMouseLeave()"
+           (mousemove)="handleSeekBarMouseMove($event)"
            (click)="handleSeek()"
-           (touchstart)="onTouchStart($event)"
-           (touchend)="onTouchEnd($event)"
-           (touchmove)="onTouchMove($event)">
+           (touchstart)="handleSeekBarTouchStart($event)"
+           (touchend)="handleSeekBarTouchEnd($event)"
+           (touchmove)="handleSeekBarTouchMove($event)">
         <div class="track-bar-container" #trackBarContainer>
-          @if (this.seekMode || this.touchMode) {
+          @if (this.seekBarMouseMode || this.seekBarTouchMode) {
             <div class="track-bar-seek" [ngStyle]="{'width': this.percentSeek + '%'}" #trackBarSeek></div>
           }
-          <div class="track-bar" [ngStyle]="{'width': calculateOffset(this.percentProgress, this.touchMode, 5) + '%'}"
+          <div class="track-bar" [ngStyle]="{'width': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
                #trackBar></div>
           <div class="playhead d-flex justify-content-center align-items-center"
-               [ngStyle]="{'left': calculateOffset(this.percentProgress, this.touchMode, 5) + '%'}">
+               [ngStyle]="{'left': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}">
           </div>
-          @if (this.seekMode || this.touchMode) {
-            <div [ngStyle]="{'left': calculateOffset(this.percentProgress, this.touchMode, 5) + '%'}"
+          @if (this.seekBarMouseMode || this.seekBarTouchMode) {
+            <div [ngStyle]="{'left': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
                  class="playhead-time d-flex justify-content-center align-items-center" #playheadTimer>
               {{ this.playheadTime }}
             </div>

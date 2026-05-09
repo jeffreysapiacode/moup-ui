@@ -36,7 +36,6 @@ export class ContentCard implements OnInit {
     this.eventBus.onSeek.subscribe((data) => {
       if (data.content.uuid === this.content.uuid) {
         this.time = TimeUtils.formatTime(data.seek);
-        this.cdr.detectChanges();
       } else {
         const storage = LocalStorageUtil.getStorage(this.content.uuid);
         if (storage) {
@@ -44,8 +43,8 @@ export class ContentCard implements OnInit {
         } else {
           this.time = TimeUtils.formatTime(0);
         }
-
       }
+      this.cdr.detectChanges();
     });
     this.eventBus.onPlay.subscribe((content) => {
       this.playing = true;
@@ -59,7 +58,7 @@ export class ContentCard implements OnInit {
       if (this.content.uuid === content.uuid) {
         this.audioGlobal.sound.seek(0);
         LocalStorageUtil.reset(this.audioGlobal.content.uuid);
-        setTimeout(()=> this.time = TimeUtils.formatTime(0));
+        this.time = TimeUtils.formatTime(0);
         this.playing = false;
         this.cdr.detectChanges();
       }
@@ -85,7 +84,5 @@ export class ContentCard implements OnInit {
     }
   }
 
-  formatTime (seconds: Number) {
-    return TimeUtils.formatTime(seconds);
-  }
+  protected readonly TimeUtils = TimeUtils;
 }

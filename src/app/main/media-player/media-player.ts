@@ -53,8 +53,8 @@ export class MediaPlayer implements OnInit {
   // Seek Bar
   rectLeftX = 0;
   rectRightX = 0;
-  seekMode: boolean = false;
-  touchMode: boolean = false;
+  seekBarMouseMode: boolean = false;
+  seekBarTouchMode: boolean = false;
   percentSeek: any = 0;
   percentProgress: any = 0;
   playheadTime: any = TimeUtils.formatTime(0);
@@ -137,11 +137,11 @@ export class MediaPlayer implements OnInit {
   animate() {
     if (this.audioGlobal.available() && this.playing) {
       setTimeout(() => {
-        if (!this.seekMode && !this.touchMode) {
+        if (!this.seekBarMouseMode && !this.seekBarTouchMode) {
           this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
         }
       }, 0);
-      if (this.seekMode && this.touchMode) {
+      if (this.seekBarMouseMode && this.seekBarTouchMode) {
         this.percentSeek = (this.audioGlobal.seek() / this.content.duration) * 100;
       }
       this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
@@ -170,7 +170,7 @@ export class MediaPlayer implements OnInit {
   }
 
   // Track Navigation
-  //// Next
+  // Next
   handleNext() {
     const index = this.getTrackIndex(this.content.uuid);
     if (index < (this.audioGlobal.contentList.length - 1)) {
@@ -183,7 +183,7 @@ export class MediaPlayer implements OnInit {
     this.seekTo(this.audioGlobal.seek() + 10);
   }
 
-  //// Previous
+  // Previous
   handlePreviousTap($event: MouseEvent) {
     $event.preventDefault();
     this.seekTo(this.audioGlobal.seek() - 10);
@@ -203,7 +203,7 @@ export class MediaPlayer implements OnInit {
     this.percentProgress = 0;
   }
 
-  //// Play/Pause
+  // Play/Pause
   handlePlay() {
     if (this.playing) {
       this.audioGlobal.pause();
@@ -215,8 +215,8 @@ export class MediaPlayer implements OnInit {
     }
   }
 
-  //// Utilities
-  private getTrackIndex(uuid: string): any {
+  // Utilities
+  getTrackIndex(uuid: string): any {
     let index = 0;
     for (let content of this.audioGlobal.contentList) {
       if (uuid === content.uuid) {
@@ -226,7 +226,7 @@ export class MediaPlayer implements OnInit {
     }
   }
 
-  private getContentByIndex(index: number): any {
+  getContentByIndex(index: number): any {
     let indexStr = 0;
     for (let content of this.audioGlobal.contentList) {
       if (indexStr === index) {
@@ -289,22 +289,22 @@ export class MediaPlayer implements OnInit {
     this.audioGlobal.play()
   }
 
-  seekToTime() {
+  seekToTime(time: any) {
     this.resetTranscript();
-    this.audioGlobal.sound.seek(this.playheadSeconds);
+    this.audioGlobal.sound.seek(time);
     this.audioGlobal.play();
   }
 
   handleSeek() {
     if (this.innerWidth < 576) {
-      this.seekMode = false;
-      this.touchMode = false;
+      this.seekBarMouseMode = false;
+      this.seekBarTouchMode = false;
       return;
     }
-    this.seekToTime();
+    this.seekToTime(this.playheadSeconds);
   }
 
-  processInput(value: any) {
+  calculateSeekPosition(value: any) {
     let percentProgressTmp = (value / this.trackBarContainer.nativeElement.clientWidth) * 100;
     if (percentProgressTmp < 0) {
       this.percentProgress = 0;
@@ -318,11 +318,11 @@ export class MediaPlayer implements OnInit {
   }
 
   //// Handle seek w/ mouse
-  onMouseMove($event: MouseEvent){
-    if (this.seekMode && !this.touchMode) {
+  handleSeekBarMouseMove($event: MouseEvent){
+    if (this.seekBarMouseMode && !this.seekBarTouchMode) {
       const rect = ($event.currentTarget as HTMLElement).getBoundingClientRect();
       const x = $event.clientX - rect.left;
-      this.processInput(x);
+      this.calculateSeekPosition(x);
       this.rectLeftX = (this.playheadTimer.nativeElement as HTMLElement).getBoundingClientRect().left;
       this.rectRightX = (this.playheadTimer.nativeElement as HTMLElement).getBoundingClientRect().right;
       // console.log('Left:' + this.rectLeftX);
@@ -330,36 +330,36 @@ export class MediaPlayer implements OnInit {
     }
   }
 
-  handleOnMouseEnter() {
-    if (!this.touchMode) {
-      this.seekMode = true;
+  handleSeekBarMouseEnter() {
+    if (!this.seekBarTouchMode) {
+      this.seekBarMouseMode = true;
     }
     this.storedSeek = this.percentProgress;
   }
 
-  handleOnMouseLeave() {
-    this.seekMode = false;
+  handleSeekBarMouseLeave() {
+    this.seekBarMouseMode = false;
     this.percentProgress = this.storedSeek;
   }
 
   //// Handle seek on mobile
-  onTouchMove(event: TouchEvent) {
+  handleSeekBarTouchMove(event: TouchEvent) {
     event.preventDefault();
-    if (this.touchMode) {
-      this.processInput(event.touches[0].clientX);
+    if (this.seekBarTouchMode) {
+      this.calculateSeekPosition(event.touches[0].clientX);
     }
   }
 
-  onTouchStart(event: TouchEvent) {
-    this.seekMode = false;
+  handleSeekBarTouchStart(event: TouchEvent) {
+    this.seekBarMouseMode = false;
     setTimeout(()=> {
-      this.touchMode = true;
+      this.seekBarTouchMode = true;
     }, 75)
   }
 
-  onTouchEnd(event: TouchEvent) {
-    this.touchMode = false;
-    this.seekToTime();
+  handleSeekBarTouchEnd(event: TouchEvent) {
+    this.seekBarTouchMode = false;
+    this.seekToTime(this.playheadSeconds);
   }
 
   calculateOffset(value: any, touchMode: boolean, offset: number) {

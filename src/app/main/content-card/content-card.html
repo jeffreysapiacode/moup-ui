@@ -16,7 +16,7 @@
     <div class="row p-0 m-0 pb-3">
       <div class="col-auto p-0 m-0 ps-4 d-flex align-items-center">
         <div class="button px-3 d-flex justify-content-center align-items-center"
-             (pointerdown)="handleLoad()">
+             (click)="handleLoad()">
           @if (this.playing && this.content === this.audioGlobal.content) {
             PAUSE
           }
@@ -34,7 +34,7 @@
             <span [ngClass]="{'time-duration-active': this.audioGlobal.content === this.content}" class="time-duration">/</span>
           </div>
           <div class="col p-0 m-0">
-            <span [ngClass]="{'time-duration-active': this.audioGlobal.content === this.content}" class="time-duration">{{this.formatTime(this.content.duration)}}</span>
+            <span [ngClass]="{'time-duration-active': this.audioGlobal.content === this.content}" class="time-duration">{{TimeUtils.formatTime(this.content.duration)}}</span>
           </div>
         </div>
       </div>
