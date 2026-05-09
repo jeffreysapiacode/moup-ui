@@ -136,11 +136,9 @@ export class MediaPlayer implements OnInit {
   // Animation Loop
   animate() {
     if (this.audioGlobal.available() && this.playing) {
-      setTimeout(() => {
-        if (!this.seekBarMouseMode && !this.seekBarTouchMode) {
-          this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
-        }
-      }, 0);
+      if (!this.seekBarMouseMode && !this.seekBarTouchMode) {
+        this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
+      }
       if (this.seekBarMouseMode && this.seekBarTouchMode) {
         this.percentSeek = (this.audioGlobal.seek() / this.content.duration) * 100;
       }

@@ -2,25 +2,25 @@
   <div class="media-player-container" [ngClass]="{'media-player-container-open': open}">
     <div class="row p-0 m-0 pt-2 px-4">
       <div class="col p-0 m-0 d-flex justify-content-center">
-        <span class="title-text">{{ this.content?.title }}</span>
+        <span class="media-player-title-text">{{ this.content?.title }}</span>
       </div>
     </div>
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 ps-4 d-flex justify-content-start align-items-end position-relative">
-        <span class="time-duration-elapsed">{{TimeUtils.formatTime(this.seek)}}</span>
+        <span class="media-player-seek-bar-time-elapsed-text">{{TimeUtils.formatTime(this.seek)}}</span>
       </div>
-      <div class="col button-adjustment p-0 m-0 pe-sm-3 d-flex justify-content-end d-flex align-items-center">
-        <div class="previous-button button-padding" style="z-index: 5;"
+      <div class="col media-player-nav-button-offset p-0 m-0 pe-sm-3 d-flex justify-content-end d-flex align-items-center">
+        <div class="media-player-nav-button-previous media-player-nav-button-padding" style="z-index: 5;"
              (click)="handlePreviousTap($event)">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M13.3333 30H10V10H13.3333M30 30L15.8333 20L30 10V30Z" fill="#68654B"/>
           </svg>
         </div>
       </div>
-      <div class="col-auto button-adjustment p-0 m-0 d-flex justify-content-center">
-        <div class="button-padding" (click)="handlePlay()">
+      <div class="col-auto media-player-nav-button-offset p-0 m-0 d-flex justify-content-center">
+        <div class="media-player-nav-button-padding" (click)="handlePlay()">
           @if (this.playing) {
-            <svg class="audio-control-button" width="55" height="55" viewBox="0 0 55 55" fill="none"
+            <svg class="media-player-nav-button-svg" width="55" height="55" viewBox="0 0 55 55" fill="none"
                  xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_119_28)">
                 <path
@@ -34,7 +34,7 @@
               </defs>
             </svg>
           } @else {
-            <svg class="audio-control-button" width="55" height="55" viewBox="0 0 55 55" fill="none"
+            <svg class="media-player-nav-button-svg" width="55" height="55" viewBox="0 0 55 55" fill="none"
                  xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_59_52)">
                 <path
@@ -50,8 +50,8 @@
           }
         </div>
       </div>
-      <div class="col button-adjustment p-0 m-0 ps-sm-3 d-flex align-items-center">
-        <div class="next-button button-padding" style="z-index: 5;"
+      <div class="col media-player-nav-button-offset p-0 m-0 ps-sm-3 d-flex align-items-center">
+        <div class="media-player-nav-button-next media-player-nav-button-padding" style="z-index: 5;"
              (click)="handleNextTap($event)">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M26.6667 30H30V10H26.6667M10 30L24.1667 20L10 10V30Z" fill="#68654B"/>
@@ -71,13 +71,13 @@
            (touchstart)="handleSeekBarTouchStart($event)"
            (touchend)="handleSeekBarTouchEnd($event)"
            (touchmove)="handleSeekBarTouchMove($event)">
-        <div class="track-bar-container" #trackBarContainer>
+        <div class="media-player-seek-bar-container" #trackBarContainer>
           @if (this.seekBarMouseMode || this.seekBarTouchMode) {
-            <div class="track-bar-seek" [ngStyle]="{'width': this.percentSeek + '%'}" #trackBarSeek></div>
+            <div class="media-player-seek-bar-placeholder" [ngStyle]="{'width': this.percentSeek + '%'}" #trackBarSeek></div>
           }
-          <div class="track-bar" [ngStyle]="{'width': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
+          <div class="media-player-seek-bar-time-elapsed-strip" [ngStyle]="{'width': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
                #trackBar></div>
-          <div class="playhead d-flex justify-content-center align-items-center"
+          <div class="media-player-seek-bar-time-elapsed-playhead d-flex justify-content-center align-items-center"
                [ngStyle]="{'left': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}">
           </div>
           @if (this.seekBarMouseMode || this.seekBarTouchMode) {
@@ -100,7 +100,7 @@
             }
           </div>
         }
-        <img class="media-player-background" src="assets/img/svg/wave-sand.svg"/>
+        <img class="media-player-background-svg" src="assets/img/svg/wave-sand.svg"/>
       }
     </div>
   </div>

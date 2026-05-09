@@ -1,3 +1,5 @@
+
+// Media Player Container
 .media-player-container
   background: rgba(249, 246, 227, 0.8)
   height: 0
@@ -11,18 +13,61 @@
   z-index: 500
   backdrop-filter: blur(30px)
   -webkit-backdrop-filter: blur(30px)
-
 .media-player-container-open
   height: 100%
 
-.media-player-background
-  position: absolute
-  bottom: 0
-  z-index: -1
-  left: -42.5px
-  opacity: 0.55
+// Title
+.media-player-title-text
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+  font-weight: 600
+  color: #68654B
+  font-size: 1.15rem
 
-.track-bar-container
+@media (min-width: 576px)
+  .media-player-title-text
+    font-size: 1.25rem
+
+
+// Transcript
+
+
+
+// Track Navigation
+.media-player-nav-button-offset
+  transform: translateY(5px)
+
+.media-player-nav-button-padding
+  padding: 5px
+  z-index: 10
+  cursor: default
+  transform: scale(1.0)
+  transition: transform 0.05s ease-in
+.media-player-nav-button-padding:hover
+  transform: scale(1.01)
+
+.media-player-nav-button-svg
+  width: 55px
+  height: 55px
+
+.media-player-nav-button-previous
+  z-index: 500
+
+.media-player-nav-button-next
+  z-index: 500
+
+// Seek Bar
+.media-player-seek-bar-time-elapsed-text
+  z-index: 5
+  color: #68654B
+  font-weight: 600
+  font-size: 1rem
+  position: absolute
+  bottom: -13px
+  left: 17px
+
+.media-player-seek-bar-container
   position: relative
   width: 100%
   height: 11px
@@ -31,13 +76,7 @@
   z-index: 10
   transition: transform 0.2s ease-in
 
-.track-bar
-  background: #8B957D
-  height: 100%
-  border-radius: 50px
-  transition: width 0.1s ease-out
-
-.track-bar-seek
+.media-player-seek-bar-placeholder
   background: #CBD3C2
   height: 100%
   border-radius: 50px
@@ -45,19 +84,13 @@
   transition: width 0.1s ease-out
   z-index: -1
 
-.playhead-time
-  position: absolute
-  bottom: 30px
-  height: 35px
-  width: 70px
-  background: #F9F6E3
-  z-index: 100 !important
-  font-weight: 700
-  color: #8B957D
-  transform: scaleY(1) translateX(-70%) !important
-  transition: left 0.1s ease-out
+.media-player-seek-bar-time-elapsed-strip
+  background: #8B957D
+  height: 100%
+  border-radius: 50px
+  transition: width 0.1s ease-out
 
-.playhead
+.media-player-seek-bar-time-elapsed-playhead
   position: absolute
   top: 50%
   transform: translateY(-50%) translateX(-100%)
@@ -72,47 +105,28 @@
     width: 25px
     height: 25px
 
-.playhead-center
-  position: relative
-  width: 9px
-  height: 9px
-  border-radius: 50px
-  background: #6E7662
-
-.audio-control-button
-  width: 55px
-  height: 55px
-
-.button-padding
-  padding: 5px
-  z-index: 10
-  cursor: pointer
-  transform: scale(1.0)
-  //transition: transform 0.1s ease-in
-
-.button-padding:hover
-  //transform: scale(1.00)
-
-.title-text
-  white-space: nowrap
-  overflow: hidden
-  text-overflow: ellipsis
-  font-weight: 600
-  color: #68654B
-  font-size: 1.15rem
-
-@media (min-width: 576px)
-  .title-text
-    font-size: 1.25rem
-
-.time-duration-elapsed
-  z-index: 5
-  color: #68654B
-  font-weight: 600
-  font-size: 1rem
+// Global
+.media-player-background-svg
   position: absolute
-  bottom: -13px
-  left: 17px
+  bottom: 0
+  z-index: -1
+  left: -42.5px
+  opacity: 0.55
+
+
+///////////////////////////////////////////////
+
+.playhead-time
+  position: absolute
+  bottom: 30px
+  height: 35px
+  width: 70px
+  background: #F9F6E3
+  z-index: 100 !important
+  font-weight: 700
+  color: #8B957D
+  transform: scaleY(1) translateX(-70%) !important
+  transition: left 0.1s ease-out
 
 .time-duration-total
   z-index: 5
@@ -122,15 +136,6 @@
   position: absolute
   bottom: -13px
   right: 17px
-
-.next-button
-  z-index: 500
-
-.previous-button
-  z-index: 500
-
-.button-adjustment
-  transform: translateY(5px)
 
 .transcript-container
   z-index: 0
