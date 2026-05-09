@@ -55,30 +55,36 @@
         <span class="time-duration-total">{{format(this.content?.duration)}}</span>
       </div>
     </div>
-    <div class="row p-0 m-0 pt-3 pb-5 px-3"
-         (click)="handleSeek()"
-         (touchstart)="this.touchMode = true"
-         (touchend)="onTouchEnd($event)"
-         (touchmove)="onTouchMove($event)"
-         (mousemove)="onMouseMove($event)"
-         (mouseenter)="handleOnMouseEnter()"
-         (mouseleave)="handleOnMouseLeave()">
-      <div class="col p-0 m-0 d-flex justify-content-center">
+    <div class="row p-0 m-0 d-flex justify-content-center align-items-center">
+<!--      <div class="col p-0 m-0">-->
+
+<!--      </div>-->
+      <div class="col pt-3 pb-5 mx-3 p-0 m-0"
+           (mouseenter)="handleOnMouseEnter()"
+           (mouseleave)="handleOnMouseLeave()"
+           (mousemove)="onMouseMove($event)"
+           (click)="handleSeek()"
+           (touchstart)="onTouchStart($event)"
+           (touchend)="onTouchEnd($event)"
+           (touchmove)="onTouchMove($event)">
         <div class="track-bar-container" #trackBarContainer>
           @if(this.seekMode || this.touchMode) {
-            <div class="track-bar-seek" [ngStyle]="{'width': calculate(this.percentSeek, seekMode) + '%'}" #trackBarSeek></div>
+            <div class="track-bar-seek" [ngStyle]="{'width': this.percentSeek + '%'}" #trackBarSeek></div>
           }
-          <div class="track-bar" [ngStyle]="{'width': calculate(this.percentProgress, seekMode) + '%'}" #trackBar></div>
-          <div class="playhead d-flex justify-content-center align-items-center" [ngClass]="{'playhead-hover': this.seekMode}" [ngStyle]="{'left': this.percentProgress + '%'}">
+          <div class="track-bar" [ngStyle]="{'width': calculate(this.percentProgress, this.touchMode, 10) + '%'}" #trackBar></div>
+          <div class="playhead d-flex justify-content-center align-items-center" [ngStyle]="{'left': calculate(this.percentProgress, this.touchMode, 10) + '%'}">
           @if (this.seekMode || this.touchMode) {
-            <div class="playhead-time d-flex justify-content-center align-items-center">
+            <div [ngStyle]="{'left': this.percentProgress + '%'}" class="playhead-time d-flex justify-content-center align-items-center">
               {{ this.playheadTime }}
             </div>
           }
             <!--            <div class="playhead-center"></div>-->
-          </div>
+<!--          </div>-->
         </div>
       </div>
+<!--      <div class="col p-0 m-0">-->
+
+<!--      </div>-->
     </div>
     @if (this.audioGlobal.available()) {
       @if (transcriptEnabled) {

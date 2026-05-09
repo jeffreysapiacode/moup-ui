@@ -58,8 +58,6 @@ export class MediaPlayer implements OnInit {
   private seekModeLock: boolean = false;
   private storedSeek: number = 0;
   private playheadSeconds: number = 0;
-  private startOffset: any = 0;
-  private endOffset: any = 0;
 
   private seekFloor: any = 0;
   private getCurrentChunk: boolean = true;
@@ -69,12 +67,6 @@ export class MediaPlayer implements OnInit {
               protected http: HttpClient,
               @Inject(DOCUMENT) private document: Document,
               protected cdr: ChangeDetectorRef) {}
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    this.innerWidth = window.innerWidth;
-    this.calculateOffset();
-  }
 
   @HostListener('document:keydown.space', ['$event'])
   handleGlobalSpacebar(event: any) {
@@ -127,7 +119,6 @@ export class MediaPlayer implements OnInit {
   }
 
   ngOnInit(): void {
-    this.calculateOffset();
     this.eventBus.onLoad.subscribe((content) => {
       this.content = content;
       this.open = true;
@@ -158,11 +149,6 @@ export class MediaPlayer implements OnInit {
     this.getCurrentChunk = true;
     this.seekFloor = Math.floor(this.audioGlobal.seek());
     this.fetchAndCacheTranscript(this.seekFloor);
-  }
-
-  calculateOffset() {
-    this.startOffset = (0.000002 * (this.innerWidth ** 2)) - (0.0063 * this.innerWidth) + 6.8816;
-    this.endOffset = (0.000004 * (this.innerWidth ** 2)) - (0.0096 * this.innerWidth) + 107.55;
   }
 
   onPlay() {
@@ -329,23 +315,37 @@ export class MediaPlayer implements OnInit {
     }
   }
 
+  onTouchStart(event: TouchEvent) {
+    this.seekMode = false;
+    setTimeout(()=> {
+      this.touchMode = true;
+    }, 75)
+  }
+
   onTouchEnd(event: TouchEvent) {
     this.touchMode = false;
     this.seekToTime();
   }
 
-  onMouseMove($event: any){
+  onMouseMove($event: MouseEvent){
     if (this.seekMode && !this.touchMode && !this.seekModeLock) {
-      this.processInput($event.clientX);
+      const rect = ($event.currentTarget as HTMLElement).getBoundingClientRect();
+      const x = $event.clientX - rect.left;
+      console.log(x);
+      this.processInput(x);
     }
+  }
+
+  calculate(value: any, touchMode: boolean, offset: number) {
+    return touchMode ? value - offset : value;
   }
 
   processInput(value: any) {
     let percentProgressTmp = (value / this.trackBarContainer.nativeElement.clientWidth) * 100;
-    if (percentProgressTmp < this.startOffset) {
-      this.percentProgress = this.startOffset;
-    } else if (percentProgressTmp > this.endOffset) {
-      this.percentProgress = this.endOffset;
+    if (percentProgressTmp < 0) {
+      this.percentProgress = 0;
+    } else if (percentProgressTmp > 100) {
+      this.percentProgress = 100;
     } else {
       this.percentProgress = percentProgressTmp;
     }
@@ -357,15 +357,10 @@ export class MediaPlayer implements OnInit {
     return TimeUtils.formatTime(elapsed);
   }
 
-  calculate(percentProgress: any, seekMode: boolean) {
-    if (seekMode) {
-      return percentProgress - 2;
-    }
-    return percentProgress;
-  }
-
   handleSeek() {
     if (this.innerWidth < 576) {
+      this.seekMode = false;
+      this.touchMode = false;
       return;
     }
     this.seekToTime();
