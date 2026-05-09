@@ -58,7 +58,8 @@ export class MediaPlayer implements OnInit {
   private seekModeLock: boolean = false;
   private storedSeek: number = 0;
   private playheadSeconds: number = 0;
-
+  protected previousHolding: boolean = false;
+  protected nextHolding: boolean = false;
   private seekFloor: any = 0;
   private getCurrentChunk: boolean = true;
 
@@ -78,31 +79,14 @@ export class MediaPlayer implements OnInit {
   handleLeftArrow(event: any) {
     // Seek to previous 10 seconds
     event.preventDefault();
-    const seekTo = this.audioGlobal.seek() - 10;
-    this.audioGlobal.sound.seek(seekTo < 0 ? 0 : seekTo);
-    this.resetTranscript();
-    if (!this.playing) {
-      this.transcriptVisible = false;
-      this.seek = seekTo;
-      this.percentProgress = (seekTo / this.content.duration) * 100;
-    }
+    this.seekTo(this.audioGlobal.seek() - 10);
   }
 
   @HostListener('window:keydown.arrowRight', ['$event'])
   handleRightArrow(event: any) {
     // Seek to next 10 seconds
     event.preventDefault();
-    const seekTo = this.audioGlobal.seek() + 10;
-    if (seekTo < this.audioGlobal.content.duration) {
-      this.audioGlobal.sound.seek(seekTo);
-      this.resetTranscript();
-      if (!this.playing) {
-        // Turn off caption window
-        this.transcriptVisible = false;
-        this.seek = seekTo;
-        this.percentProgress = (seekTo / this.content.duration) * 100;
-      }
-    }
+    this.seekTo(this.audioGlobal.seek() + 10);
   }
 
   @HostListener('document:visibilitychange', [])
@@ -145,6 +129,19 @@ export class MediaPlayer implements OnInit {
     });
     }
 
+  seekTo(seekTo: any) {
+    if (seekTo < this.audioGlobal.content.duration) {
+      this.audioGlobal.sound.seek(seekTo);
+      this.resetTranscript();
+      if (!this.playing) {
+        // Turn off caption window
+        this.transcriptVisible = false;
+        this.seek = seekTo;
+        this.percentProgress = (seekTo / this.content.duration) * 100;
+      }
+    }
+  }
+
   resetTranscript() {
     this.getCurrentChunk = true;
     this.seekFloor = Math.floor(this.audioGlobal.seek());
@@ -181,6 +178,16 @@ export class MediaPlayer implements OnInit {
         this.transcriptVisible = !!(this.displayChunk && this.displayChunk.length > 0);
       }
       if (this.seekFloor !== this.count) {
+        if (this.seekFloor % 0.3 === 0) {
+          if (this.previousHolding) {
+            this.seekTo(this.audioGlobal.seek() - 10);
+          }
+          if (this.nextHolding) {
+            this.seekTo(this.audioGlobal.seek() + 10);
+          }
+        }
+
+
         if (this.seekFloor % 10 === 0) {
           if (this.transcriptEnabled && this.screenVisible) {
             this.fetchAndCacheTranscript(this.seekFloor);
@@ -235,7 +242,14 @@ export class MediaPlayer implements OnInit {
     for (const [index, word] of wordList.entries()) {
       tempArray.push(word);
       if (index === (length - 1) && tempArray.length < this.MAX_WORDS_ON_SCREEN) {
-        nestedArray.push(tempArray);
+        const array = nestedArray.at(nestedArray.length - 1)
+        if (tempArray.length === 1) {
+          array.push(tempArray[0]);
+        } else {
+          nestedArray.push(tempArray);
+        }
+
+        console.log(JSON.stringify(array));
       }
       if (counter >= (this.MAX_WORDS_ON_SCREEN - 1)) {
         counter = 0;
@@ -331,7 +345,6 @@ export class MediaPlayer implements OnInit {
     if (this.seekMode && !this.touchMode && !this.seekModeLock) {
       const rect = ($event.currentTarget as HTMLElement).getBoundingClientRect();
       const x = $event.clientX - rect.left;
-      console.log(x);
       this.processInput(x);
     }
   }
@@ -395,11 +408,23 @@ export class MediaPlayer implements OnInit {
     this.percentProgress = 0;
   }
 
+  handlePreviousTouchStart($event: TouchEvent) {
+    this.previousHolding = true;
+    // $event.stopPropagation();
+
+  }
+
   handleNext() {
     const index = this.getTrackIndex(this.content.uuid);
     if (index < (this.audioGlobal.contentList.length - 1)) {
       this.seekTrack(index + 1);
     }
+  }
+
+  handleNextTouchStart($event: TouchEvent) {
+    this.nextHolding = true;
+    // $event.stopPropagation();
+
   }
 
   getTrackIndex(uuid: string): any {

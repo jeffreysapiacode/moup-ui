@@ -1,6 +1,6 @@
 <div class="container-fluid p-0 m-0">
   <div class="media-player-container" [ngClass]="{'media-player-container-open': open}">
-    <div class="row p-0 m-0 pt-2 px-5">
+    <div class="row p-0 m-0 pt-2 px-4">
       <div class="col p-0 m-0 d-flex justify-content-center">
         <span class="title-text">{{this.content?.title}}</span>
       </div>
@@ -9,8 +9,11 @@
       <div class="col p-0 m-0 ps-4 d-flex justify-content-start align-items-end position-relative">
         <span class="time-duration-elapsed">{{format(this.seek)}}</span>
       </div>
-      <div class="col button-adjustment p-0 m-0 pe-3 d-flex justify-content-end d-flex align-items-center">
-        <div class="previous-button button-padding" style="z-index: 5;" (pointerdown)="handlePrevious()">
+      <div class="col button-adjustment p-0 m-0 pe-sm-3 d-flex justify-content-end d-flex align-items-center">
+        <div class="previous-button button-padding" style="z-index: 5;"
+             (touchstart)="handlePreviousTouchStart($event)"
+             (touchend)="this.previousHolding = false">
+<!--             (pointerup)="handlePrevious()">-->
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M13.3333 30H10V10H13.3333M30 30L15.8333 20L30 10V30Z" fill="#68654B"/>
           </svg>
@@ -44,8 +47,11 @@
           }
         </div>
       </div>
-      <div class="col button-adjustment p-0 m-0 ps-3 d-flex align-items-center">
-        <div class="next-button button-padding" style="z-index: 5;" (pointerdown)="handleNext()">
+      <div class="col button-adjustment p-0 m-0 ps-sm-3 d-flex align-items-center">
+        <div class="next-button button-padding" style="z-index: 5;"
+             (touchstart)="this.nextHolding = true"
+             (touchend)="this.nextHolding = false">
+<!--             (pointerup)="handleNext()">-->
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M26.6667 30H30V10H26.6667M10 30L24.1667 20L10 10V30Z" fill="#68654B"/>
           </svg>
@@ -100,4 +106,4 @@
     }
   </div>
 </div>
-
+</div>

@@ -61,11 +61,15 @@
   top: 50%
   transform: translateY(-50%) translateX(-50%)
   background: #90C298
-  width: 25px
-  height: 25px
+  width: 27px
+  height: 27px
   border-radius: 50px
   cursor: grab
   transition: left 0.1s ease-out, transform 0.2s ease-out
+@media (min-width: 576px)
+  .playhead
+    width: 25px
+    height: 25px
 
 .playhead-center
   position: relative
@@ -92,7 +96,7 @@
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis
-  font-weight: 700
+  font-weight: 600
   color: #68654B
   font-size: 1.15rem
 
