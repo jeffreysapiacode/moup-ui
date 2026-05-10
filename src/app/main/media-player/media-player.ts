@@ -55,7 +55,7 @@ export class MediaPlayer implements OnInit {
   rectRightX = 0;
   seekBarMouseMode: boolean = false;
   seekBarTouchMode: boolean = false;
-  percentSeek: any = 0;
+  percentProgressPlaceholder: any = 0;
   percentProgress: any = 0;
   playheadTime: any = TimeUtils.formatTime(0);
   seek: any = 0;
@@ -122,7 +122,7 @@ export class MediaPlayer implements OnInit {
       this.playing = false;
       this.cdr.detectChanges();
     });
-    this.eventBus.onSeek.subscribe((data) => {
+    this.eventBus.onAnimationFrame.subscribe((data) => {
       this.seek = data.seek;
     });
     this.eventBus.onEnd.subscribe((content) => {
@@ -136,14 +136,11 @@ export class MediaPlayer implements OnInit {
 
   // Animation Loop
   animate() {
-    if (this.audioGlobal.available() && this.playing) {
-      if (!this.seekBarMouseMode && !this.seekBarTouchMode) {
+    if (this.playing) {
+      this.eventBus.onAnimationFrame.emit({content: this.content, seek: this.audioGlobal.seek()});
+      this.seekBarMouseMode || this.seekBarTouchMode ?
+        this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.content.duration) * 100:
         this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
-      }
-      if (this.seekBarMouseMode && this.seekBarTouchMode) {
-        this.percentSeek = (this.audioGlobal.seek() / this.content.duration) * 100;
-      }
-      this.eventBus.onSeek.emit({content: this.content, seek: this.audioGlobal.seek()});
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       if (this.displayArray && this.displayArray.length > 0) {
         this.displayChunk = this.getDisplayChunk(this.displayArray);
@@ -359,6 +356,16 @@ export class MediaPlayer implements OnInit {
   }
 
   // Transcript
+  getDisplayChunk(displayArray: any) {
+    for (let displayChunk of displayArray) {
+      let start = displayChunk[0].start;
+      let end = displayChunk[displayChunk.length - 1].end;
+      if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
+        return displayChunk;
+      }
+    }
+  }
+
   fetchAndCacheTranscript(seekFloor: any) {
     const seekFloorFloor = (Math.floor(seekFloor / 10) * 10);
     let start = seekFloorFloor;
@@ -413,16 +420,6 @@ export class MediaPlayer implements OnInit {
         return response;
       }
     });
-  }
-
-  getDisplayChunk(displayArray: any) {
-    for (let displayChunk of displayArray) {
-      let start = displayChunk[0].start;
-      let end = displayChunk[displayChunk.length - 1].end;
-      if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
-        return displayChunk;
-      }
-    }
   }
 
   getTranscript(seekFloor: any) {

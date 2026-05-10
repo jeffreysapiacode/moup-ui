@@ -7,6 +7,6 @@ export class EventBus {
   public onLoad = new EventEmitter();
   public onPlay = new EventEmitter()
   public onPause = new EventEmitter();
-  public onSeek = new EventEmitter();
+  public onAnimationFrame = new EventEmitter();
   public onEnd = new EventEmitter();
 }
