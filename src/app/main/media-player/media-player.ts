@@ -147,18 +147,13 @@ export class MediaPlayer implements OnInit {
       this.displayChunk = this.getDisplayChunk(this.displayArray);
       this.transcriptVisible = !!(this.displayChunk && this.displayChunk.length > 0);
       this.seekFloor = Math.floor(this.audioGlobal.seek());
-      if (this.seekFloor !== this.count
-        && this.seekFloor % 10 === 0
-        && this.transcriptEnabled
-        && this.screenVisible) {
+      if (this.seekFloor !== this.count && this.seekFloor % 10 === 0) {
+        if (this.transcriptEnabled && this.screenVisible) {
           this.fetchAndCacheTranscript(this.seekFloor);
-          const wordListTmp = this.getTranscript(this.seekFloor);
-          if (wordListTmp) {
-            this.wordList = wordListTmp;
-            this.displayArray = this.chunkData(this.wordList);
-          }
-          this.saveToLocalStorage(this.seekFloor)
-          this.count = this.seekFloor;
+          this.displayArray = this.chunkData(this.getTranscript(this.seekFloor));
+        }
+        this.count = this.seekFloor;
+        this.saveToLocalStorage(this.seekFloor)
       }
       this.cdr.detectChanges();
     }
@@ -370,18 +365,27 @@ export class MediaPlayer implements OnInit {
   }
 
   fetchAndCacheTranscript(seekFloor: any) {
-    const seekFloorFloor = (Math.floor(seekFloor / 10) * 10);
-    let start = seekFloorFloor;
-    let end = seekFloorFloor + 10;
-    const compKey = seekFloorFloor + '-' + this.audioGlobal.content.uuid;
+    const seekFloorRound = (Math.floor(seekFloor / 10) * 10);
+    const compKey = seekFloorRound + '-' + this.audioGlobal.content.uuid;
+    const compKeyPreCache = (seekFloorRound + 10) + '-' + this.audioGlobal.content.uuid;
     if (this.getCurrentChunk && !this.wordMap.has(compKey)) {
-      this.getWords(start, end, compKey);
+      this.getWords(seekFloorRound, seekFloorRound + 10, compKey);
       this.getCurrentChunk = false;
     }
-    const compKey2 = (seekFloorFloor + 10) + '-' + this.audioGlobal.content.uuid;
-    if (!this.wordMap.has(compKey2)) {
-      this.getWords(start + 10, end + 10, compKey2);
+    if (!this.wordMap.has(compKeyPreCache)) {
+      this.getWords(seekFloorRound + 10, seekFloorRound + 10, compKeyPreCache);
     }
+  }
+
+  getWords(start: any, end: any, key: string) {
+    this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + end).subscribe((response: any) => {
+      if (response.length > 0) {
+        this.wordMap.set(key, response);
+        this.wordList = this.getTranscript(this.seekFloor);
+        this.displayArray = this.chunkData(this.wordList);
+        console.log(this.wordList);
+      }
+    });
   }
 
   chunkData(wordList: any) {
@@ -413,18 +417,6 @@ export class MediaPlayer implements OnInit {
     return nestedArray;
   }
 
-  getWords(start: any, end: any, compKey: string) {
-    this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + end).subscribe((response: any) => {
-      if (response.length > 0) {
-        this.wordMap.set(compKey, response);
-        this.wordList = this.getTranscript(this.seekFloor);
-        this.displayArray = this.chunkData(this.wordList);
-        console.log(this.wordList);
-        return response;
-      }
-    });
-  }
-
   getTranscript(seekFloor: any) {
     const compKey = (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
     let wordMap = this.wordMap.get(compKey);
@@ -432,18 +424,9 @@ export class MediaPlayer implements OnInit {
   }
 
   resetTranscript() {
-    if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
-      this.getCurrentChunk = true;
-    }
+    this.getCurrentChunk = true;
     this.seekFloor = Math.floor(this.audioGlobal.seek());
     this.fetchAndCacheTranscript(this.seekFloor);
-  }
-
-  getCurrentChuckRequired(seconds: number) {
-    const seekFloor = (Math.floor(seconds / 10) * 10);
-    const compKey = seekFloor + '-' + this.audioGlobal.content.uuid;
-    const keyExists = this.wordMap.has(compKey);
-    return true;
   }
 
   // Utilities
