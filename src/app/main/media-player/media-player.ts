@@ -413,12 +413,12 @@ export class MediaPlayer implements OnInit {
   cacheTranscript() {
     const cacheKey = this.buildCacheKey(this.seekFloor, this.audioGlobal.content.uuid);
     if (!this.wordMap.has(cacheKey)) {
-      this.getWordsFromAPI((Math.floor(this.seekFloor / 10) * 10), cacheKey);
+      this.getWordsFromAPI(this.calculateSeekFloorMultiple(this.seekFloor), cacheKey);
     }
     const preCacheSeconds = this.seekFloor + this.preCacheLookaheadSeconds;
     const cacheKey2 = this.buildCacheKey(preCacheSeconds, this.audioGlobal.content.uuid);
     if (!this.wordMap.has(cacheKey2) && ((this.seekFloor + this.preCacheLookaheadSeconds) < this.audioGlobal.content.duration)) {
-      this.getWordsFromAPI((Math.floor(preCacheSeconds / 10) * 10), cacheKey2);
+      this.getWordsFromAPI(this.calculateSeekFloorMultiple(preCacheSeconds), cacheKey2);
     }
   }
 
@@ -449,6 +449,10 @@ export class MediaPlayer implements OnInit {
   // Utilities
   buildCacheKey(seek: number, contentUuid: string) {
     return `${(Math.floor(seek / 10) * 10)}-${contentUuid}`;
+  }
+
+  calculateSeekFloorMultiple(seekFloor: number) {
+    return (Math.floor(seekFloor / this.preCacheLookaheadSeconds) * this.preCacheLookaheadSeconds)
   }
 
   protected readonly TimeUtils = TimeUtils;
