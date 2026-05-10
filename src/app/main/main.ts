@@ -43,7 +43,7 @@ export class Main implements OnInit {
         setTimeout(() => {
           this.loading = false;
           this.cdr.detectChanges();
-        }, 150);
+        }, 2000);
       });
   }
 }
