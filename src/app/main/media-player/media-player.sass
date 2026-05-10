@@ -1,5 +1,5 @@
 
-// Media Player Container
+// Container
 .media-player-container
   background: rgba(249, 246, 227, 0.8)
   height: 0
@@ -29,10 +29,34 @@
   .media-player-title-text
     font-size: 1.25rem
 
-
 // Transcript
+.media-player-transcript-container
+  z-index: 0
+  opacity: 0
+  position: absolute
+  top: 0
+  left: 50%
+  transform: translateX(-50%)
+  background: #EBE8D0
+  color: #ACA787
+  width: fit-content
+  min-width: 200px
+  font-weight: 600
+  height: 45px
+  transition: bottom 0.2s ease-in, top 0.15s ease, opacity 0.05s ease
+//box-shadow: 5px 5px 0 0 rgba(104, 101, 75, 1.0)
 
+.media-player-transcript-container-visible
+  top: -61px
+  z-index: 500
+  opacity: 100%
 
+.media-player-transcript-base-text-transition
+  transition: color 0.065s ease-in, font-weight 0.075s ease-in !important
+
+.media-player-transcript-text-highlight
+  font-weight: 600 !important
+  color: #7E7851 !important
 
 // Track Navigation
 .media-player-nav-button-offset
@@ -101,22 +125,20 @@
   cursor: default
   transition: left 0.1s ease-out, transform 0.2s ease-out
 @media (min-width: 576px)
-  .playhead
+  .media-player-seek-bar-time-elapsed-playhead
     width: 25px
     height: 25px
 
-// Global
-.media-player-background-svg
+.media-player-seek-bar-time-total-text
+  z-index: 5
+  color: #68654B
+  font-weight: 600
+  font-size: 1rem
   position: absolute
-  bottom: 0
-  z-index: -1
-  left: -42.5px
-  opacity: 0.55
+  bottom: -13px
+  right: 17px
 
-
-///////////////////////////////////////////////
-
-.playhead-time
+.media-player-seek-bar-seek-time-display-tag
   position: absolute
   bottom: 30px
   height: 35px
@@ -128,42 +150,10 @@
   transform: scaleY(1) translateX(-70%) !important
   transition: left 0.1s ease-out
 
-.time-duration-total
-  z-index: 5
-  color: #68654B
-  font-weight: 600
-  font-size: 1rem
+// Global
+.media-player-background-svg
   position: absolute
-  bottom: -13px
-  right: 17px
-
-.transcript-container
-  z-index: 0
-  opacity: 0
-  position: absolute
-  top: 0
-  left: 50%
-  transform: translateX(-50%)
-  background: #EBE8D0
-  color: #ACA787
-  width: fit-content
-  min-width: 200px
-  font-weight: 600
-  height: 45px
-  transition: bottom 0.2s ease-in, top 0.15s ease, opacity 0.05s ease
-  //box-shadow: 5px 5px 0 0 rgba(104, 101, 75, 1.0)
-
-.transcript-container-open
-  bottom: 155px
-
-.transcript-container-visible
-  top: -61px
-  z-index: 500
-  opacity: 100%
-
-.text-transition
-  transition: color 0.065s ease-in, font-weight 0.075s ease-in !important
-
-.text-highlight
-  font-weight: 600 !important
-  color: #7E7851 !important
+  bottom: 0
+  z-index: -1
+  left: -42.5px
+  opacity: 0.55

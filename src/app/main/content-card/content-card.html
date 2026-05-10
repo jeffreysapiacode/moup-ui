@@ -1,21 +1,21 @@
 <div class="container-fluid p-0 m-0 d-flex justify-content-center">
-  <div class="card-container" [ngStyle]="{'box-shadow': this.innerWidth < 576 ? '14px 14px 0 0 rgba(104, 101, 75, 1.0)':'7px 7px 0 0 rgba(104, 101, 75, 1.0)'}">
+  <div class="content-card-container" [ngStyle]="{'box-shadow': this.innerWidth < 576 ? '14px 14px 0 0 rgba(104, 101, 75, 1.0)':'7px 7px 0 0 rgba(104, 101, 75, 1.0)'}">
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 px-4 py-3">
-        <span class="title-text">{{content.title}}</span>
+        <span class="content-card-title-text">{{content.title}}</span>
       </div>
         <div class="col-auto p-0 m-0 d-flex justify-content-end align-items-center">
-          <span [ngClass]="{'playing-text-visible':this.audioGlobal.content === this.content}" class="playing-text pe-4">Playing</span>
+          <span [ngClass]="{'content-card-playing-text-tag-visible':this.audioGlobal.content === this.content}" class="content-card-playing-text-tag pe-4">Playing</span>
         </div>
     </div>
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 px-4 pb-3">
-        <span class="description-text">{{content.description}}</span>
+        <span class="content-card-description-text">{{content.description}}</span>
       </div>
     </div>
     <div class="row p-0 m-0 pb-3">
       <div class="col-auto p-0 m-0 ps-4 d-flex align-items-center">
-        <div class="button px-3 d-flex justify-content-center align-items-center"
+        <div class="content-card-button px-3 d-flex justify-content-center align-items-center"
              (click)="handleLoad()">
           @if (this.playing && this.content === this.audioGlobal.content) {
             PAUSE
@@ -28,18 +28,18 @@
       <div  class="col p-0 m-0 ps-3 d-flex justify-content-start align-items-center">
         <div class="row p-0 m-0">
           <div class="col p-0 m-0">
-            <span [ngClass]="{'time-duration-active': this.audioGlobal.content === this.content}" class="time-duration">{{ this.time }}</span>
+            <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content === this.content}" class="content-card-elapsed-and-total-time">{{ this.elapsedOrSavedTime }}</span>
           </div>
           <div class="col p-0 m-0">
-            <span [ngClass]="{'time-duration-active': this.audioGlobal.content === this.content}" class="time-duration">/</span>
+            <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content === this.content}" class="content-card-elapsed-and-total-time">/</span>
           </div>
           <div class="col p-0 m-0">
-            <span [ngClass]="{'time-duration-active': this.audioGlobal.content === this.content}" class="time-duration">{{TimeUtils.formatTime(this.content.duration)}}</span>
+            <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content === this.content}" class="content-card-elapsed-and-total-time">{{TimeUtils.formatTime(this.content.duration)}}</span>
           </div>
         </div>
       </div>
       <div class="col p-0 m-0 ps-4 pt-1 pe-3 d-flex " [ngClass]="{'justify-content-end': this.innerWidth >= 576, 'justify-content-start': this.innerWidth < 576}">
-        <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none"><div class="button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div></a>
+        <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none"><div class="content-card-button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div></a>
       </div>
     </div>
   </div>

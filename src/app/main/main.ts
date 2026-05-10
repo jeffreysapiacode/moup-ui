@@ -24,23 +24,23 @@ export class Main implements OnInit {
   loading: boolean = false;
   apiUrl = environment.apiUrl;
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.innerWidth = window.innerWidth;
+  }
+
   constructor(protected http: HttpClient,
               protected audioGlobal: AudioGlobal,
               protected cdr: ChangeDetectorRef) {
+  }
+
+  ngOnInit(): void {
+    this.innerWidth = window.innerWidth;
     this.loading = true;
     this.http.get(this.apiUrl + '/content')
       .subscribe((contentList : any) => {
         this.audioGlobal.contentList  = contentList;
         setTimeout(()=> {this.loading = false; this.cdr.detectChanges();}, 150);
       });
-  }
-
-  ngOnInit(): void {
-    this.innerWidth = window.innerWidth;
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    this.innerWidth = window.innerWidth;
   }
 }

@@ -20,7 +20,7 @@ export class ContentCard implements OnInit {
   @Input() content: any;
   @Input() innerWidth: any;
   playing: boolean = false;
-  time: any = TimeUtils.formatTime(0);
+  elapsedOrSavedTime: any = TimeUtils.formatTime(0);
   apiUrl = environment.apiUrl;
 
   constructor(protected eventBus: EventBus,
@@ -31,17 +31,17 @@ export class ContentCard implements OnInit {
   ngOnInit(): void {
     const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
     if (storedInfo) {
-      this.time = TimeUtils.formatTime(storedInfo.seek);
+      this.elapsedOrSavedTime = TimeUtils.formatTime(storedInfo.seek);
     }
     this.eventBus.onSeek.subscribe((data) => {
       if (data.content.uuid === this.content.uuid) {
-        this.time = TimeUtils.formatTime(data.seek);
+        this.elapsedOrSavedTime = TimeUtils.formatTime(data.seek);
       } else {
         const storage = LocalStorageUtil.getStorage(this.content.uuid);
         if (storage) {
-          this.time = TimeUtils.formatTime(storage.seek);
+          this.elapsedOrSavedTime = TimeUtils.formatTime(storage.seek);
         } else {
-          this.time = TimeUtils.formatTime(0);
+          this.elapsedOrSavedTime = TimeUtils.formatTime(0);
         }
       }
       this.cdr.detectChanges();
@@ -58,7 +58,7 @@ export class ContentCard implements OnInit {
       if (this.content.uuid === content.uuid) {
         this.audioGlobal.sound.seek(0);
         LocalStorageUtil.reset(this.audioGlobal.content.uuid);
-        this.time = TimeUtils.formatTime(0);
+        this.elapsedOrSavedTime = TimeUtils.formatTime(0);
         this.playing = false;
         this.cdr.detectChanges();
       }

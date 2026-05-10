@@ -1,46 +1,73 @@
-.card-container
+
+// Container
+.content-card-container
   width: 550px
   background: rgba(249,247,239,1.0)
   z-index: 10
   box-shadow: 7px 7px 0 0 rgba(104, 101, 75, 1.0)
 
-.title-text
+// Title
+.content-card-title-text
   font-size: 1.3rem
   font-weight: 700 !important
   color: #7C7965
   line-height: 1rem
+@media (min-width: 576px)
+  .content-card-title-text
+    font-size: 1.1rem
 
-.description-text
+// Description
+.content-card-description-text
   font-size: 1.0rem
   font-weight: 500 !important
   color: #A5A190
   line-height: 1rem
+@media (min-width: 576px)
+  .content-card-description-text
+    font-size: 1rem
 
-.playing-text
+.content-card-playing-text-tag
   color: #4CAFD6
   font-weight: 500
   font-size: 1.15rem
   opacity: 0
   letter-spacing: 0.08em
   transition: opacity 0.2s ease-in
-
 @media (min-width: 576px)
-  .title-text
-    font-size: 1.1rem
-  .description-text
-    font-size: 1rem
-  .playing-text
+  .content-card-playing-text-tag
     font-size: 0.99rem
 
-.playing-text-visible
+.content-card-playing-text-tag-visible
   opacity: 100%
 
-.time-duration
+.content-card-elapsed-and-total-time
   color: #7C7965
   font-weight: 400
   font-size: 1.1rem
   padding-left: 0
   transition: font-weight 0.2s ease-in
 
-.time-duration-active
+.content-card-elapsed-and-total-time-active
   font-weight: 700 !important
+
+// Button
+.content-card-button
+  background: #EBE8C8
+  color: #8E8B67
+  height: 48px
+  width: 140px
+  font-size: 0.97rem
+  font-weight: 700
+  border: solid 4px #B8B69D
+  text-decoration: none !important
+  transform: scale(0.99)
+  transition: transform 0.05s ease-in
+@media (min-width: 576px)
+  .content-card-button
+    font-size: 0.94rem
+    font-weight: 600
+    border: solid 3.5px #B8B69D
+
+.content-card-button:hover
+  cursor: default
+  transform: scale(1.00)

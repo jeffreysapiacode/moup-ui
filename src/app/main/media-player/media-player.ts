@@ -67,12 +67,6 @@ export class MediaPlayer implements OnInit {
   // Timer
   count: number = 0;
 
-  constructor(protected eventBus: EventBus,
-              protected audioGlobal: AudioGlobal,
-              protected http: HttpClient,
-              @Inject(DOCUMENT) private document: Document,
-              protected cdr: ChangeDetectorRef) {}
-
   @HostListener('document:keydown.space', ['$event'])
   handleGlobalSpaceBar(event: any) {
     event.preventDefault();
@@ -105,6 +99,12 @@ export class MediaPlayer implements OnInit {
       this.cdr.detectChanges();
     }
   }
+
+  constructor(protected eventBus: EventBus,
+              protected audioGlobal: AudioGlobal,
+              protected http: HttpClient,
+              @Inject(DOCUMENT) private document: Document,
+              protected cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.eventBus.onLoad.subscribe((content) => {
