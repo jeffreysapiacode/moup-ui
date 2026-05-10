@@ -58,17 +58,14 @@
   color: #7E7851 !important
 
 // Track Navigation
-.media-player-nav-button-offset
-  transform: translateY(5px)
-
 .media-player-nav-button-padding
   padding: 5px
   z-index: 10
   cursor: default
-  transform: scale(1.0)
+  transform: scale(1.0) translateY(5px)
   transition: transform 0.05s ease-in
 .media-player-nav-button-padding:hover
-  transform: scale(1.01)
+  transform: scale(1.01) translateY(4px)
 
 .media-player-nav-button-svg
   width: 55px
@@ -89,6 +86,15 @@
   position: absolute
   bottom: -13px
   left: 17px
+
+.media-player-seek-bar-time-total-text
+  z-index: 5
+  color: #68654B
+  font-weight: 600
+  font-size: 1rem
+  position: absolute
+  bottom: -13px
+  right: 17px
 
 .media-player-seek-bar-container
   position: relative
@@ -127,15 +133,6 @@
   .media-player-seek-bar-time-elapsed-playhead
     width: 25px
     height: 25px
-
-.media-player-seek-bar-time-total-text
-  z-index: 5
-  color: #68654B
-  font-weight: 600
-  font-size: 1rem
-  position: absolute
-  bottom: -13px
-  right: 17px
 
 .media-player-seek-bar-seek-time-display-tag
   position: absolute
