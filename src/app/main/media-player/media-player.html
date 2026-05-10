@@ -73,8 +73,7 @@
            (touchmove)="handleSeekBarTouchMove($event)">
         <div class="media-player-seek-bar-container" #trackBarContainer>
           @if (this.seekBarMouseMode || this.seekBarTouchMode) {
-            <div class="media-player-seek-bar-placeholder" [ngStyle]="{'width': this.percentProgressPlaceholder + '%'}"
-                 #trackBarSeek></div>
+            <div class="media-player-seek-bar-placeholder" [ngStyle]="{'width': this.percentProgressPlaceholder + '%'}" ></div>
           }
           <div class="media-player-seek-bar-time-elapsed-strip"
                [ngStyle]="{'width': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
