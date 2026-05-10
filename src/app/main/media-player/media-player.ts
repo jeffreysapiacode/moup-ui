@@ -47,7 +47,7 @@ export class MediaPlayer implements OnInit {
   displayArray: any = [];
   wordMap: Map<string, any> = new Map();
   transcriptVisible: boolean = false;
-  displayChunk: any;
+  displaySegment: any;
 
   // Track Navigation
   playing: boolean = false;
@@ -64,9 +64,7 @@ export class MediaPlayer implements OnInit {
   storedSeek: number = 0;
   playheadSeconds: number = 0;
   seekFloor: any = 0;
-
-  // Timer
-  count: number = 0;
+  seekFloorStored: number = 0;
 
   @HostListener('document:keydown.space', ['$event'])
   handleGlobalSpaceBar(event: any) {
@@ -97,7 +95,7 @@ export class MediaPlayer implements OnInit {
     } else {
       this.screenVisible = true;
       if (this.transcriptEnabled && this.playing) {
-        this.resetTranscript();
+        this.cacheTranscript();
       }
       this.cdr.detectChanges();
     }
@@ -114,11 +112,17 @@ export class MediaPlayer implements OnInit {
     this.eventBus.onLoad.subscribe((content: any) => {
       this.content = content;
       this.open = true;
+      const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
+      // Check if there is a saved start time
+      if (storedInfo) {
+        this.seekToTime(storedInfo.seek);
+      }
+      this.audioGlobal.play();
     });
     this.eventBus.onPlay.subscribe((content: any) => {
       this.animate();
       this.playing = true;
-      this.resetTranscript();
+      this.cacheTranscript();
       this.cdr.detectChanges();
     });
     this.eventBus.onPause.subscribe((content: any) => {
@@ -144,22 +148,19 @@ export class MediaPlayer implements OnInit {
       this.seekBarMouseMode || this.seekBarTouchMode ?
         this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.content.duration) * 100:
         this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
-      this.displayChunk = this.getDisplayChunk(this.displayArray);
-      this.transcriptVisible = !!(this.displayChunk && this.displayChunk.length > 0);
-      console.log(this.displayChunk);
-      console.log(this.displayArray);
+      this.displaySegment = this.getDisplaySegment(this.displayArray);
+      this.transcriptVisible = !!(this.displaySegment && this.displaySegment.length > 0);
       this.seekFloor = Math.floor(this.audioGlobal.seek());
-      // Happens every 10 seconds of play time
-      if (this.seekFloor !== this.count && this.seekFloor % 10 === 0) {
-        if (this.transcriptEnabled && this.screenVisible) {
-          const lookaheadSeconds = this.seekFloor + this.preCacheLookaheadSeconds;
-          if (!this.wordMap.has(lookaheadSeconds)) {
-            this.getWordsFromAPI(lookaheadSeconds, this.buildCacheKey(lookaheadSeconds, this.audioGlobal.content.uuid));
-          }
-          this.displayArray = this.segmentWords(this.getTranscript(this.seekFloor));
+      // Happens every 1 second of play time
+      if (this.seekFloor !== this.seekFloorStored ) {
+        // Happens every 10 seconds of play time
+        if (this.seekFloor % 10 === 0) {
+          this.saveToLocalStorage(this.seekFloor);
         }
-        this.count = this.seekFloor;
-        this.saveToLocalStorage(this.seekFloor)
+        if (this.transcriptEnabled && this.screenVisible) {
+          this.cacheTranscript();
+        }
+        this.seekFloorStored = this.seekFloor;
       }
       this.cdr.detectChanges();
     }
@@ -195,7 +196,7 @@ export class MediaPlayer implements OnInit {
         return;
       }
     }
-    this.resetTranscript();
+    this.cacheTranscript();
     this.audioGlobal.sound.seek(0);
     this.percentProgress = 0;
   }
@@ -240,13 +241,13 @@ export class MediaPlayer implements OnInit {
     const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
     // Check if there is a saved start time
     if (storedInfo) {
-      this.audioGlobal.sound.seek(storedInfo.seek);
+      this.seekToTime(storedInfo.seek);
     }
     this.audioGlobal.play()
   }
 
   seekToTime(seek: any) {
-    this.resetTranscript();
+    this.cacheTranscript();
     this.audioGlobal.sound.seek(seek);
     this.audioGlobal.play();
     if (!this.playing) {
@@ -328,44 +329,42 @@ export class MediaPlayer implements OnInit {
     return touchMode ? value - offset : value;
   }
 
+  displaySegmentStored: any;
+
   // Transcript //////////////////////////////
-  getDisplayChunk(displayArray: any) {
-
-    console.log('in ' + displayArray);
-
+  getDisplaySegment(displayArray: any) {
     if (!displayArray || displayArray.length === 0) {
       return;
     }
+    for (let i = 0; i<displayArray.length; i++) {
+      let displaySegment = displayArray[i];
+      let previousSegment;
+      let nextSegment;
+      if (i > 0) {
+        previousSegment = displayArray[i-1][displayArray[i-1].length - 1];
+      }
+      if (i < displayArray.length - 1) {
+        nextSegment = displayArray[i+1][0];
+      }
+      let start = previousSegment ? previousSegment.end : displaySegment[0].start;
+      let end = nextSegment ? nextSegment.start : displaySegment[displaySegment.length - 1].end;
+      if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
+        if (!displaySegment && this.displaySegmentStored) {
+          return this.displaySegmentStored
+        }
+        this.displaySegmentStored = displaySegment;
+        return displaySegment;
+      }
+    }
 
-    console.log('got here')
-    // for (let i = 0; i<displayArray.length; i++) {
-    //   let displayChunk = displayArray[i];
-    //   let previousChunk;
-    //   let nextChunk;
-    //   if (i > 0) {
-    //     previousChunk = displayArray[i-1];
-    //     // The problem is somewhere in here
-    //   }
-    //   if (i < displayArray.length - 1) {
-    //     nextChunk = displayArray[i+1];
-    //   }
-    //   let start = previousChunk ? previousChunk.end : displayChunk[0].start;
-    //   let end = nextChunk ? nextChunk.start : displayChunk[displayChunk.length - 1].end;
+    // for (let displayChunk of displayArray) {
+    //   let start = displayChunk[0].start;
+    //   let end = displayChunk[displayChunk.length - 1].end;
     //   if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
     //     return displayChunk;
     //   }
     // }
-
-    for (let displayChunk of displayArray) {
-      console.log(JSON.stringify(displayChunk));
-      let start = displayChunk[0].start;
-      console.log(start);
-      let end = displayChunk[displayChunk.length - 1].end;
-      console.log(end);
-      if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
-        return displayChunk;
-      }
-    }
+    return;
   }
 
   getWordsFromAPI(start: number, key: string) {
@@ -411,14 +410,15 @@ export class MediaPlayer implements OnInit {
     return this.wordMap.get(this.buildCacheKey(seekFloor, this.audioGlobal.content.uuid));
   }
 
-  resetTranscript() {
+  cacheTranscript() {
     const cacheKey = this.buildCacheKey(this.seekFloor, this.audioGlobal.content.uuid);
     if (!this.wordMap.has(cacheKey)) {
       this.getWordsFromAPI((Math.floor(this.seekFloor / 10) * 10), cacheKey);
     }
-    const cacheKey2 = this.buildCacheKey(this.seekFloor + this.preCacheLookaheadSeconds, this.audioGlobal.content.uuid);
+    const preCacheSeconds = this.seekFloor + this.preCacheLookaheadSeconds;
+    const cacheKey2 = this.buildCacheKey(preCacheSeconds, this.audioGlobal.content.uuid);
     if (!this.wordMap.has(cacheKey2)) {
-      this.getWordsFromAPI((Math.floor((this.seekFloor + this.preCacheLookaheadSeconds) / 10) * 10), cacheKey2);
+      this.getWordsFromAPI((Math.floor(preCacheSeconds / 10) * 10), cacheKey2);
     }
   }
 

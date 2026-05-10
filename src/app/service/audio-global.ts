@@ -19,10 +19,10 @@ export class AudioGlobal {
     this.content = content;
     if (this.content) {
       this.resetSound(this.content.filename);
+      this.eventBus.onLoad.emit(this.content);
     } else {
       console.error('Content not found');
     }
-    this.eventBus.onLoad.emit(this.content);
   }
 
   available() {
