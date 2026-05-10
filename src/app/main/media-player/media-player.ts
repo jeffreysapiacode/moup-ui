@@ -48,6 +48,7 @@ export class MediaPlayer implements OnInit {
   wordMap: Map<string, any> = new Map();
   transcriptVisible: boolean = false;
   displaySegment: any;
+  displaySegmentStored: any;
 
   // Track Navigation
   playing: boolean = false;
@@ -153,13 +154,10 @@ export class MediaPlayer implements OnInit {
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       // Happens every 1 second of play time
       if (this.seekFloor !== this.seekFloorStored ) {
-        // Happens every 10 seconds of play time
-        if (this.seekFloor % 10 === 0) {
-          this.saveToLocalStorage(this.seekFloor);
-        }
         if (this.transcriptEnabled && this.screenVisible) {
           this.cacheTranscript();
         }
+        this.saveToLocalStorage(this.seekFloor);
         this.seekFloorStored = this.seekFloor;
       }
       this.cdr.detectChanges();
@@ -328,8 +326,6 @@ export class MediaPlayer implements OnInit {
   calculateOffset(value: any, touchMode: boolean, offset: number) {
     return touchMode ? value - offset : value;
   }
-
-  displaySegmentStored: any;
 
   // Transcript //////////////////////////////
   getDisplaySegment(displayArray: any) {
