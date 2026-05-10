@@ -6,7 +6,12 @@
         <div class="main-content-card-scroll-box pt-3" [style]="{'z-index': 50}"
              [ngClass]="{'main-content-card-scroll-box-padding': this.audioGlobal.content}">
           @if (this.loading) {
-            <!--Do loading screen stuff here-->
+            <!-- Main Loading -->
+            <div class="row p-0 m-0">
+              <div class="col vh-100 p-0 m-0 d-flex justify-content-center align-items-center" [style]="{transform: 'translateY(-180px)'}">
+                <span class="main-loading-title-text">Loading...</span>
+              </div>
+            </div>
           } @else {
             @if (this.audioGlobal.contentList.length === 0) {
               <div class="row p-0 m-0 w-100 h-100">
@@ -28,7 +33,7 @@
               }
             }
           }
-          <img class="main-container-background-svg" src="assets/img/svg/wave-blue.svg"/>
+          <img [ngClass]="{'main-container-background-svg-loading': this.loading}" class="main-container-background-svg" src="assets/img/svg/wave-blue.svg"/>
         </div>
       </div>
     </div>

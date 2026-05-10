@@ -38,6 +38,7 @@ export class MediaPlayer implements OnInit {
   apiUrl = environment.apiUrl;
   open: boolean = false;
   content: any;
+  loading: boolean = false;
 
   // Transcript
   maxWordsOnScreen: number = 3;
@@ -130,15 +131,15 @@ export class MediaPlayer implements OnInit {
       this.playing = false;
       this.cdr.detectChanges();
     });
-    this.eventBus.onAnimationFrame.subscribe((data: any) => {
-      this.seek = data.seek;
-    });
     this.eventBus.onEnd.subscribe((content: any) => {
       this.percentProgress = 0;
       this.seek = 0;
       this.playing = false;
       this.handleNext();
       this.cdr.detectChanges();
+    });
+    this.eventBus.onAnimationFrame.subscribe((data: any) => {
+      this.seek = data.seek;
     });
   }
 

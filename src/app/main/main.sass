@@ -28,6 +28,19 @@
   position: fixed
   bottom: 0
   z-index: -1
+  animation: none
+
+.main-container-background-svg-loading
+  animation: wave 3s infinite ease-in-out
+
+// Background SVG Loading Animation
+@keyframes wave
+  0%
+    transform: translateX(0)
+  50%
+    transform: translateX(-50px)
+  100%
+    transform: translateX(0)
 
 // Container for when all episode have been deleted
 .main-no-content-display
@@ -37,3 +50,10 @@
   font-weight: 700
   color: #68654B
   border: solid 10px #68654B
+
+// Loading
+.main-loading-title-text
+  color: #AAE5E3
+  font-size: 1.7rem
+  font-weight: 600
+  letter-spacing: 0.3rem
