@@ -24,13 +24,15 @@
               </div>
             }
             @if (this.audioGlobal.contentList.length > 0) {
-              @for (content of this.audioGlobal.contentList; track content.uuid) {
-                <div class="row p-0 m-0 pb-3 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
-                  <div class="col p-0 m-0">
-                    <app-content-card [innerWidth]="innerWidth" [content]="content"></app-content-card>
+              <div class="">
+                @for (content of this.audioGlobal.contentList; track content.uuid) {
+                  <div class="row p-0 m-0 pb-3 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
+                    <div class="col p-0 m-0">
+                      <app-content-card [innerWidth]="innerWidth" [content]="content"></app-content-card>
+                    </div>
                   </div>
-                </div>
-              }
+                }
+              </div>
             }
           }
           <img [ngClass]="{'main-container-background-svg-loading': this.loading}" class="main-container-background-svg" src="assets/img/svg/wave-blue.svg"/>

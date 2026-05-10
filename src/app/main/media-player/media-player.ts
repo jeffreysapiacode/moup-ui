@@ -4,7 +4,7 @@ import {
   DOCUMENT,
   ElementRef,
   HostListener,
-  Inject,
+  Inject, Input,
   OnInit,
   ViewChild
 } from '@angular/core';
@@ -27,6 +27,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class MediaPlayer implements OnInit {
 
+  @Input() loading: boolean = false;
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
   @ViewChild('playheadTimer') playheadTimer!: ElementRef;
@@ -38,7 +39,6 @@ export class MediaPlayer implements OnInit {
   apiUrl = environment.apiUrl;
   open: boolean = false;
   content: any;
-  loading: boolean = false;
 
   // Transcript
   maxWordsOnScreen: number = 3;
@@ -112,6 +112,9 @@ export class MediaPlayer implements OnInit {
 
   ngOnInit(): void {
     this.eventBus.onLoad.subscribe((content: any) => {
+      this.loading = true;
+    });
+    this.eventBus.onLoaded.subscribe((content: any) => {
       this.content = content;
       this.open = true;
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
@@ -120,6 +123,7 @@ export class MediaPlayer implements OnInit {
         this.seekToTime(storedInfo.seek);
       }
       this.audioGlobal.play();
+      this.loading = false;
     });
     this.eventBus.onPlay.subscribe((content: any) => {
       this.animate();

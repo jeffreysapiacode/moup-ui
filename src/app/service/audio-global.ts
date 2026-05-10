@@ -52,6 +52,7 @@ export class AudioGlobal {
     });
     this.sound.once('load', () => {
       // Send play count trigger
+      this.eventBus.onLoaded.emit(this.content);
     });
     this.sound.on('play', (() => {
       this.eventBus.onPlay.emit(this.content);
