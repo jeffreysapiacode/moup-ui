@@ -41,7 +41,7 @@ export class MediaPlayer implements OnInit {
 
   // Transcript
   maxWordsOnScreen: number = 3;
-  preCacheLookaheadSeconds: number = 10;
+  lookaheadSeconds: number = 10;
   transcriptEnabled: boolean = true;
   wordList: any = [];
   displayArray: any = [];
@@ -368,12 +368,17 @@ export class MediaPlayer implements OnInit {
   }
 
   getWordsFromAPI(start: number, key: string) {
-    this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + (start + this.preCacheLookaheadSeconds)).subscribe((response: any) => {
-      if (response.length > 0) {
-        this.wordMap.set(key, response);
-        this.wordList = this.getTranscript(this.seekFloor);
-        this.displayArray = this.segmentWords(this.wordList);
-      }
+    this.http.get(this.apiUrl + '/auto-dictate',
+      { params: {
+        contentUuid: this.audioGlobal.content.uuid,
+          start: start,
+          end: (start + this.lookaheadSeconds)}})
+      .subscribe((response: any) => {
+        if (response.length > 0) {
+          this.wordMap.set(key, response);
+          this.wordList = this.getTranscript(this.seekFloor);
+          this.displayArray = this.segmentWords(this.wordList);
+        }
     });
   }
 
@@ -415,9 +420,9 @@ export class MediaPlayer implements OnInit {
     if (!this.wordMap.has(cacheKey)) {
       this.getWordsFromAPI(this.calculateSeekFloorMultiple(this.seekFloor), cacheKey);
     }
-    const preCacheSeconds = this.seekFloor + this.preCacheLookaheadSeconds;
+    const preCacheSeconds = this.seekFloor + this.lookaheadSeconds;
     const cacheKey2 = this.buildCacheKey(preCacheSeconds, this.audioGlobal.content.uuid);
-    if (!this.wordMap.has(cacheKey2) && ((this.seekFloor + this.preCacheLookaheadSeconds) < this.audioGlobal.content.duration)) {
+    if (!this.wordMap.has(cacheKey2) && ((this.seekFloor + this.lookaheadSeconds) < this.audioGlobal.content.duration)) {
       this.getWordsFromAPI(this.calculateSeekFloorMultiple(preCacheSeconds), cacheKey2);
     }
   }
@@ -452,7 +457,7 @@ export class MediaPlayer implements OnInit {
   }
 
   calculateSeekFloorMultiple(seekFloor: number) {
-    return (Math.floor(seekFloor / this.preCacheLookaheadSeconds) * this.preCacheLookaheadSeconds)
+    return (Math.floor(seekFloor / this.lookaheadSeconds) * this.lookaheadSeconds)
   }
 
   protected readonly TimeUtils = TimeUtils;
