@@ -113,10 +113,10 @@ export class MediaPlayer implements OnInit {
   ngOnInit(): void {
     this.eventBus.onLoad.subscribe((content: any) => {
       this.loading = true;
-    });
-    this.eventBus.onLoaded.subscribe((content: any) => {
       this.content = content;
       this.open = true;
+    });
+    this.eventBus.onLoaded.subscribe((content: any) => {
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
       // Check if there is a saved start time
       if (storedInfo) {
