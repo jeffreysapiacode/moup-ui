@@ -1,16 +1,16 @@
 <div class="container-fluid p-0 m-0">
 <!--  {{ this.innerWidth }}-->
-  <div class="app-container">
+  <div class="main-container">
     <div class="row p-0 m-0">
       <div class="col p-0 m-0">
-        <div class="content-card-container no-content-block-z-index pt-3" [ngClass]="{'content-card-container-padding': this.audioGlobal.content}">
+        <div class="main-content-card-scroll-box pt-3" [style]="{'z-index': 50}" [ngClass]="{'main-content-card-scroll-box-padding': this.audioGlobal.content}">
           @if (this.loading) {
             <!--Do loading screen stuff here-->
           } @else {
               @if (this.audioGlobal.contentList.length === 0) {
                 <div class="row p-0 m-0 w-100 h-100">
                   <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
-                    <div class="no-content-block px-5 py-5 mx-3">I have decided to delete all of the episodes. It's nothing personal. In fact, I did it because I love you, and just as importantly, I want you to love me.</div>
+                    <div class="main-no-content-display px-5 py-5 mx-3">I have decided to delete all of the episodes. It's nothing personal. In fact, I did it because I love you, and just as importantly, I want you to love me.</div>
                   </div>
                 </div>
               }
@@ -24,7 +24,7 @@
                 }
               }
           }
-          <img class="app-container-background" src="assets/img/svg/wave-blue.svg"/>
+          <img class="main-container-background-svg" src="assets/img/svg/wave-blue.svg"/>
         </div>
       </div>
     </div>

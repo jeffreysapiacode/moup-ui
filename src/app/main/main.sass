@@ -1,9 +1,12 @@
-.app-container
+
+// Container
+.main-container
   background: #73D3CF
   height: 100vh
   width: 100vw
 
-.content-card-container
+// Scroll Box
+.main-content-card-scroll-box
   overflow-y: scroll
   height: 100vh
   width: 100vw
@@ -13,34 +16,24 @@
   overflow-x: clip
   z-index: 10
 
-.content-card-container-padding
-  padding-bottom: 150px
-
-.content-card-container::-webkit-scrollbar
+// Remove scroll bar
+.main-content-card-scroll-box::-webkit-scrollbar
   display: none
 
-.app-container-background
+.main-content-card-scroll-box-padding
+  padding-bottom: 150px
+
+// Background SVG
+.main-container-background-svg
   position: fixed
   bottom: 0
   z-index: -1
 
-.no-content-block
+// Container for when all episode have been deleted
+.main-no-content-display
   background: #F9F6E3
   height: auto
   max-width: 450px
   font-weight: 700
   color: #68654B
   border: solid 10px #68654B
-
-.no-content-block-z-index
-  z-index: 50
-
-.closed-caption-button
-  z-index: 500
-  background: #F2F0E7
-  position: absolute
-  top: 5px
-  right: 5px
-  cursor: pointer
-
-
