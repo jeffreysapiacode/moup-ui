@@ -41,6 +41,7 @@ export class MediaPlayer implements OnInit {
 
   // Transcript
   maxWordsOnScreen: number = 3;
+  preCacheLookaheadSeconds: number = 10;
   transcriptEnabled: boolean = true;
   wordList: any = [];
   displayArray: any = [];
@@ -63,7 +64,6 @@ export class MediaPlayer implements OnInit {
   storedSeek: number = 0;
   playheadSeconds: number = 0;
   seekFloor: any = 0;
-  getCurrentChunk: boolean = true;
 
   // Timer
   count: number = 0;
@@ -111,24 +111,24 @@ export class MediaPlayer implements OnInit {
   }
 
   ngOnInit(): void {
-    this.eventBus.onLoad.subscribe((content) => {
+    this.eventBus.onLoad.subscribe((content: any) => {
       this.content = content;
       this.open = true;
     });
-    this.eventBus.onPlay.subscribe((content) => {
+    this.eventBus.onPlay.subscribe((content: any) => {
       this.animate();
       this.playing = true;
       this.resetTranscript();
       this.cdr.detectChanges();
     });
-    this.eventBus.onPause.subscribe((content) => {
+    this.eventBus.onPause.subscribe((content: any) => {
       this.playing = false;
       this.cdr.detectChanges();
     });
-    this.eventBus.onAnimationFrame.subscribe((data) => {
+    this.eventBus.onAnimationFrame.subscribe((data: any) => {
       this.seek = data.seek;
     });
-    this.eventBus.onEnd.subscribe((content) => {
+    this.eventBus.onEnd.subscribe((content: any) => {
       this.percentProgress = 0;
       this.seek = 0;
       this.playing = false;
@@ -146,11 +146,17 @@ export class MediaPlayer implements OnInit {
         this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
       this.displayChunk = this.getDisplayChunk(this.displayArray);
       this.transcriptVisible = !!(this.displayChunk && this.displayChunk.length > 0);
+      console.log(this.displayChunk);
+      console.log(this.displayArray);
       this.seekFloor = Math.floor(this.audioGlobal.seek());
+      // Happens every 10 seconds of play time
       if (this.seekFloor !== this.count && this.seekFloor % 10 === 0) {
         if (this.transcriptEnabled && this.screenVisible) {
-          this.fetchAndCacheTranscript(this.seekFloor);
-          this.displayArray = this.chunkData(this.getTranscript(this.seekFloor));
+          const lookaheadSeconds = this.seekFloor + this.preCacheLookaheadSeconds;
+          if (!this.wordMap.has(lookaheadSeconds)) {
+            this.getWordsFromAPI(lookaheadSeconds, this.buildCacheKey(lookaheadSeconds, this.audioGlobal.content.uuid));
+          }
+          this.displayArray = this.segmentWords(this.getTranscript(this.seekFloor));
         }
         this.count = this.seekFloor;
         this.saveToLocalStorage(this.seekFloor)
@@ -227,34 +233,6 @@ export class MediaPlayer implements OnInit {
     }
   }
 
-  // Local Storage
-  saveToLocalStorage(seekFloor: any) {
-    if (!this.content) {
-      return;
-    }
-    let storage: any;
-    if (!localStorage.getItem('moup') || localStorage.getItem('moup') === 'undefined') {
-      storage = [];
-      storage.push({contentUuid: this.content.uuid, seek: seekFloor});
-      this.pushToStorage(storage)
-    }
-    storage = JSON.parse(<string>localStorage.getItem('moup'));
-    for (let storedInfo of storage) {
-      if (storedInfo.contentUuid === this.content?.uuid) {
-        storedInfo.seek = seekFloor;
-        this.pushToStorage(storage);
-        return;
-      }
-    }
-    // Not found
-    storage.push({contentUuid: this.content?.uuid, seek: seekFloor});
-    this.pushToStorage(storage)
-  }
-
-  pushToStorage(storage: any) {
-    localStorage.setItem('moup', JSON.stringify(storage));
-  }
-
   // Seek Bar /////////////////////////////////
   seekToTrack(index: number) {
     const content = this.getContentByIndex(index);
@@ -307,8 +285,8 @@ export class MediaPlayer implements OnInit {
       const rect = ($event.currentTarget as HTMLElement).getBoundingClientRect();
       const x = $event.clientX - rect.left;
       this.calculateSeekPosition(x);
-      this.rectLeftX = (this.playheadTimer.nativeElement as HTMLElement).getBoundingClientRect().left;
-      this.rectRightX = (this.playheadTimer.nativeElement as HTMLElement).getBoundingClientRect().right;
+      // this.rectLeftX = (this.playheadTimer.nativeElement as HTMLElement).getBoundingClientRect().left;
+      // this.rectRightX = (this.playheadTimer.nativeElement as HTMLElement).getBoundingClientRect().right;
       // console.log('Left:' + this.rectLeftX);
       // console.log('Right:' + this.rectRightX);
     }
@@ -352,43 +330,55 @@ export class MediaPlayer implements OnInit {
 
   // Transcript //////////////////////////////
   getDisplayChunk(displayArray: any) {
+
+    console.log('in ' + displayArray);
+
     if (!displayArray || displayArray.length === 0) {
       return;
     }
+
+    console.log('got here')
+    // for (let i = 0; i<displayArray.length; i++) {
+    //   let displayChunk = displayArray[i];
+    //   let previousChunk;
+    //   let nextChunk;
+    //   if (i > 0) {
+    //     previousChunk = displayArray[i-1];
+    //     // The problem is somewhere in here
+    //   }
+    //   if (i < displayArray.length - 1) {
+    //     nextChunk = displayArray[i+1];
+    //   }
+    //   let start = previousChunk ? previousChunk.end : displayChunk[0].start;
+    //   let end = nextChunk ? nextChunk.start : displayChunk[displayChunk.length - 1].end;
+    //   if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
+    //     return displayChunk;
+    //   }
+    // }
+
     for (let displayChunk of displayArray) {
+      console.log(JSON.stringify(displayChunk));
       let start = displayChunk[0].start;
+      console.log(start);
       let end = displayChunk[displayChunk.length - 1].end;
+      console.log(end);
       if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
         return displayChunk;
       }
     }
   }
 
-  fetchAndCacheTranscript(seekFloor: any) {
-    const seekFloorRound = (Math.floor(seekFloor / 10) * 10);
-    const compKey = seekFloorRound + '-' + this.audioGlobal.content.uuid;
-    const compKeyPreCache = (seekFloorRound + 10) + '-' + this.audioGlobal.content.uuid;
-    if (this.getCurrentChunk && !this.wordMap.has(compKey)) {
-      this.getWords(seekFloorRound, seekFloorRound + 10, compKey);
-      this.getCurrentChunk = false;
-    }
-    if (!this.wordMap.has(compKeyPreCache)) {
-      this.getWords(seekFloorRound + 10, seekFloorRound + 10, compKeyPreCache);
-    }
-  }
-
-  getWords(start: any, end: any, key: string) {
-    this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + end).subscribe((response: any) => {
+  getWordsFromAPI(start: number, key: string) {
+    this.http.get(this.apiUrl + '/auto-dictate?contentUuid=' + this.audioGlobal.content.uuid + '&start=' + start + '&end=' + (start + this.preCacheLookaheadSeconds)).subscribe((response: any) => {
       if (response.length > 0) {
         this.wordMap.set(key, response);
         this.wordList = this.getTranscript(this.seekFloor);
-        this.displayArray = this.chunkData(this.wordList);
-        console.log(this.wordList);
+        this.displayArray = this.segmentWords(this.wordList);
       }
     });
   }
 
-  chunkData(wordList: any) {
+  segmentWords(wordList: any) {
     if (!wordList) {
       return;
     }
@@ -418,18 +408,48 @@ export class MediaPlayer implements OnInit {
   }
 
   getTranscript(seekFloor: any) {
-    const compKey = (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
-    let wordMap = this.wordMap.get(compKey);
-    return wordMap;
+    return this.wordMap.get(this.buildCacheKey(seekFloor, this.audioGlobal.content.uuid));
   }
 
   resetTranscript() {
-    this.getCurrentChunk = true;
-    this.seekFloor = Math.floor(this.audioGlobal.seek());
-    this.fetchAndCacheTranscript(this.seekFloor);
+    const cacheKey = this.buildCacheKey(this.seekFloor, this.audioGlobal.content.uuid);
+    if (!this.wordMap.has(cacheKey)) {
+      this.getWordsFromAPI((Math.floor(this.seekFloor / 10) * 10), cacheKey);
+    }
+    const cacheKey2 = this.buildCacheKey(this.seekFloor + this.preCacheLookaheadSeconds, this.audioGlobal.content.uuid);
+    if (!this.wordMap.has(cacheKey2)) {
+      this.getWordsFromAPI((Math.floor((this.seekFloor + this.preCacheLookaheadSeconds) / 10) * 10), cacheKey2);
+    }
+  }
+
+  // Local Storage
+  saveToLocalStorage(seekFloor: any) {
+    if (!this.content) {
+      return;
+    }
+    let storage: any;
+    if (!localStorage.getItem('moup') || localStorage.getItem('moup') === 'undefined') {
+      storage = [];
+      storage.push({contentUuid: this.content.uuid, seek: seekFloor});
+      localStorage.setItem('moup', JSON.stringify(storage));
+    }
+    storage = JSON.parse(<string>localStorage.getItem('moup'));
+    for (let storedInfo of storage) {
+      if (storedInfo.contentUuid === this.content?.uuid) {
+        storedInfo.seek = seekFloor;
+        localStorage.setItem('moup', JSON.stringify(storage));
+        return;
+      }
+    }
+    // Not found
+    storage.push({contentUuid: this.content?.uuid, seek: seekFloor});
+    localStorage.setItem('moup', JSON.stringify(storage));
   }
 
   // Utilities
+  buildCacheKey(seek: number, contentUuid: string) {
+    return `${(Math.floor(seek / 10) * 10)}-${contentUuid}`;
+  }
 
   protected readonly TimeUtils = TimeUtils;
 }
