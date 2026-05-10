@@ -417,7 +417,7 @@ export class MediaPlayer implements OnInit {
     }
     const preCacheSeconds = this.seekFloor + this.preCacheLookaheadSeconds;
     const cacheKey2 = this.buildCacheKey(preCacheSeconds, this.audioGlobal.content.uuid);
-    if (!this.wordMap.has(cacheKey2)) {
+    if (!this.wordMap.has(cacheKey2) && ((this.seekFloor + 10) < this.audioGlobal.content.duration)) {
       this.getWordsFromAPI((Math.floor(preCacheSeconds / 10) * 10), cacheKey2);
     }
   }
