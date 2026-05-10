@@ -7,7 +7,7 @@
     </div>
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 ps-4 d-flex justify-content-start align-items-end position-relative">
-        <span class="media-player-seek-bar-time-elapsed-text">{{TimeUtils.formatTime(this.seek)}}</span>
+        <span class="media-player-seek-bar-time-elapsed-text">{{ TimeUtils.formatTime(this.seek) }}</span>
       </div>
       <div class="col p-0 m-0 pe-sm-3 d-flex justify-content-end d-flex align-items-center">
         <div class="media-player-nav-button-previous media-player-nav-button-padding" style="z-index: 5;"
@@ -73,35 +73,36 @@
            (touchmove)="handleSeekBarTouchMove($event)">
         <div class="media-player-seek-bar-container" #trackBarContainer>
           @if (this.seekBarMouseMode || this.seekBarTouchMode) {
-            <div class="media-player-seek-bar-placeholder" [ngStyle]="{'width': this.percentSeek + '%'}" #trackBarSeek></div>
+            <div class="media-player-seek-bar-placeholder" [ngStyle]="{'width': this.percentSeek + '%'}"
+                 #trackBarSeek></div>
           }
-          <div class="media-player-seek-bar-time-elapsed-strip" [ngStyle]="{'width': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
+          <div class="media-player-seek-bar-time-elapsed-strip"
+               [ngStyle]="{'width': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
                #trackBar></div>
           <div class="media-player-seek-bar-time-elapsed-playhead d-flex justify-content-center align-items-center"
                [ngStyle]="{'left': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}">
           </div>
           @if (this.seekBarMouseMode || this.seekBarTouchMode) {
             <div [ngStyle]="{'left': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
-                 class="media-player-seek-bar-seek-time-display-tag d-flex justify-content-center align-items-center" #playheadTimer>
+                 class="media-player-seek-bar-seek-time-display-tag d-flex justify-content-center align-items-center"
+                 #playheadTimer>
               {{ this.playheadTime }}
             </div>
           }
         </div>
       </div>
-      @if (this.audioGlobal.available()) {
-        @if (transcriptEnabled) {
-          <div class="media-player-transcript-container px-3 d-flex justify-content-center align-items-center"
-               [ngClass]="{'media-player-transcript-container-visible': this.transcriptVisible}">
-            @if (this.displayChunk) {
-              @for (chunk of this.displayChunk; track chunk.start) {
-                <span class="media-player-transcript-base-text-transition"
-                      [ngClass]="{'media-player-transcript-text-highlight': this.audioGlobal.seek() >= chunk.start && this.audioGlobal.seek() < chunk.end}">{{ chunk.word }}</span>&nbsp;
-              }
+      @if (this.audioGlobal.available() && transcriptEnabled) {
+        <div class="media-player-transcript-container px-3 d-flex justify-content-center align-items-center"
+             [ngClass]="{'media-player-transcript-container-visible': this.transcriptVisible}">
+          @if (this.displayChunk) {
+            @for (chunk of this.displayChunk; track chunk.start) {
+              <span class="media-player-transcript-base-text-transition"
+                    [ngClass]="{'media-player-transcript-text-highlight': this.audioGlobal.seek() >= chunk.start && this.audioGlobal.seek() < chunk.end}">{{ chunk.word }}</span>&nbsp;
             }
-          </div>
-        }
-        <img class="media-player-background-svg" src="assets/img/svg/wave-sand.svg"/>
+          }
+        </div>
       }
+      <img class="media-player-background-svg" src="assets/img/svg/wave-sand.svg"/>
     </div>
   </div>
 </div>

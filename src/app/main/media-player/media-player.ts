@@ -104,7 +104,8 @@ export class MediaPlayer implements OnInit {
               protected audioGlobal: AudioGlobal,
               protected http: HttpClient,
               @Inject(DOCUMENT) private document: Document,
-              protected cdr: ChangeDetectorRef) {}
+              protected cdr: ChangeDetectorRef) {
+  }
 
   ngOnInit(): void {
     this.eventBus.onLoad.subscribe((content) => {
@@ -131,7 +132,7 @@ export class MediaPlayer implements OnInit {
       this.handleNext();
       this.cdr.detectChanges();
     });
-    }
+  }
 
   // Animation Loop
   animate() {
@@ -309,7 +310,7 @@ export class MediaPlayer implements OnInit {
   }
 
   //// Handle seek w/ mouse
-  handleSeekBarMouseMove($event: MouseEvent){
+  handleSeekBarMouseMove($event: MouseEvent) {
     if (this.seekBarMouseMode && !this.seekBarTouchMode) {
       const rect = ($event.currentTarget as HTMLElement).getBoundingClientRect();
       const x = $event.clientX - rect.left;
@@ -343,7 +344,7 @@ export class MediaPlayer implements OnInit {
 
   handleSeekBarTouchStart(event: TouchEvent) {
     this.seekBarMouseMode = false;
-    setTimeout(()=> {
+    setTimeout(() => {
       this.seekBarTouchMode = true;
     }, 75)
   }
@@ -362,7 +363,7 @@ export class MediaPlayer implements OnInit {
     const seekFloorFloor = (Math.floor(seekFloor / 10) * 10);
     let start = seekFloorFloor;
     let end = seekFloorFloor + 10;
-    const compKey =  seekFloorFloor + '-' + this.audioGlobal.content.uuid;
+    const compKey = seekFloorFloor + '-' + this.audioGlobal.content.uuid;
     if (this.getCurrentChunk && !this.wordMap.has(compKey)) {
       this.getWords(start, end, compKey);
       this.getCurrentChunk = false;
@@ -425,13 +426,12 @@ export class MediaPlayer implements OnInit {
   }
 
   getTranscript(seekFloor: any) {
-    const compKey =  (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
+    const compKey = (Math.floor(seekFloor / 10) * 10) + '-' + this.audioGlobal.content.uuid;
     let wordMap = this.wordMap.get(compKey);
     return wordMap;
   }
 
-  resetTranscript()
-  {
+  resetTranscript() {
     if (this.getCurrentChuckRequired(this.audioGlobal.seek())) {
       this.getCurrentChunk = true;
     }

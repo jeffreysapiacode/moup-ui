@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {EventBus} from './event-bus';
 import {environment} from '../../environments/environment';
 import {Howl} from 'howler';
@@ -59,10 +59,10 @@ export class AudioGlobal {
     this.sound.on('pause', () => {
       this.eventBus.onPause.emit(this.content);
     });
-    this.sound.on('end', ()=> {
+    this.sound.on('end', () => {
       this.eventBus.onEnd.emit(this.content);
     });
-    this.sound.on('loaderror', ()=> {
+    this.sound.on('loaderror', () => {
     });
     this.sound.on('playerror', () => {
     });

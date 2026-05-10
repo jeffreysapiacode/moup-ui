@@ -1,8 +1,6 @@
-
-
 export class TimeUtils {
 
-  static formatTime (totalSeconds: any) {
+  static formatTime(totalSeconds: any) {
     const seconds = Math.floor(totalSeconds);
     const minutes = Math.floor(totalSeconds / 60);
     const hours = Math.floor(totalSeconds / (60 * 60));
@@ -14,6 +12,4 @@ export class TimeUtils {
       return hours + ':' + mm + ':' + ss;
     }
   }
-
 }
-

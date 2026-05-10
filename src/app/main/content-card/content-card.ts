@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
 import {TimeUtils} from '../../util/time-utils';
 import {LocalStorageUtil} from '../../util/local-storage-util';
 import {NgClass, NgStyle} from '@angular/common';
@@ -66,7 +66,7 @@ export class ContentCard implements OnInit {
   }
 
   public handleLoad() {
-    if(this.content !== this.audioGlobal.content) {
+    if (this.content !== this.audioGlobal.content) {
       this.audioGlobal.setContent(this.content);
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
       // Check if there is a saved start time
