@@ -30,6 +30,7 @@ export class MediaPlayer implements OnInit {
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
   @ViewChild('playheadTimer') playheadTimer!: ElementRef;
+  @ViewChild('playButton') playButton!: ElementRef;
 
   // Universal
   innerWidth: any = window.innerWidth;
@@ -37,9 +38,6 @@ export class MediaPlayer implements OnInit {
   apiUrl = environment.apiUrl;
   open: boolean = false;
   content: any;
-
-  // Track Navigation
-  playing: boolean = false;
 
   // Transcript
   maxWordsOnScreen: number = 3;
@@ -49,6 +47,9 @@ export class MediaPlayer implements OnInit {
   wordMap: Map<string, any> = new Map();
   transcriptVisible: boolean = false;
   displayChunk: any;
+
+  // Track Navigation
+  playing: boolean = false;
 
   // Seek Bar
   rectLeftX = 0;
@@ -70,6 +71,8 @@ export class MediaPlayer implements OnInit {
   @HostListener('document:keydown.space', ['$event'])
   handleGlobalSpaceBar(event: any) {
     event.preventDefault();
+    this.playButton.nativeElement.focus();
+    setTimeout(() => {this.playButton.nativeElement.blur();}, 500)
     this.handlePlay();
   }
 
@@ -141,24 +144,21 @@ export class MediaPlayer implements OnInit {
       this.seekBarMouseMode || this.seekBarTouchMode ?
         this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.content.duration) * 100:
         this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
+      this.displayChunk = this.getDisplayChunk(this.displayArray);
+      this.transcriptVisible = !!(this.displayChunk && this.displayChunk.length > 0);
       this.seekFloor = Math.floor(this.audioGlobal.seek());
-      if (this.displayArray && this.displayArray.length > 0) {
-        this.displayChunk = this.getDisplayChunk(this.displayArray);
-        this.transcriptVisible = !!(this.displayChunk && this.displayChunk.length > 0);
-      }
-      if (this.seekFloor !== this.count) {
-        if (this.seekFloor % 10 === 0) {
-          if (this.transcriptEnabled && this.screenVisible) {
-            this.fetchAndCacheTranscript(this.seekFloor);
-            const wordListTmp = this.getTranscript(this.seekFloor);
-            if (wordListTmp) {
-              this.wordList = wordListTmp;
-              this.displayArray = this.chunkData(this.wordList);
-            }
+      if (this.seekFloor !== this.count
+        && this.seekFloor % 10 === 0
+        && this.transcriptEnabled
+        && this.screenVisible) {
+          this.fetchAndCacheTranscript(this.seekFloor);
+          const wordListTmp = this.getTranscript(this.seekFloor);
+          if (wordListTmp) {
+            this.wordList = wordListTmp;
+            this.displayArray = this.chunkData(this.wordList);
           }
-        }
-        this.saveToLocalStorage(this.seekFloor)
-        this.count = this.seekFloor;
+          this.saveToLocalStorage(this.seekFloor)
+          this.count = this.seekFloor;
       }
       this.cdr.detectChanges();
     }
@@ -260,7 +260,7 @@ export class MediaPlayer implements OnInit {
     localStorage.setItem('moup', JSON.stringify(storage));
   }
 
-  // Seek Bar
+  // Seek Bar /////////////////////////////////
   seekToTrack(index: number) {
     const content = this.getContentByIndex(index);
     this.audioGlobal.setContent(content);
@@ -355,8 +355,11 @@ export class MediaPlayer implements OnInit {
     return touchMode ? value - offset : value;
   }
 
-  // Transcript
+  // Transcript //////////////////////////////
   getDisplayChunk(displayArray: any) {
+    if (!displayArray || displayArray.length === 0) {
+      return;
+    }
     for (let displayChunk of displayArray) {
       let start = displayChunk[0].start;
       let end = displayChunk[displayChunk.length - 1].end;
