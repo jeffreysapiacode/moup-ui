@@ -453,6 +453,9 @@ export class MediaPlayer implements OnInit {
   }
 
   cacheTranscript() {
+    if (this.previousHold || this.nextHold) {
+      return;
+    }
     const cacheKey = this.buildCacheKey(this.seekFloor, this.audioGlobal.content.uuid);
     if (!this.wordMap.has(cacheKey)) {
       this.getWordsFromAPI(this.calculateSeekFloorMultiple(this.seekFloor), cacheKey);
