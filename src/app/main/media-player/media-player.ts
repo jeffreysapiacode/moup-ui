@@ -162,6 +162,12 @@ export class MediaPlayer implements OnInit {
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       // Happens every 1 second of play time
       if (this.seekFloor !== this.seekFloorStored ) {
+        if (this.previousHold) {
+          this.audioGlobal.sound.seek(this.audioGlobal.seek() - this.seekAmountSeconds);
+        }
+        if (this.nextHold) {
+          this.audioGlobal.sound.seek(this.audioGlobal.seek() + this.seekAmountSeconds);
+        }
         if (this.transcriptEnabled && this.screenVisible) {
           this.cacheTranscript();
         }
@@ -175,18 +181,14 @@ export class MediaPlayer implements OnInit {
 
   // Track Navigation
   handlePreviousTouchStart($event: TouchEvent) {
-    // make it so it detects a hold of 1 second
     $event.preventDefault();
     this.previousHoldTimeoutId = setTimeout(()=> {
       this.previousHold = true;
-      alert('Previous Detected')
       console.log('Hold detected');
     }, 1000);
   }
 
   handlePreviousTouchEnd($event: TouchEvent) {
-    $event.preventDefault();
-    // make it so it detects a hold of 1 second
     clearTimeout(this.previousHoldTimeoutId);
     this.previousHold = false;
   }
@@ -195,13 +197,11 @@ export class MediaPlayer implements OnInit {
     $event.preventDefault();
     this.nextHoldTimeoutId = setTimeout(()=> {
       this.nextHold = true;
-      alert('Next detected')
       console.log('Hold detected');
     }, 1000);
   }
 
   handleNextTouchEnd($event: TouchEvent) {
-    $event.preventDefault();
     clearTimeout(this.nextHoldTimeoutId);
     this.nextHold = false;
   }
