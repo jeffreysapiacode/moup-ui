@@ -127,6 +127,7 @@ export class MediaPlayer implements OnInit {
         this.seekToTime(storedInfo.seek);
       }
       this.audioGlobal.play();
+      this.cdr.detectChanges();
     });
     this.eventBus.onPlay.subscribe((content: any) => {
       this.animate();
@@ -236,8 +237,7 @@ export class MediaPlayer implements OnInit {
         return;
       }
     }
-    this.cacheTranscript();
-    this.audioGlobal.sound.seek(0);
+    this.seekToTime(0);
     this.percentProgress = 0;
   }
 

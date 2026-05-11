@@ -88,13 +88,13 @@
               <div class="media-player-seek-bar-placeholder" [ngStyle]="{'width': this.percentProgressPlaceholder + '%'}" ></div>
             }
             <div class="media-player-seek-bar-time-elapsed-strip"
-                 [ngStyle]="{'width': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
+                 [ngStyle]="{'width': calculateOffset(this.percentProgress, this.seekBarTouchMode, 0) + '%'}"
                  #trackBar></div>
             <div class="media-player-seek-bar-time-elapsed-playhead d-flex justify-content-center align-items-center"
-                 [ngStyle]="{'left': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}">
+                 [ngStyle]="{'left': calculateOffset(this.percentProgress, this.seekBarTouchMode, 0) + '%'}">
             </div>
             @if (this.seekBarMouseMode || this.seekBarTouchMode) {
-              <div [ngStyle]="{'left': calculateOffset(this.percentProgress, this.seekBarTouchMode, 5) + '%'}"
+              <div [ngStyle]="{'left': calculateOffset(this.percentProgress, this.seekBarTouchMode, 0) + '%'}"
                    class="media-player-seek-bar-seek-time-display-tag d-flex justify-content-center align-items-center"
                    #playheadTimer>
                 {{ this.playheadTime }}
