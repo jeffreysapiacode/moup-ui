@@ -58,7 +58,7 @@ export class ContentCard implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    const rnd = Math.random() * (650 - 100) + 100;
+    const rnd = Math.random() * (650 - 0.01) + 0.01;
     setTimeout(() => {
       this.visible = true;
       this.cdr.detectChanges();
