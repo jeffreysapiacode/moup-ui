@@ -46,20 +46,20 @@ export class ContentCard implements OnInit {
       }
       this.cdr.detectChanges();
     });
-    this.eventBus.onPlay.subscribe((content) => {
+    this.eventBus.onPlay.subscribe((content: any) => {
       this.playing = true;
       this.cdr.detectChanges();
     });
-    this.eventBus.onPause.subscribe((content) => {
+    this.eventBus.onPause.subscribe((content: any) => {
       this.playing = false;
       this.cdr.detectChanges();
     });
-    this.eventBus.onEnd.subscribe((content) => {
+    this.eventBus.onEnd.subscribe((content: any) => {
       if (this.content.uuid === content.uuid) {
-        this.audioGlobal.sound.seek(0);
-        LocalStorageUtil.reset(this.audioGlobal.content.uuid);
-        this.elapsedOrSavedTime = TimeUtils.formatTime(0);
         this.playing = false;
+        this.audioGlobal.sound.seek(0);
+        this.elapsedOrSavedTime = TimeUtils.formatTime(0);
+        LocalStorageUtil.reset(this.audioGlobal.content.uuid);
         this.cdr.detectChanges();
       }
     });
@@ -68,7 +68,6 @@ export class ContentCard implements OnInit {
   public handleLoad() {
     if (this.content !== this.audioGlobal.content) {
       this.audioGlobal.setContent(this.content);
-      // Emit load event here and do the play stored in fo thing in the media player
     } else {
       if (this.playing) {
         this.audioGlobal.pause();

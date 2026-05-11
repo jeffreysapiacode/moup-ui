@@ -129,7 +129,6 @@ export class MediaPlayer implements OnInit {
       this.playing = true;
       this.animate();
       console.log('animate');
-      this.cacheTranscript();
       this.cdr.detectChanges();
     });
     this.eventBus.onPause.subscribe((content: any) => {
@@ -151,16 +150,16 @@ export class MediaPlayer implements OnInit {
   // Animation Loop
   animate() {
     if (this.playing) {
-      console.log('running')
+      console.log('running: ' + this.audioGlobal.sound.seek())
       this.eventBus.onAnimationFrame.emit({content: this.content, seek: this.audioGlobal.seek()});
       this.seekBarMouseMode || this.seekBarTouchMode ?
-        this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.content.duration) * 100:
+        this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.content.duration) * 100 :
         this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
       this.displaySegment = this.getDisplaySegment(this.displayArray);
       this.transcriptVisible = !!(this.displaySegment && this.displaySegment.length > 0);
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       // Happens every 1 second of play time
-      if (this.seekFloor !== this.seekFloorStored ) {
+      if (this.seekFloor !== this.seekFloorStored) {
         if (this.transcriptEnabled && this.screenVisible) {
           this.cacheTranscript();
         }

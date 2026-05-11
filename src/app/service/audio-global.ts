@@ -15,15 +15,6 @@ export class AudioGlobal {
   constructor(private eventBus: EventBus) {
   }
 
-  setContent(content: any) {
-    if (!content) {
-      return;
-    }
-    this.content = content;
-    this.resetSound(this.content.filename);
-    this.eventBus.onLoad.emit(this.content);
-  }
-
   available() {
     return this.content && this.sound;
   }
@@ -40,8 +31,20 @@ export class AudioGlobal {
     return this.sound.seek();
   }
 
-  resetSound(filename: any) {
+  setContent(content: any) {
+    if (!content) {
+      return;
+    }
+    this.content = content;
+    this.setSound(this.content.filename);
+    this.eventBus.onLoad.emit(this.content);
+  }
+
+  setSound(filename: any) {
     Howler.stop();
+    if (this.sound) {
+      this.sound.stop();
+    }
     this.sound = new Howl({
       src: [this.apiUrl + '/stream/' + filename],
       html5: true
