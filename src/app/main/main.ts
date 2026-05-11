@@ -60,15 +60,16 @@ export class Main implements OnInit {
       if (this.waitForResponse) {
         this.contentSubscription?.unsubscribe();
         this.waitForResponse = false;
-        this.loading = false;
-        this.error = true;
-        this.cdr.detectChanges();
+        setTimeout(()=> {
+          this.loading = false;
+          this.error = true;
+          this.cdr.detectChanges();
+        })
       }
     }, 10000);
     this.contentSubscription = this.http.get(this.apiUrl + '/content', { observe: 'response' })
       .subscribe((response: any) => {
         this.statusCode = response.status;
-        console.log(this.statusCode);
         clearTimeout(timeoutId);
         this.audioGlobal.contentList = response.body;
       }, (error: any) => {
@@ -77,6 +78,10 @@ export class Main implements OnInit {
       }, () => {
         this.loading = false;
       });
+  }
+
+  click() {
+
   }
 
   waitForResponseLoop() {
