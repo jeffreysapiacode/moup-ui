@@ -24,7 +24,7 @@ export class Main implements OnInit {
   apiUrl = environment.apiUrl;
   error: boolean = false;
   statusCode: any;
-  waitForResponse: boolean = false;
+  waitForResponseRequired: boolean = false;
   contentSubscription: Subscription | undefined;
 
   @HostListener('window:resize', ['$event'])
@@ -46,20 +46,21 @@ export class Main implements OnInit {
     this.loading = true;
     this.error = false;
     this.statusCode = null;
-    this.waitForResponse = false;
+    this.waitForResponseRequired = false;
     setTimeout(() => {
       if (this.statusCode) {
         this.loading = false;
         this.cdr.detectChanges();
       } else {
-        this.waitForResponse = true;
+        this.waitForResponseRequired = true;
         this.waitForResponseLoop();
       }
     }, 2000);
+    // Set service timeout timer for 10 seconds
     const timeoutId = setTimeout(()=>{
-      if (this.waitForResponse) {
+      if (this.waitForResponseRequired) {
         this.contentSubscription?.unsubscribe();
-        this.waitForResponse = false;
+        this.waitForResponseRequired = false;
         setTimeout(()=> {
           this.loading = false;
           this.error = true;
@@ -85,11 +86,13 @@ export class Main implements OnInit {
   }
 
   waitForResponseLoop() {
-    if (this.waitForResponse) {
+    if (this.waitForResponseRequired) {
       if (this.statusCode === 200) {
-        this.waitForResponse = false;
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.waitForResponseRequired = false;
+        setTimeout(()=> {
+          this.loading = false;
+          this.cdr.detectChanges();
+        })
       }
       requestAnimationFrame(this.waitForResponseLoop.bind(this));
     }
