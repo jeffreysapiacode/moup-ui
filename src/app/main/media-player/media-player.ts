@@ -365,8 +365,14 @@ export class MediaPlayer implements OnInit {
     this.seekBarTouchMode = false;
   }
 
-  calculateOffset(value: any, touchMode: boolean, offset: number) {
-    return touchMode ? value - offset : value;
+  calculateOffset(value: any, offset: number, touchOffset: number) {
+    if (this.seekBarMouseMode) {
+      return value - offset;
+    }
+    if (this.seekBarTouchMode) {
+      return value - (offset + touchOffset);
+    }
+    return value;
   }
 
   // Transcript //////////////////////////////
