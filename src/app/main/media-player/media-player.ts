@@ -52,7 +52,12 @@ export class MediaPlayer implements OnInit {
   displaySegmentStored: any;
 
   // Track Navigation
+  seekAmountSeconds: number = 5;
   playing: boolean = false;
+  nextHold: boolean = false;
+  previousHold: boolean = false;
+  nextHoldTimeoutId: number | undefined;
+  previousHoldTimeoutId: number | undefined;
 
   // Seek Bar
   rectLeftX = 0;
@@ -78,16 +83,14 @@ export class MediaPlayer implements OnInit {
 
   @HostListener('window:keydown.arrowLeft', ['$event'])
   handleLeftArrow(event: any) {
-    // Seek to previous 10 seconds
     event.preventDefault();
-    this.seekToTime(this.audioGlobal.seek() - 10);
+    this.seekToTime(this.audioGlobal.seek() - this.seekAmountSeconds);
   }
 
   @HostListener('window:keydown.arrowRight', ['$event'])
   handleRightArrow(event: any) {
-    // Seek to next 10 seconds
     event.preventDefault();
-    this.seekToTime(this.audioGlobal.seek() + 10);
+    this.seekToTime(this.audioGlobal.seek() + this.seekAmountSeconds);
   }
 
   @HostListener('document:visibilitychange', [])
@@ -171,23 +174,57 @@ export class MediaPlayer implements OnInit {
   }
 
   // Track Navigation
-  // Next
+  handlePreviousTouchStart($event: TouchEvent) {
+    // make it so it detects a hold of 1 second
+    $event.preventDefault();
+    this.previousHoldTimeoutId = setTimeout(()=> {
+      this.previousHold = true;
+      alert('Previous Detected')
+      console.log('Hold detected');
+    }, 1000);
+  }
+
+  handlePreviousTouchEnd($event: TouchEvent) {
+    $event.preventDefault();
+    // make it so it detects a hold of 1 second
+    clearTimeout(this.previousHoldTimeoutId);
+    this.previousHold = false;
+  }
+
+  handleNextTouchStart($event: TouchEvent) {
+    $event.preventDefault();
+    this.nextHoldTimeoutId = setTimeout(()=> {
+      this.nextHold = true;
+      alert('Next detected')
+      console.log('Hold detected');
+    }, 1000);
+  }
+
+  handleNextTouchEnd($event: TouchEvent) {
+    $event.preventDefault();
+    clearTimeout(this.nextHoldTimeoutId);
+    this.nextHold = false;
+  }
+
+  handleNextIncrement($event: MouseEvent) {
+    $event.preventDefault();
+    if (!this.nextHold) {
+      this.seekToTime(this.audioGlobal.seek() + this.seekAmountSeconds);
+    }
+  }
+
+  handlePreviousIncrement($event: Event) {
+    $event.preventDefault();
+    if (!this.previousHold) {
+      this.seekToTime(this.audioGlobal.seek() - this.seekAmountSeconds);
+    }
+  }
+
   handleNext() {
     const index = this.getTrackIndex(this.content.uuid);
     if (index < (this.audioGlobal.contentList.length - 1)) {
       this.seekToTrack(index + 1);
     }
-  }
-
-  handleNextTap($event: MouseEvent) {
-    $event.preventDefault();
-    this.seekToTime(this.audioGlobal.seek() + 10);
-  }
-
-  // Previous
-  handlePreviousTap($event: MouseEvent) {
-    $event.preventDefault();
-    this.seekToTime(this.audioGlobal.seek() - 10);
   }
 
   handlePrevious() {
@@ -204,7 +241,6 @@ export class MediaPlayer implements OnInit {
     this.percentProgress = 0;
   }
 
-  // Play/Pause
   handlePlay() {
     if (this.playing) {
       this.audioGlobal.pause();

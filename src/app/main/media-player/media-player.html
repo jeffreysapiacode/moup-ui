@@ -19,7 +19,9 @@
         </div>
         <div class="col p-0 m-0 pe-sm-3 d-flex justify-content-end d-flex align-items-center">
           <div class="media-player-nav-button-previous media-player-nav-button-padding" style="z-index: 5;"
-               (click)="handlePreviousTap($event)">
+               (touchstart)="handlePreviousTouchStart($event)"
+               (touchend)="handlePreviousTouchEnd($event)"
+               (pointerup)="handlePreviousIncrement($event)">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M13.3333 30H10V10H13.3333M30 30L15.8333 20L30 10V30Z" fill="#68654B"/>
             </svg>
@@ -60,7 +62,9 @@
         </div>
         <div class="col p-0 m-0 ps-sm-3 d-flex align-items-center">
           <div class="media-player-nav-button-next media-player-nav-button-padding" style="z-index: 5;"
-               (click)="handleNextTap($event)">
+               (touchstart)="handleNextTouchStart($event)"
+               (touchend)="handleNextTouchEnd($event)"
+               (pointerup)="handleNextIncrement($event)">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M26.6667 30H30V10H26.6667M10 30L24.1667 20L10 10V30Z" fill="#68654B"/>
             </svg>
