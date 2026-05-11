@@ -73,7 +73,6 @@ export class ContentCard implements OnInit {
         this.audioGlobal.pause();
       } else {
         this.audioGlobal.play();
-        this.eventBus.onPlay.emit(this.content);
       }
     }
   }

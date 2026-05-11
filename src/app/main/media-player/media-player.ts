@@ -210,10 +210,7 @@ export class MediaPlayer implements OnInit {
     if (this.playing) {
       this.audioGlobal.pause();
     } else {
-      if (this.audioGlobal.available()) {
-        this.audioGlobal.play();
-        this.eventBus.onPlay.emit(this.content);
-      }
+      this.audioGlobal.play();
     }
   }
 
