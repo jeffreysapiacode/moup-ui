@@ -38,6 +38,7 @@ export class Main implements OnInit {
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
     this.loading = true;
+    this.error = false;
     this.http.get(this.apiUrl + '/content')
       .subscribe((contentList: any) => {
         this.audioGlobal.contentList = contentList;
