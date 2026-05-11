@@ -5,8 +5,6 @@ import {environment} from '../../environments/environment';
 import {MediaPlayer} from './media-player/media-player';
 import {NgClass} from '@angular/common';
 import {AudioGlobal} from '../service/audio-global';
-import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {EventBus} from '../service/event-bus';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -36,7 +34,6 @@ export class Main implements OnInit {
 
   constructor(protected http: HttpClient,
               protected audioGlobal: AudioGlobal,
-              protected eventBus: EventBus,
               protected cdr: ChangeDetectorRef) {
   }
 
@@ -51,7 +48,6 @@ export class Main implements OnInit {
     this.statusCode = null;
     this.waitForResponse = false;
     setTimeout(() => {
-      console.log(this.statusCode);
       if (this.statusCode) {
         this.loading = false;
         this.cdr.detectChanges();
@@ -72,6 +68,7 @@ export class Main implements OnInit {
     this.contentSubscription = this.http.get(this.apiUrl + '/content', { observe: 'response' })
       .subscribe((response: any) => {
         this.statusCode = response.status;
+        console.log(this.statusCode);
         clearTimeout(timeoutId);
         this.audioGlobal.contentList = response.body;
       }, (error: any) => {
