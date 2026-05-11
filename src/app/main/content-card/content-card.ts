@@ -29,31 +29,14 @@ export class ContentCard implements OnInit, AfterViewChecked {
               protected cdr: ChangeDetectorRef) {
   }
 
-  ngAfterViewChecked(): void {
-    const rnd = (Math.random() * (0.65 - 0.1) + 0.1) * 1000;
-        setTimeout(() => {
-          this.visible = true;
-          this.cdr.detectChanges();
-        }, rnd);
-    }
-
   ngOnInit(): void {
     const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
-    if (storedInfo) {
-      this.elapsedOrSavedTime = TimeUtils.formatTime(storedInfo.seek);
-    }
+    this.elapsedOrSavedTime = TimeUtils.formatTime(storedInfo ? storedInfo.seek : 0);
     this.eventBus.onAnimationFrame.subscribe((data: any) => {
       if (data.content.uuid === this.content.uuid) {
         this.elapsedOrSavedTime = TimeUtils.formatTime(data.seek);
-      } else {
-        const storage = LocalStorageUtil.getStorage(this.content.uuid);
-        if (storage) {
-          this.elapsedOrSavedTime = TimeUtils.formatTime(storage.seek);
-        } else {
-          this.elapsedOrSavedTime = TimeUtils.formatTime(0);
-        }
+        this.cdr.detectChanges();
       }
-      this.cdr.detectChanges();
     });
     this.eventBus.onPlay.subscribe((content: any) => {
       this.playing = true;
@@ -72,6 +55,14 @@ export class ContentCard implements OnInit, AfterViewChecked {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  ngAfterViewChecked(): void {
+    const rnd = Math.random() * (650 - 100) + 100;
+    setTimeout(() => {
+      this.visible = true;
+      this.cdr.detectChanges();
+    }, rnd);
   }
 
   public handleLoad() {
