@@ -33,7 +33,7 @@ export class ContentCard implements OnInit {
     if (storedInfo) {
       this.elapsedOrSavedTime = TimeUtils.formatTime(storedInfo.seek);
     }
-    this.eventBus.onAnimationFrame.subscribe((data) => {
+    this.eventBus.onAnimationFrame.subscribe((data: any) => {
       if (data.content.uuid === this.content.uuid) {
         this.elapsedOrSavedTime = TimeUtils.formatTime(data.seek);
       } else {

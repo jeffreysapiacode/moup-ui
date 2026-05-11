@@ -113,8 +113,8 @@ export class MediaPlayer implements OnInit {
   ngOnInit(): void {
     this.eventBus.onLoad.subscribe((content: any) => {
       this.loading = true;
-      this.content = content;
       this.open = true;
+      this.content = content;
     });
     this.eventBus.onLoaded.subscribe((content: any) => {
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
@@ -126,8 +126,9 @@ export class MediaPlayer implements OnInit {
       this.loading = false;
     });
     this.eventBus.onPlay.subscribe((content: any) => {
-      this.animate();
       this.playing = true;
+      this.animate();
+      console.log('animate');
       this.cacheTranscript();
       this.cdr.detectChanges();
     });
@@ -150,6 +151,7 @@ export class MediaPlayer implements OnInit {
   // Animation Loop
   animate() {
     if (this.playing) {
+      console.log('running')
       this.eventBus.onAnimationFrame.emit({content: this.content, seek: this.audioGlobal.seek()});
       this.seekBarMouseMode || this.seekBarTouchMode ?
         this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.content.duration) * 100:
@@ -166,8 +168,8 @@ export class MediaPlayer implements OnInit {
         this.seekFloorStored = this.seekFloor;
       }
       this.cdr.detectChanges();
+      requestAnimationFrame(this.animate.bind(this));
     }
-    requestAnimationFrame(this.animate.bind(this));
   }
 
   // Track Navigation

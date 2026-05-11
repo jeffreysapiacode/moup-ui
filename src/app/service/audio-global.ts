@@ -16,13 +16,12 @@ export class AudioGlobal {
   }
 
   setContent(content: any) {
-    this.content = content;
-    if (this.content) {
-      this.resetSound(this.content.filename);
-      this.eventBus.onLoad.emit(this.content);
-    } else {
-      console.error('Content not found');
+    if (!content) {
+      return;
     }
+    this.content = content;
+    this.resetSound(this.content.filename);
+    this.eventBus.onLoad.emit(this.content);
   }
 
   available() {
@@ -43,9 +42,6 @@ export class AudioGlobal {
 
   resetSound(filename: any) {
     Howler.stop();
-    if (this.sound) {
-      this.sound.stop();
-    }
     this.sound = new Howl({
       src: [this.apiUrl + '/stream/' + filename],
       html5: true
@@ -68,5 +64,4 @@ export class AudioGlobal {
     this.sound.on('playerror', () => {
     });
   }
-
 }
