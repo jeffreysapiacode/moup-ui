@@ -53,7 +53,7 @@
   border: solid 10px #68654B
 
 // Loading
-.main-loading-title-text
+.main-title-text
   color: #AAE5E3
   font-size: 1.7rem
   font-weight: 600
@@ -61,6 +61,14 @@
   opacity: 0 !important
   transition: opacity 0.3s ease-out
   transform: translateY(-140px)
-  z-index: -9999
-.main-loading-title-text-visible
+  z-index: 500
+.main-title-text-visible
   opacity: 100% !important
+
+// Error
+.main-error-retry-button-text
+  cursor: pointer
+  transition: color 0.2s ease-in
+
+.main-error-retry-button-text:hover
+  color: #AAE5E3

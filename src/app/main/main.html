@@ -7,15 +7,18 @@
              [ngClass]="{'main-content-card-scroll-box-padding': this.audioGlobal.content}">
           <!-- Main Loading -->
           <div class="vh-100 vw-100 position-absolute d-flex justify-content-center align-items-center">
-            <span class="main-loading-title-text" [ngClass]="{'main-loading-title-text-visible':this.loading}">Loading...</span>
+            <span class="main-title-text" [ngClass]="{'main-title-text-visible':this.loading}">Loading...</span>
           </div>
             @if (!this.loading) {
               @if (this.error) {
-                <div class="row p-0 m-0">
-                  <div class="col vh-100 p-0 m-0 d-flex justify-content-center align-items-center" [style]="{transform: 'translateY(-180px)'}">
-                    <span class="main-loading-title-text text-center">There was an error.<br><span (click)="handleGetContent()" class="p-3">Retry</span></span>
-                  </div>
+                <div class="vh-100 vw-100 position-absolute d-flex justify-content-center align-items-center">
+                  <span class="main-title-text text-center" [ngClass]="{'main-title-text-visible':!this.loading}">There was an error.<br><span class="main-error-retry-button-text p-3" (click)="handleGetContent()">Retry</span></span>
                 </div>
+<!--                <div class="row p-0 m-0">-->
+<!--                  <div class="col vh-100 p-0 m-0 d-flex justify-content-center align-items-center" [style]="{transform: 'translateY(-180px)'}">-->
+<!--                    <span class="main-loading-title-text text-center">There was an error.<br><span class="main-error-retry-button-text p-3" (click)="handleGetContent()">Retry</span></span>-->
+<!--                  </div>-->
+<!--                </div>-->
               }
               @else {
                 @if (this.audioGlobal.contentList.length === 0) {
