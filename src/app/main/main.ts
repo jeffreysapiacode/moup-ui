@@ -42,13 +42,17 @@ export class Main implements OnInit {
 
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
+    this.handleGetContent();
+  }
+
+  handleGetContent() {
     this.loading = true;
     this.error = false;
     this.statusCode = null;
     this.waitForResponse = false;
-    // Initiate timeout for minimum response time
     setTimeout(() => {
-      if (this.statusCode === 200) {
+      console.log(this.statusCode);
+      if (this.statusCode) {
         this.loading = false;
         this.cdr.detectChanges();
       } else {
@@ -56,23 +60,22 @@ export class Main implements OnInit {
         this.waitForResponseLoop();
       }
     }, 2000);
-    // Cancel subscription after timeout
     const timeoutId = setTimeout(()=>{
       if (this.waitForResponse) {
         this.contentSubscription?.unsubscribe();
         this.waitForResponse = false;
         this.loading = false;
+        this.error = true;
+        this.cdr.detectChanges();
       }
     }, 10000);
     this.contentSubscription = this.http.get(this.apiUrl + '/content', { observe: 'response' })
       .subscribe((response: any) => {
         this.statusCode = response.status;
-        if (this.statusCode === 200) {
-          clearTimeout(timeoutId);
-          console.log('StatusCode: ', this.statusCode);
-          this.audioGlobal.contentList = response.body;
-        }
+        clearTimeout(timeoutId);
+        this.audioGlobal.contentList = response.body;
       }, (error: any) => {
+        this.statusCode = error.status;
         this.error = true;
       }, () => {
         this.loading = false;
@@ -89,6 +92,4 @@ export class Main implements OnInit {
       requestAnimationFrame(this.waitForResponseLoop.bind(this));
     }
   }
-
 }
-

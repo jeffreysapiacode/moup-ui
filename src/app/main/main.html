@@ -13,27 +13,37 @@
               </div>
             </div>
           } @else {
-            @if (this.audioGlobal.contentList.length === 0) {
-              <div class="row p-0 m-0 w-100 h-100">
-                <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
-                  <div class="main-no-content-display px-5 py-5 mx-3">I have decided to delete all of the episodes. It's
-                    nothing personal. In fact, I did it because I love you, and just as importantly, I want you to love
-                    me.
-                  </div>
+            @if (this.error) {
+              <div class="row p-0 m-0">
+                <div class="col vh-100 p-0 m-0 d-flex justify-content-center align-items-center" [style]="{transform: 'translateY(-180px)'}">
+                  <span class="main-loading-title-text text-center">There was an error.<br><span (click)="handleGetContent()" class="p-3">Retry</span></span>
                 </div>
               </div>
             }
-            @if (this.audioGlobal.contentList.length > 0) {
-              <div class="">
-                @for (content of this.audioGlobal.contentList; track content.uuid) {
-                  <div class="row p-0 m-0 pb-3 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
-                    <div class="col p-0 m-0">
-                      <app-content-card [innerWidth]="innerWidth" [content]="content"></app-content-card>
+            @else {
+              @if (this.audioGlobal.contentList.length === 0) {
+                <div class="row p-0 m-0 w-100 h-100">
+                  <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
+                    <div class="main-no-content-display px-5 py-5 mx-3">I have decided to delete all of the episodes. It's
+                      nothing personal. In fact, I did it because I love you, and just as importantly, I want you to love
+                      me.
                     </div>
                   </div>
-                }
-              </div>
+                </div>
+              }
+              @if (this.audioGlobal.contentList.length > 0) {
+                <div class="">
+                  @for (content of this.audioGlobal.contentList; track content.uuid) {
+                    <div class="row p-0 m-0 pb-3 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
+                      <div class="col p-0 m-0">
+                        <app-content-card [innerWidth]="innerWidth" [content]="content"></app-content-card>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
             }
+
           }
 <!--          <img [ngClass]="{'main-container-background-svg-loading': this.loading}" class="main-container-background-svg" src="assets/img/svg/wave-blue.svg"/>-->
           <div [ngClass]="{'main-container-background-svg-loading': this.loading}" class="main-container-background-svg">
