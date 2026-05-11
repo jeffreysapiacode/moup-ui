@@ -245,10 +245,7 @@ export class MediaPlayer implements OnInit {
     if (this.playing) {
       this.audioGlobal.pause();
     } else {
-      if (this.audioGlobal.available()) {
-        this.audioGlobal.play();
-        this.eventBus.onPlay.emit(this.content);
-      }
+      this.audioGlobal.play();
     }
   }
 
@@ -297,13 +294,14 @@ export class MediaPlayer implements OnInit {
     }
   }
 
-  handleSeek() {
+  handleSeekBarMouseClick() {
     if (this.innerWidth < 576) {
       this.seekBarMouseMode = false;
       this.seekBarTouchMode = false;
       return;
+    } else {
+      this.seekToTime(this.playheadSeconds);
     }
-    this.seekToTime(this.playheadSeconds);
   }
 
   calculateSeekPosition(value: any) {
@@ -354,14 +352,17 @@ export class MediaPlayer implements OnInit {
 
   handleSeekBarTouchStart(event: TouchEvent) {
     this.seekBarMouseMode = false;
-    setTimeout(() => {
-      this.seekBarTouchMode = true;
-    }, 75)
+    this.seekBarTouchMode = true;
   }
 
   handleSeekBarTouchEnd(event: TouchEvent) {
+
+    // Determine what is a drag and what is a tap do this by timing the start to end. if 0.3 or less then its a tap, more then its a drag
+
+    if (this.seekBarTouchMode) {
+      this.seekToTime(this.playheadSeconds);
+    }
     this.seekBarTouchMode = false;
-    this.seekToTime(this.playheadSeconds);
   }
 
   calculateOffset(value: any, touchMode: boolean, offset: number) {

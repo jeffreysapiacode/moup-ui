@@ -45,7 +45,7 @@ export class Main implements OnInit {
         setTimeout(() => {
           this.loading = false;
           this.cdr.detectChanges();
-        }, 1500);
+        }, 2000);
       }, (error) => {
         this.error = true;
       }, () => {
