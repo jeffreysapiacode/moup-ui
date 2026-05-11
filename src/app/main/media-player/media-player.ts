@@ -4,7 +4,7 @@ import {
   DOCUMENT,
   ElementRef,
   HostListener,
-  Inject, Input,
+  Inject,
   OnInit,
   ViewChild
 } from '@angular/core';
@@ -27,7 +27,6 @@ import {HttpClient} from '@angular/common/http';
 })
 export class MediaPlayer implements OnInit {
 
-  @Input() loading: boolean = false;
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
   @ViewChild('playheadTimer') playheadTimer!: ElementRef;
@@ -39,6 +38,7 @@ export class MediaPlayer implements OnInit {
   apiUrl = environment.apiUrl;
   open: boolean = false;
   content: any;
+  loading: boolean = false;
 
   // Transcript
   maxWordsOnScreen: number = 3;
@@ -112,23 +112,19 @@ export class MediaPlayer implements OnInit {
 
   ngOnInit(): void {
     this.eventBus.onLoad.subscribe((content: any) => {
-      this.loading = true;
-      this.open = true;
       this.content = content;
-    });
-    this.eventBus.onLoaded.subscribe((content: any) => {
+      this.open = true;
       const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
       // Check if there is a saved start time
       if (storedInfo) {
         this.seekToTime(storedInfo.seek);
       }
       this.audioGlobal.play();
-      this.loading = false;
     });
     this.eventBus.onPlay.subscribe((content: any) => {
-      this.playing = true;
       this.animate();
-      console.log('animate');
+      this.playing = true;
+      this.cacheTranscript();
       this.cdr.detectChanges();
     });
     this.eventBus.onPause.subscribe((content: any) => {
@@ -150,16 +146,15 @@ export class MediaPlayer implements OnInit {
   // Animation Loop
   animate() {
     if (this.playing) {
-      console.log('running: ' + this.audioGlobal.sound.seek())
       this.eventBus.onAnimationFrame.emit({content: this.content, seek: this.audioGlobal.seek()});
       this.seekBarMouseMode || this.seekBarTouchMode ?
-        this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.content.duration) * 100 :
+        this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.content.duration) * 100:
         this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
       this.displaySegment = this.getDisplaySegment(this.displayArray);
       this.transcriptVisible = !!(this.displaySegment && this.displaySegment.length > 0);
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       // Happens every 1 second of play time
-      if (this.seekFloor !== this.seekFloorStored) {
+      if (this.seekFloor !== this.seekFloorStored ) {
         if (this.transcriptEnabled && this.screenVisible) {
           this.cacheTranscript();
         }
@@ -167,8 +162,8 @@ export class MediaPlayer implements OnInit {
         this.seekFloorStored = this.seekFloor;
       }
       this.cdr.detectChanges();
-      requestAnimationFrame(this.animate.bind(this));
     }
+    requestAnimationFrame(this.animate.bind(this));
   }
 
   // Track Navigation
@@ -210,7 +205,10 @@ export class MediaPlayer implements OnInit {
     if (this.playing) {
       this.audioGlobal.pause();
     } else {
-      this.audioGlobal.play();
+      if (this.audioGlobal.available()) {
+        this.audioGlobal.play();
+        this.eventBus.onPlay.emit(this.content);
+      }
     }
   }
 
@@ -369,7 +367,7 @@ export class MediaPlayer implements OnInit {
   getWordsFromAPI(start: number, key: string) {
     this.http.get(this.apiUrl + '/auto-dictate',
       { params: {
-        contentUuid: this.audioGlobal.content.uuid,
+          contentUuid: this.audioGlobal.content.uuid,
           start: start,
           end: (start + this.lookaheadSeconds)}})
       .subscribe((response: any) => {
@@ -378,7 +376,7 @@ export class MediaPlayer implements OnInit {
           this.wordList = this.getTranscript(this.seekFloor);
           this.displayArray = this.segmentWords(this.wordList);
         }
-    });
+      });
   }
 
   segmentWords(wordList: any) {
