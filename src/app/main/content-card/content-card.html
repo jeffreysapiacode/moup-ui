@@ -1,5 +1,6 @@
 <div class="container-fluid p-0 m-0 d-flex justify-content-center">
   <div class="content-card-container"
+       [ngClass]="{'content-card-container-visible': this.visible}"
        [ngStyle]="{'box-shadow': this.innerWidth < 576 ? '14px 14px 0 0 rgba(104, 101, 75, 1.0)':'7px 7px 0 0 rgba(104, 101, 75, 1.0)'}">
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 px-4 py-3">

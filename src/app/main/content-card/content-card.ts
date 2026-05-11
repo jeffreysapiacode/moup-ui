@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import {environment} from '../../../environments/environment';
 import {TimeUtils} from '../../util/time-utils';
@@ -15,18 +15,27 @@ import {AudioGlobal} from '../../service/audio-global';
   templateUrl: './content-card.html',
   styleUrl: './content-card.sass',
 })
-export class ContentCard implements OnInit {
+export class ContentCard implements OnInit, AfterViewChecked {
 
   @Input() content: any;
   @Input() innerWidth: any;
   playing: boolean = false;
   elapsedOrSavedTime: any = TimeUtils.formatTime(0);
   apiUrl = environment.apiUrl;
+  visible: boolean = false;
 
   constructor(protected eventBus: EventBus,
               protected audioGlobal: AudioGlobal,
               protected cdr: ChangeDetectorRef) {
   }
+
+  ngAfterViewChecked(): void {
+    const rnd = (Math.random() * (0.65 - 0.1) + 0.1) * 1000;
+        setTimeout(() => {
+          this.visible = true;
+          this.cdr.detectChanges();
+        }, rnd);
+    }
 
   ngOnInit(): void {
     const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);

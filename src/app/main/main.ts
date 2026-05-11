@@ -23,6 +23,7 @@ export class Main implements OnInit {
   innerWidth: any;
   loading: boolean = false;
   apiUrl = environment.apiUrl;
+  error: boolean = false;
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -44,6 +45,10 @@ export class Main implements OnInit {
           this.loading = false;
           this.cdr.detectChanges();
         }, 2000);
+      }, (error) => {
+        this.error = true;
+      }, () => {
+        this.loading = false;
       });
   }
 }
