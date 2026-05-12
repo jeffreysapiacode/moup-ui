@@ -146,9 +146,15 @@
   background: #F9F6E3
   z-index: 100 !important
   font-weight: 700
+  font-size: 1rem
   color: #8B957D
-  transform: scaleY(1) translateX(-70%) !important
+  transform: translateX(-70%) !important
   transition: left 0.1s ease-out
+@media (min-width: 576px)
+  .media-player-seek-bar-seek-time-display-tag
+    height: 35px
+    width: 70px
+    font-size: 1rem
 
 // Global
 .media-player-background-svg
@@ -156,7 +162,7 @@
   bottom: 0
   z-index: -1
   left: 0
-  opacity: 0.55
+  opacity: 0.95
 
 // Loading
 .media-player-loading-title-text

@@ -41,14 +41,14 @@ export class MediaPlayer implements OnInit {
   loading: boolean = false;
 
   // Transcript
+  transcriptVisible: boolean = false;
   maxWordsOnScreen: number = 3;
   lookaheadSeconds: number = 10;
   transcriptEnabled: boolean = true;
   wordList: any = [];
-  displayArray: any = [];
   wordMap: Map<string, any> = new Map();
-  transcriptVisible: boolean = false;
   displaySegment: any;
+  displaySegments: any = [];
   displaySegmentStored: any;
 
   // Track Navigation
@@ -168,10 +168,18 @@ export class MediaPlayer implements OnInit {
   animate() {
     if (this.playing) {
       this.eventBus.onAnimationFrame.emit({content: this.audioGlobal.content, seek: this.audioGlobal.seek()});
+      const percentProgress = (this.audioGlobal.seek() / this.audioGlobal.content.duration) * 100;
       this.seekBarMouseMode || this.seekBarTouchMode ?
-        this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.audioGlobal.content.duration) * 100:
-        this.percentProgress = (this.audioGlobal.seek() / this.audioGlobal.content.duration) * 100;
-      this.displaySegment = this.getDisplaySegment(this.displayArray);
+        this.percentProgressPlaceholder = percentProgress:
+        this.percentProgress = percentProgress;
+
+      const wordList = this.getTranscript(this.seekFloor + 10);
+      const nextDisplaySegments = this.toSegments(wordList);
+
+      this.wordList = this.getTranscript(this.seekFloor);
+      this.displaySegments = this.toSegments(this.wordList);
+
+      this.displaySegment = this.getCurrentDisplaySegment(this.displaySegments, nextDisplaySegments, this.audioGlobal.seek());
       this.transcriptVisible = !!(this.displaySegment && this.displaySegment.length > 0);
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       // Happens every 1 second of play time
@@ -386,24 +394,32 @@ export class MediaPlayer implements OnInit {
     return value;
   }
 
-  // Transcript //////////////////////////////
-  getDisplaySegment(displayArray: any) {
-    if (!displayArray || displayArray.length === 0) {
+  // Transcript
+  getCurrentDisplaySegment(displaySegments: any, nextDisplaySegments: any, seek: number) {
+    if (!displaySegments || displaySegments.length === 0) {
       return;
     }
-    for (let i = 0; i<displayArray.length; i++) {
-      let displaySegment = displayArray[i];
+    for (let i = 0; i<displaySegments.length; i++) {
+      let displaySegment = displaySegments[i];
       let previousSegment;
       let nextSegment;
       if (i > 0) {
-        previousSegment = displayArray[i-1][displayArray[i-1].length - 1];
+        previousSegment = displaySegments[i-1][displaySegments[i-1].length - 1];
       }
-      if (i < displayArray.length - 1) {
-        nextSegment = displayArray[i+1][0];
+      if (i < displaySegments.length - 1) {
+        nextSegment = displaySegments[i+1][0];
       }
+
+      let nextEnd: any;
+      if (nextDisplaySegments && !nextSegment) {
+         nextEnd = nextDisplaySegments[0][0].start;
+      } else {
+        nextEnd = displaySegment[displaySegment.length - 1].end;
+      }
+
       let start = previousSegment ? previousSegment.end : displaySegment[0].start;
-      let end = nextSegment ? nextSegment.start : displaySegment[displaySegment.length - 1].end;
-      if (this.audioGlobal.seek() > start && this.audioGlobal.seek() < end) {
+      let end = nextSegment ? nextSegment.start : nextEnd;
+      if (seek > start && seek < end) {
         if (!displaySegment && this.displaySegmentStored) {
           return this.displaySegmentStored
         }
@@ -432,12 +448,12 @@ export class MediaPlayer implements OnInit {
         if (response.length > 0) {
           this.wordMap.set(key, response);
           this.wordList = this.getTranscript(this.seekFloor);
-          this.displayArray = this.segmentWords(this.wordList);
+          this.displaySegments = this.toSegments(this.wordList);
         }
       });
   }
 
-  segmentWords(wordList: any) {
+  toSegments(wordList: any) {
     if (!wordList) {
       return;
     }

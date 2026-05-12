@@ -73,7 +73,7 @@
         </div>
       </div>
       <div class="row p-0 m-0 d-flex justify-content-center align-items-center">
-        <div class="col pt-3 pb-5 px-3 p-0 m-0"
+        <div class="col p-0 m-0 pt-3 pb-5 px-3"
              (mouseenter)="handleSeekBarMouseEnter()"
              (mouseleave)="handleSeekBarMouseLeave()"
              (mousemove)="handleSeekBarMouseMove($event)"
@@ -92,7 +92,7 @@
                  [ngStyle]="{'left': calculateOffset(this.percentProgress, 1.25, 5.5) + '%'}">
             </div>
             @if (this.seekBarMouseMode || this.seekBarTouchMode) {
-              <div [ngStyle]="{'left': calculateOffset(this.percentProgress, 1.25, 2) + '%'}"
+              <div [ngStyle]="{'left': calculateOffset(this.percentProgress, 0, 1.25) + '%'}"
                    class="media-player-seek-bar-seek-time-display-tag d-flex justify-content-center align-items-center"
                    #playheadTimer>
                 {{ this.playheadTime }}
