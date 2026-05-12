@@ -115,6 +115,8 @@ export class MediaPlayer implements OnInit {
   ngOnInit(): void {
     this.eventBus.onLoaded.subscribe(() => {
       this.loading = false;
+      this.cdr.detectChanges();
+      // this.audioGlobal.pause();
     });
     this.eventBus.onLoad.subscribe((content: any) => {
       this.loading = true;

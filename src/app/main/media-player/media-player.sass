@@ -3,7 +3,6 @@
 .media-player-container
   background: rgba(249, 246, 227, 0.8)
   height: 0
-  transition: height 0.2s ease-in
   max-height: 150px
   width: 100vw
   position: fixed
@@ -13,6 +12,7 @@
   z-index: 500
   backdrop-filter: blur(30px)
   -webkit-backdrop-filter: blur(30px)
+  transition: height 0.2s ease-in
 .media-player-container-open
   height: 100%
 
@@ -167,4 +167,10 @@
   opacity: 0
   transition: opacity 0.3s ease-in
 .media-player-loading-title-text-visible
+  opacity: 100% !important
+
+.media-player-visibility-control
+  opacity: 0 !important
+  transition: opacity 0.1s ease-in
+.media-player-visibility-control-visible
   opacity: 100% !important

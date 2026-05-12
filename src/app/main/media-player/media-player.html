@@ -1,16 +1,11 @@
 <div class="container-fluid p-0 m-0">
   <div class="media-player-container" [ngClass]="{'media-player-container-open': open}">
-    @if (this.loading) {
-<!--      <div class="vh-100 vw-100 position-absolute d-flex justify-content-center align-items-center">-->
-<!--        <span class="media-player-loading-title-text" [ngClass]="{'media-player-loading-title-text-visible': this.loading}">Loading...</span>-->
-<!--      </div>-->
-      <div class="row h-100 p-0 m-0">
-        <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
-          <span class="media-player-loading-title-text">Loading...</span>
-        </div>
+    <div class="row w-100 h-100 p-0 m-0 position-absolute">
+      <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
+        <span class="media-player-loading-title-text" [ngClass]="{'media-player-loading-title-text-visible': this.loading}">Loading...</span>
       </div>
-    }
-    @else {
+    </div>
+    <div class="media-player-visibility-control" [ngClass]="{'media-player-visibility-control-visible': !this.loading}">
       <div class="row p-0 m-0 pt-2 px-4">
         <div class="col p-0 m-0 d-flex justify-content-center">
           <span class="media-player-title-text">{{this.audioGlobal.content?.title}}</span>
@@ -120,6 +115,6 @@
           <img class="media-player-background-svg p-0 m-0" src="assets/img/svg/wave-sand.svg" />
         }
       </div>
-    }
+    </div>
   </div>
 </div>
