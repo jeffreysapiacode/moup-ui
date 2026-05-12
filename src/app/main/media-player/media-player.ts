@@ -131,16 +131,16 @@ export class MediaPlayer implements OnInit {
       if (storedInfo && !this.loadError) {
         this.seekToTime(storedInfo.seek);
       }
+      if (this.loadError) {
+        this.audioGlobal.sound.stop();
+        this.seekToTime(this.loadErrorSeekStored);
+      }
       this.audioGlobal.play();
       this.cdr.detectChanges();
     });
     this.eventBus.onPlay.subscribe((content: any) => {
       this.animate();
       this.playing = true;
-      if (this.loadError) {
-        this.audioGlobal.sound.stop();
-        this.seekToTime(this.loadErrorSeekStored);
-      }
       this.loadError = false;
       this.loadErrorIntervalSet = false;
       clearInterval(this.loadErrorIntervalId);
