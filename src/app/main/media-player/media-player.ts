@@ -52,6 +52,7 @@ export class MediaPlayer implements OnInit {
 
   // Track Navigation
   seekAmountSeconds: number = 5;
+  seekButtonHoldDelay: number = 250;
   playing: boolean = false;
   nextHold: boolean = false;
   previousHold: boolean = false;
@@ -185,8 +186,7 @@ export class MediaPlayer implements OnInit {
     $event.preventDefault();
     this.previousHoldTimeoutId = setTimeout(()=> {
       this.previousHold = true;
-      console.log('Hold detected');
-    }, 1000);
+    }, this.seekButtonHoldDelay);
   }
 
   handlePreviousTouchEnd($event: TouchEvent) {
@@ -198,8 +198,7 @@ export class MediaPlayer implements OnInit {
     $event.preventDefault();
     this.nextHoldTimeoutId = setTimeout(()=> {
       this.nextHold = true;
-      console.log('Hold detected');
-    }, 1000);
+    }, this.seekButtonHoldDelay);
   }
 
   handleNextTouchEnd($event: TouchEvent) {
