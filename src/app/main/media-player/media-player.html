@@ -2,10 +2,10 @@
   <div class="media-player-container" [ngClass]="{'media-player-container-open': open}">
     <div class="row w-100 h-100 p-0 m-0 position-absolute">
       <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
-        <span class="media-player-loading-title-text" [ngClass]="{'media-player-loading-title-text-visible': this.loading}">Loading...</span>
+        <span class="media-player-loading-title-text" [ngClass]="{'media-player-loading-title-text-visible': this.loading || this.loadError}">Loading...</span>
       </div>
     </div>
-    <div class="media-player-visibility-control" [ngClass]="{'media-player-visibility-control-visible': !this.loading}">
+    <div class="media-player-visibility-control" [ngClass]="{'media-player-visibility-control-visible': !this.loading && !this.loadError}">
       <div class="row p-0 m-0 pt-2 px-5">
         <div class="col p-0 m-0 d-flex justify-content-center">
           <span class="media-player-title-text">{{this.audioGlobal.content?.title}}</span>

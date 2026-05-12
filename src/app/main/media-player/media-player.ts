@@ -39,12 +39,16 @@ export class MediaPlayer implements OnInit {
   apiUrl = environment.apiUrl;
   open: boolean = false;
   loading: boolean = false;
+  loadError: boolean = false;
+  loadErrorIntervalId: any;
+  loadErrorIntervalSet: boolean = false;
+  loadErrorSeekStored: number = 0;
 
   // Transcript
+  transcriptEnabled: boolean = false;
   transcriptVisible: boolean = false;
   maxWordsOnScreen: number = 3;
   lookaheadSeconds: number = 10;
-  transcriptEnabled: boolean = true;
   wordList: any = [];
   wordMap: Map<string, any> = new Map();
   displaySegment: any;
@@ -124,8 +128,7 @@ export class MediaPlayer implements OnInit {
       this.loading = true;
       this.open = true;
       const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
-      // Check if there is a saved start time
-      if (storedInfo) {
+      if (storedInfo && !this.loadError) {
         this.seekToTime(storedInfo.seek);
       }
       this.audioGlobal.play();
@@ -134,6 +137,13 @@ export class MediaPlayer implements OnInit {
     this.eventBus.onPlay.subscribe((content: any) => {
       this.animate();
       this.playing = true;
+      if (this.loadError) {
+        this.audioGlobal.sound.stop();
+        this.seekToTime(this.loadErrorSeekStored);
+      }
+      this.loadError = false;
+      this.loadErrorIntervalSet = false;
+      clearInterval(this.loadErrorIntervalId);
       this.cacheTranscript();
       this.cdr.detectChanges();
     });
@@ -148,6 +158,20 @@ export class MediaPlayer implements OnInit {
       this.handleNext();
       this.cdr.detectChanges();
     });
+    this.eventBus.onPlayError.subscribe((content: any) => {
+      alert('there was a play error')
+    });
+    this.eventBus.onLoadError.subscribe((content: any) => {
+      const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
+      if (storedInfo) {
+        if (storedInfo.seek > 0) {
+          this.loadErrorSeekStored = storedInfo.seek;
+          console.log(storedInfo.seek);
+        }
+      }
+      this.loadError = true;
+      this.playRetry();
+    })
     this.eventBus.onAnimationFrame.subscribe((data: any) => {
       this.seek = data.seek;
     });
@@ -161,6 +185,20 @@ export class MediaPlayer implements OnInit {
         return;
       }
       this.audioGlobal.changeContentAndTriggerPlay(content);
+    }
+  }
+
+  // Play Retry Loop
+  playRetry() {
+    // Limit this to every 1 second
+    if (!this.loadErrorIntervalSet) {
+      this.loadErrorIntervalId = setInterval(() => {
+        if (this.loadError) {
+          console.log('Attempting to retry...');
+          this.audioGlobal.changeContentAndTriggerPlay(this.audioGlobal.content);
+        }
+      }, 1000);
+      this.loadErrorIntervalSet = true;
     }
   }
 

@@ -59,6 +59,7 @@ export class AudioGlobal {
     Howler.stop();
     if (this.sound) {
       this.sound.stop();
+      this.sound.unload();
     }
     this.sound = new Howl({
       src: [this.apiUrl + '/stream/' + filename],
@@ -78,10 +79,10 @@ export class AudioGlobal {
     this.sound.on('end', () => {
       this.eventBus.onEnd.emit(this.content);
     });
-    this.sound.on('loaderror', () => {
+    this.sound.on('loaderror', (id: any, error: any) => {
       this.eventBus.onLoadError.emit(this.content);
     });
-    this.sound.on('playerror', () => {
+    this.sound.on('playerror', (id: any, error: any) => {
       this.eventBus.onPlayError.emit(this.content);
     });
   }
