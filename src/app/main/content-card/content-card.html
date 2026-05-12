@@ -29,15 +29,16 @@
       </div>
       <div class="col p-0 m-0 ps-3 d-flex justify-content-start align-items-center">
         <div class="row p-0 m-0">
-          <div class="col p-0 m-0">
+          <div class="col-auto p-0 m-0">
             <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content === this.content}"
                   class="content-card-elapsed-and-total-time">{{ this.elapsedOrSavedTime }}</span>
           </div>
-          <div class="col p-0 m-0">
+          <div class="col-auto p-0 m-0">
             <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content === this.content}"
                   class="content-card-elapsed-and-total-time">/</span>
           </div>
-          <div class="col p-0 m-0">
+          <div class="w-100 d-sm-none d-block"></div>
+          <div class="col-auto p-0 m-0">
             <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content === this.content}"
                   class="content-card-elapsed-and-total-time">{{ TimeUtils.formatTime(this.content.duration) }}</span>
           </div>
