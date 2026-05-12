@@ -172,6 +172,7 @@
   font-size: 1rem
   opacity: 0
   transition: opacity 0.3s ease-in
+  animation: loading 2s infinite ease-out
 .media-player-loading-title-text-visible
   opacity: 100% !important
 
@@ -180,3 +181,11 @@
   transition: opacity 0.1s ease-in
 .media-player-visibility-control-visible
   opacity: 100% !important
+
+@keyframes loading
+  0%
+    color: #D1CDB3
+  50%
+    color: #E6E3CA
+  100%
+    color: #D1CDB3
