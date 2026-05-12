@@ -45,7 +45,7 @@ export class MediaPlayer implements OnInit {
   loadErrorSeekStored: number = 0;
 
   // Transcript
-  transcriptEnabled: boolean = false;
+  transcriptEnabled: boolean = true;
   transcriptVisible: boolean = false;
   maxWordsOnScreen: number = 3;
   lookaheadSeconds: number = 10;
@@ -121,7 +121,7 @@ export class MediaPlayer implements OnInit {
 
   ngOnInit(): void {
     this.eventBus.onLoaded.subscribe(() => {
-      // this.loading = false;
+      this.loading = false;
       this.cdr.detectChanges();
     });
     this.eventBus.onLoad.subscribe((content: any) => {
@@ -159,7 +159,6 @@ export class MediaPlayer implements OnInit {
       this.cdr.detectChanges();
     });
     this.eventBus.onPlayError.subscribe((content: any) => {
-      alert('there was a play error')
     });
     this.eventBus.onLoadError.subscribe((content: any) => {
       const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
