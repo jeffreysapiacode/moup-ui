@@ -81,10 +81,6 @@ export class Main implements OnInit {
       });
   }
 
-  click() {
-
-  }
-
   waitForResponseLoop() {
     if (this.waitForResponseRequired) {
       if (this.statusCode === 200) {

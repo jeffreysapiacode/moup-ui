@@ -37,7 +37,6 @@ export class MediaPlayer implements OnInit {
   screenVisible: boolean = true;
   apiUrl = environment.apiUrl;
   open: boolean = false;
-  content: any;
   loading: boolean = false;
 
   // Transcript
@@ -118,10 +117,9 @@ export class MediaPlayer implements OnInit {
       this.loading = false;
     });
     this.eventBus.onLoad.subscribe((content: any) => {
-      this.content = content;
       this.loading = true;
       this.open = true;
-      const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
+      const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
       // Check if there is a saved start time
       if (storedInfo) {
         this.seekToTime(storedInfo.seek);
@@ -154,10 +152,10 @@ export class MediaPlayer implements OnInit {
   // Animation Loop
   animate() {
     if (this.playing) {
-      this.eventBus.onAnimationFrame.emit({content: this.content, seek: this.audioGlobal.seek()});
+      this.eventBus.onAnimationFrame.emit({content: this.audioGlobal.content, seek: this.audioGlobal.seek()});
       this.seekBarMouseMode || this.seekBarTouchMode ?
-        this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.content.duration) * 100:
-        this.percentProgress = (this.audioGlobal.seek() / this.content.duration) * 100;
+        this.percentProgressPlaceholder = (this.audioGlobal.seek() / this.audioGlobal.content.duration) * 100:
+        this.percentProgress = (this.audioGlobal.seek() / this.audioGlobal.content.duration) * 100;
       this.displaySegment = this.getDisplaySegment(this.displayArray);
       this.transcriptVisible = !!(this.displaySegment && this.displaySegment.length > 0);
       this.seekFloor = Math.floor(this.audioGlobal.seek());
@@ -222,7 +220,7 @@ export class MediaPlayer implements OnInit {
   }
 
   handleNext() {
-    const index = this.getTrackIndex(this.content.uuid);
+    const index = this.getTrackIndex(this.audioGlobal.content.uuid);
     if (index < (this.audioGlobal.contentList.length - 1)) {
       this.seekToTrack(index + 1);
     }
@@ -231,7 +229,7 @@ export class MediaPlayer implements OnInit {
   handlePrevious() {
     // If less than 3 seconds, go to previous track, if greater, restart
     if (this.audioGlobal.seek() < 3) {
-      const index = this.getTrackIndex(this.content.uuid);
+      const index = this.getTrackIndex(this.audioGlobal.content.uuid);
       if (index > 0) {
         this.seekToTrack(index - 1);
         return;
@@ -274,7 +272,7 @@ export class MediaPlayer implements OnInit {
   seekToTrack(index: number) {
     const content = this.getContentByIndex(index);
     this.audioGlobal.setContent(content);
-    const storedInfo = LocalStorageUtil.getStorage(this.content.uuid);
+    const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
     // Check if there is a saved start time
     if (storedInfo) {
       this.seekToTime(storedInfo.seek);
@@ -290,7 +288,7 @@ export class MediaPlayer implements OnInit {
       // Turn off caption window
       this.transcriptVisible = false;
       this.seek = seek;
-      this.percentProgress = (seek / this.content.duration) * 100;
+      this.percentProgress = (seek / this.audioGlobal.content.duration) * 100;
     }
   }
 
@@ -313,7 +311,7 @@ export class MediaPlayer implements OnInit {
     } else {
       this.percentProgress = percentProgressTmp;
     }
-    this.playheadSeconds = (this.percentProgress / 100) * this.content.duration;
+    this.playheadSeconds = (this.percentProgress / 100) * this.audioGlobal.content.duration;
     this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
   }
 
@@ -476,25 +474,25 @@ export class MediaPlayer implements OnInit {
 
   // Local Storage
   saveToLocalStorage(seekFloor: any) {
-    if (!this.content) {
+    if (!this.audioGlobal.content) {
       return;
     }
     let storage: any;
     if (!localStorage.getItem('moup') || localStorage.getItem('moup') === 'undefined') {
       storage = [];
-      storage.push({contentUuid: this.content.uuid, seek: seekFloor});
+      storage.push({contentUuid: this.audioGlobal.content.uuid, seek: seekFloor});
       localStorage.setItem('moup', JSON.stringify(storage));
     }
     storage = JSON.parse(<string>localStorage.getItem('moup'));
     for (let storedInfo of storage) {
-      if (storedInfo.contentUuid === this.content?.uuid) {
+      if (storedInfo.contentUuid === this.audioGlobal.content?.uuid) {
         storedInfo.seek = seekFloor;
         localStorage.setItem('moup', JSON.stringify(storage));
         return;
       }
     }
     // Not found
-    storage.push({contentUuid: this.content?.uuid, seek: seekFloor});
+    storage.push({contentUuid: this.audioGlobal.content?.uuid, seek: seekFloor});
     localStorage.setItem('moup', JSON.stringify(storage));
   }
 

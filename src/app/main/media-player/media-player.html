@@ -1,6 +1,9 @@
 <div class="container-fluid p-0 m-0">
   <div class="media-player-container" [ngClass]="{'media-player-container-open': open}">
     @if (this.loading) {
+<!--      <div class="vh-100 vw-100 position-absolute d-flex justify-content-center align-items-center">-->
+<!--        <span class="media-player-loading-title-text" [ngClass]="{'media-player-loading-title-text-visible': this.loading}">Loading...</span>-->
+<!--      </div>-->
       <div class="row h-100 p-0 m-0">
         <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
           <span class="media-player-loading-title-text">Loading...</span>
@@ -10,7 +13,7 @@
     @else {
       <div class="row p-0 m-0 pt-2 px-4">
         <div class="col p-0 m-0 d-flex justify-content-center">
-          <span class="media-player-title-text">{{this.content?.title}}</span>
+          <span class="media-player-title-text">{{this.audioGlobal.content?.title}}</span>
         </div>
       </div>
       <div class="row p-0 m-0">
@@ -71,7 +74,7 @@
           </div>
         </div>
         <div class="col p-0 m-0 pe-4 d-flex justify-content-end align-items-end position-relative">
-          <span class="media-player-seek-bar-time-total-text">{{TimeUtils.formatTime(this.content?.duration)}}</span>
+          <span class="media-player-seek-bar-time-total-text">{{TimeUtils.formatTime(this.audioGlobal.content?.duration)}}</span>
         </div>
       </div>
       <div class="row p-0 m-0 d-flex justify-content-center align-items-center">
