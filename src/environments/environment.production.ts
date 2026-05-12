@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://api.moup.io:8081'
+  apiUrl: 'https://api.moup.io:8081'
 };

@@ -40,8 +40,8 @@ export class AudioGlobal {
     }
     this.content = content;
     this.setSound(this.content.filename);
-    this.eventBus.onLoad.emit(this.content);
     this.updateQueryParams(this.content.mmx);
+    this.eventBus.onLoad.emit(this.content);
   }
 
   updateQueryParams(mmx: string) {
@@ -50,7 +50,7 @@ export class AudioGlobal {
       queryParams: {
         mmx: mmx
       },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: 'replace',
       replaceUrl: true
     });
   }
@@ -79,8 +79,10 @@ export class AudioGlobal {
       this.eventBus.onEnd.emit(this.content);
     });
     this.sound.on('loaderror', () => {
+      this.eventBus.onLoadError.emit(this.content);
     });
     this.sound.on('playerror', () => {
+      this.eventBus.onPlayError.emit(this.content);
     });
   }
 }

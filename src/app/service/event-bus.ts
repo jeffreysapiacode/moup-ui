@@ -5,6 +5,8 @@ import {EventEmitter, Injectable} from '@angular/core';
 })
 export class EventBus {
   public onLoad = new EventEmitter();
+  public onLoadError = new EventEmitter();
+  public onPlayError = new EventEmitter();
   public onLoaded = new EventEmitter();
   public onPlay = new EventEmitter()
   public onPause = new EventEmitter();
