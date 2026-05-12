@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {EventBus} from './event-bus';
 import {environment} from '../../environments/environment';
 import {Howl} from 'howler';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,9 @@ export class AudioGlobal {
   public sound: any;
   private apiUrl = environment.apiUrl;
 
-  constructor(private eventBus: EventBus) {
+  constructor(private eventBus: EventBus,
+              private router: Router,
+              private route: ActivatedRoute) {
   }
 
   available() {
@@ -31,13 +34,25 @@ export class AudioGlobal {
     return this.sound.seek();
   }
 
-  setContent(content: any) {
+  changeContentAndTriggerPlay(content: any) {
     if (!content) {
       return;
     }
     this.content = content;
     this.setSound(this.content.filename);
     this.eventBus.onLoad.emit(this.content);
+    this.updateQueryParams(this.content.mmx);
+  }
+
+  updateQueryParams(mmx: string) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        mmx: mmx
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
   }
 
   setSound(filename: any) {
@@ -47,6 +62,7 @@ export class AudioGlobal {
     }
     this.sound = new Howl({
       src: [this.apiUrl + '/stream/' + filename],
+      autoplay: true,
       html5: true
     });
     this.sound.once('load', () => {

@@ -67,7 +67,7 @@ export class ContentCard implements OnInit, AfterViewChecked {
 
   public handleLoad() {
     if (this.content !== this.audioGlobal.content) {
-      this.audioGlobal.setContent(this.content);
+      this.audioGlobal.changeContentAndTriggerPlay(this.content);
     } else {
       if (this.playing) {
         this.audioGlobal.pause();

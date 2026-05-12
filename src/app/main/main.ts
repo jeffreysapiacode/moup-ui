@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, HostListener, OnInit} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, HostListener, OnInit} from '@angular/core';
 import {ContentCard} from './content-card/content-card';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
@@ -6,6 +6,7 @@ import {MediaPlayer} from './media-player/media-player';
 import {NgClass} from '@angular/common';
 import {AudioGlobal} from '../service/audio-global';
 import {Subscription} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -34,6 +35,7 @@ export class Main implements OnInit {
 
   constructor(protected http: HttpClient,
               protected audioGlobal: AudioGlobal,
+              private route: ActivatedRoute,
               protected cdr: ChangeDetectorRef) {
   }
 

@@ -15,6 +15,7 @@ import {LocalStorageUtil} from '../../util/local-storage-util';
 import {TimeUtils} from '../../util/time-utils';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-media-player',
@@ -109,6 +110,7 @@ export class MediaPlayer implements OnInit {
   constructor(protected eventBus: EventBus,
               protected audioGlobal: AudioGlobal,
               protected http: HttpClient,
+              protected router: Router,
               @Inject(DOCUMENT) private document: Document,
               protected cdr: ChangeDetectorRef) {
   }
@@ -117,7 +119,6 @@ export class MediaPlayer implements OnInit {
     this.eventBus.onLoaded.subscribe(() => {
       this.loading = false;
       this.cdr.detectChanges();
-      // this.audioGlobal.pause();
     });
     this.eventBus.onLoad.subscribe((content: any) => {
       this.loading = true;
@@ -150,6 +151,17 @@ export class MediaPlayer implements OnInit {
     this.eventBus.onAnimationFrame.subscribe((data: any) => {
       this.seek = data.seek;
     });
+    const params = new URLSearchParams(window.location.search);
+    const mmx = params.get('mmx');
+    if (mmx) {
+      const content = this.audioGlobal.contentList
+        .find((content: any)=> content.mmx === mmx)
+      if (!content) {
+        this.clearQueryParams();
+        return;
+      }
+      this.audioGlobal.changeContentAndTriggerPlay(content);
+    }
   }
 
   // Animation Loop
@@ -272,7 +284,7 @@ export class MediaPlayer implements OnInit {
   // Seek Bar /////////////////////////////////
   seekToTrack(index: number) {
     const content = this.getContentByIndex(index);
-    this.audioGlobal.setContent(content);
+    this.audioGlobal.changeContentAndTriggerPlay(content);
     const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
     // Check if there is a saved start time
     if (storedInfo) {
@@ -504,6 +516,13 @@ export class MediaPlayer implements OnInit {
 
   calculateSeekFloorMultiple(seekFloor: number) {
     return (Math.floor(seekFloor / this.lookaheadSeconds) * this.lookaheadSeconds)
+  }
+
+  clearQueryParams() {
+    this.router.navigate([], {
+      queryParams: {},
+      replaceUrl: true // Optional: replaces current history entry instead of adding a new one
+    });
   }
 
   protected readonly TimeUtils = TimeUtils;
