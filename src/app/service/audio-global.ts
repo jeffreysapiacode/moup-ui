@@ -64,7 +64,8 @@ export class AudioGlobal {
     this.sound = new Howl({
       src: [this.apiUrl + '/stream/' + filename],
       autoplay: true,
-      html5: true
+      html5: true,
+      pool: 1
     });
     this.sound.once('load', () => {
       // Send play count trigger
