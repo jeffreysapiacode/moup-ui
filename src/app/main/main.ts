@@ -6,7 +6,7 @@ import {MediaPlayer} from './media-player/media-player';
 import {NgClass} from '@angular/common';
 import {AudioGlobal} from '../service/audio-global';
 import {Subscription} from 'rxjs';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -35,12 +35,15 @@ export class Main implements OnInit {
 
   constructor(protected http: HttpClient,
               protected audioGlobal: AudioGlobal,
-              private route: ActivatedRoute,
+              private router: Router,
               protected cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
+    if (!this.audioGlobal.available()) {
+      this.router.navigate(['/']);
+    }
     this.handleGetContent();
   }
 

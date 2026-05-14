@@ -40,7 +40,8 @@ export class AudioGlobal {
     }
     this.content = content;
     this.setSound(this.content.filename);
-    this.updateQueryParams(this.content.mmx);
+    this.router.navigate(['/play']);
+    setTimeout(()=>{this.updateQueryParams(this.content.mmx);});
     this.eventBus.onLoad.emit(this.content);
   }
 
