@@ -12,7 +12,7 @@
             @if (!this.loading) {
               @if (this.error) {
                 <div class="vh-100 vw-100 position-absolute d-flex justify-content-center align-items-center">
-                  <span class="main-title-text text-center" [ngClass]="{'main-title-text-visible':!this.loading}">There was an error.<br><span class="main-error-retry-button-text p-2" (click)="handleGetContent()">Retry</span></span>
+                  <span class="main-title-text text-center" [ngClass]="{'main-title-text-visible':!this.loading}">There was an error.<br><span class="main-error-retry-button-text p-2 mt-1" (click)="handleGetContent()">Retry</span></span>
                 </div>
 <!--                <div class="row p-0 m-0">-->
 <!--                  <div class="col vh-100 p-0 m-0 d-flex justify-content-center align-items-center" [style]="{transform: 'translateY(-180px)'}">-->

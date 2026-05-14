@@ -6,14 +6,21 @@ COPY /privkey1.pem /usr/share/nginx
 EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"]
 
-#ng build --configuration=production
-#cp /etc/letsencrypt/archive/moup.io/fullchain1.pem ~/Code/moup-ui
-#cp /etc/letsencrypt/archive/moup.io/privkey1.pem ~/Code/moup-ui
-#docker build -t moup-ui .
-#rm ~/Code/moup-ui/fullchain1.pem
-#rm ~/Code/moup-ui/privkey1.pem
-#docker kill moup-ui
-#docker rm moup-ui
-#docker run -d --name moup-ui -p 80:80 -p 443:443 --restart always moup-ui
+# 5/14/2026 12:57AM
+# Build and Deploy to AWS EC2 Instance
+# ng build --configuration=production
+# cp /etc/letsencrypt/archive/moup.io/fullchain1.pem ~/Code/moup-ui
+# cp /etc/letsencrypt/archive/moup.io/privkey1.pem ~/Code/moup-ui
+# docker build --platform linux/amd64,linux/arm64 -t moup-ui .
+# rm ~/Code/moup-ui/fullchain1.pem
+# rm ~/Code/moup-ui/privkey1.pem
+# docker tag moup-ui:latest moup.io:5000/moup-ui:latest
+# docker push moup.io:5000/moup-ui:latest
 
-#ng build --configuration=production && cp /etc/letsencrypt/archive/moup.io/fullchain1.pem ~/Code/moup-ui && cp /etc/letsencrypt/archive/moup.io/privkey1.pem ~/Code/moup-ui && docker build -t moup-ui . && rm ~/Code/moup-ui/fullchain1.pem && rm ~/Code/moup-ui/privkey1.pem && docker kill moup-ui && docker rm moup-ui && docker run -d --name moup-ui -p 80:80 -p 443:443 --restart always moup-ui
+# ON REMOTE INSTANCE
+# ssh -i "~/Downloads/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker pull moup.io:5000/moup-ui:latest
+# ssh -i "~/Downloads/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker kill moup-ui
+# ssh -i "~/Downloads/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker rm moup-ui
+# ssh -i "~/Downloads/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker run -d --name moup-ui -p 80:80 -p 443:443 --restart always moup.io:5000/moup-ui:latest
+
+# ng build --configuration=production && cp /etc/letsencrypt/archive/moup.io/fullchain1.pem ~/Code/moup-ui && cp /etc/letsencrypt/archive/moup.io/privkey1.pem ~/Code/moup-ui && docker build --platform linux/amd64,linux/arm64 -t moup-ui . && rm ~/Code/moup-ui/fullchain1.pem && rm ~/Code/moup-ui/privkey1.pem && docker tag moup-ui:latest moup.io:5000/moup-ui:latest && docker push moup.io:5000/moup-ui:latest && ssh -i "~/Downloads/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker pull moup.io:5000/moup-ui:latest && ssh -i "~/Downloads/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker kill moup-ui && ssh -i "~/Downloads/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker rm moup-ui && ssh -i "~/Downloads/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker run -d --name moup-ui -p 80:80 -p 443:443 --restart always moup.io:5000/moup-ui:latest
