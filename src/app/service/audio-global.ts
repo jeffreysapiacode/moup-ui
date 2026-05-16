@@ -34,6 +34,18 @@ export class AudioGlobal {
     return this.sound.seek();
   }
 
+  duration() {
+    return this.sound.duration();
+  }
+
+  contentExists() {
+    return this.contentList && this.contentList.length > 0;
+  }
+
+  contentNotExists() {
+    return this.contentList && this.contentList.length === 0;
+  }
+
   changeContentAndTriggerPlay(content: any) {
     if (!content) {
       return;

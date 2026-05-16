@@ -205,7 +205,7 @@ export class MediaPlayer implements OnInit {
   animate() {
     if (this.playing) {
       this.eventBus.onAnimationFrame.emit({content: this.audioGlobal.content, seek: this.audioGlobal.seek()});
-      const percentProgress = (this.audioGlobal.seek() / this.audioGlobal.content.duration) * 100;
+      const percentProgress = (this.audioGlobal.seek() / this.audioGlobal.duration()) * 100;
       this.seekBarMouseMode || this.seekBarTouchMode ?
         this.percentProgressPlaceholder = percentProgress:
         this.percentProgress = percentProgress;
@@ -346,7 +346,7 @@ export class MediaPlayer implements OnInit {
       // Turn off caption window
       this.transcriptVisible = false;
       this.seek = seek;
-      this.percentProgress = (seek / this.audioGlobal.content.duration) * 100;
+      this.percentProgress = (seek / this.audioGlobal.duration()) * 100;
     }
   }
 
@@ -369,7 +369,7 @@ export class MediaPlayer implements OnInit {
     } else {
       this.percentProgress = percentProgressTmp;
     }
-    this.playheadSeconds = (this.percentProgress / 100) * this.audioGlobal.content.duration;
+    this.playheadSeconds = (this.percentProgress / 100) * this.audioGlobal.duration();
     this.playheadTime = TimeUtils.formatTime(this.playheadSeconds);
   }
 

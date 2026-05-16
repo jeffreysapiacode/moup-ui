@@ -4,34 +4,29 @@
     <div class="row p-0 m-0">
       <div class="col p-0 m-0">
         <div class="main-content-card-scroll-box" [style]="{'z-index': 50}"
-             [ngClass]="{'main-content-card-scroll-box-padding': this.audioGlobal.available()}">
+             [ngClass]="{'main-content-card-scroll-box-padding': this.audioGlobal.available(), 'pt-3':this.audioGlobal.contentExists()}">
           <!-- Main Loading -->
-          <div class="vh-100 vw-100 position-absolute d-flex justify-content-center align-items-center">
+          <div class="dvh-100 vw-100 position-absolute d-flex justify-content-center align-items-center">
             <span class="main-title-text" [ngClass]="{'main-title-text-visible':this.loading}">Loading...</span>
           </div>
             @if (!this.loading) {
               @if (this.error) {
-                <div class="vh-100 vw-100 position-absolute d-flex justify-content-center align-items-center">
-                  <span class="main-title-text text-center" [ngClass]="{'main-title-text-visible':!this.loading}">There was an error.<br><span class="main-error-retry-button-text p-2 mt-1" (click)="handleGetContent()">Retry</span></span>
+                <div class="dvh-100 vw-100 position-absolute d-flex justify-content-center align-items-center">
+                  <span class="main-title-text text-center" [ngClass]="{'main-title-text-visible':!this.loading}">There was an error.<br><br><span class="main-error-retry-button-text p-2" (click)="handleGetContent()">Retry</span></span>
                 </div>
-<!--                <div class="row p-0 m-0">-->
-<!--                  <div class="col vh-100 p-0 m-0 d-flex justify-content-center align-items-center" [style]="{transform: 'translateY(-180px)'}">-->
-<!--                    <span class="main-loading-title-text text-center">There was an error.<br><span class="main-error-retry-button-text p-3" (click)="handleGetContent()">Retry</span></span>-->
-<!--                  </div>-->
-<!--                </div>-->
               }
               @else {
-                @if (this.audioGlobal.contentList.length === 0) {
+                @if (this.audioGlobal.contentNotExists()) {
                   <div class="row p-0 m-0 w-100 h-100">
                     <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
-                      <div class="main-no-content-display px-5 py-5 mx-3">I have decided to delete all of the episodes. It's
+                      <div class="main-no-content-display text-center px-5 py-5 mx-3">I have decided to delete all of the episodes. It is
                         nothing personal. In fact, I did it because I love you, and just as importantly, I want you to love
-                        me.
+                        me. <br><br> Please do not worry. I will be back very soon.
                       </div>
                     </div>
                   </div>
                 }
-                @if (this.audioGlobal.contentList.length > 0) {
+                @if (this.audioGlobal.contentExists()) {
                   <div class="">
                     @for (content of this.audioGlobal.contentList; track content.uuid) {
                       <div class="row p-0 m-0 pb-3 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
@@ -56,6 +51,6 @@
     </div>
   </div>
 </div>
-@if (this.audioGlobal.contentList.length > 0) {
+@if (this.audioGlobal.contentExists()) {
   <app-media-player></app-media-player>
 }
