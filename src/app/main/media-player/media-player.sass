@@ -1,7 +1,8 @@
+@import '../../../styles/variables'
 
 // Container
 .media-player-container
-  background: rgba(249, 246, 227, 0.8)
+  background: rgba(249, 246, 227, 1.0)
   height: 0
   max-height: 150px
   width: 100vw
@@ -22,7 +23,7 @@
   overflow: hidden
   text-overflow: ellipsis
   font-weight: 600
-  color: #68654B
+  color: $card-border-tan
   font-size: 1.15rem
 @media (min-width: 576px)
   .media-player-title-text
@@ -84,7 +85,7 @@
 // Seek Bar
 .media-player-seek-bar-time-elapsed-text
   z-index: 5
-  color: #68654B
+  color: $card-border-tan
   font-weight: 600
   font-size: 1rem
   position: absolute
@@ -93,7 +94,7 @@
 
 .media-player-seek-bar-time-total-text
   z-index: 5
-  color: #68654B
+  color: $card-border-tan
   font-weight: 600
   font-size: 1rem
   position: absolute
@@ -189,3 +190,6 @@
     color: #E6E3CA
   100%
     color: #D1CDB3
+
+.accent-brown
+  fill: $card-border-tan

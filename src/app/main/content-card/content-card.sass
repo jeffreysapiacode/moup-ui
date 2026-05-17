@@ -1,3 +1,4 @@
+@import '../../../styles/variables'
 
 // Container
 .content-card-container
@@ -13,9 +14,9 @@
 
 // Title
 .content-card-title-text
-  font-size: 1.3rem
+  font-size: 1.4rem
   font-weight: 700 !important
-  color: #7C7965
+  color: $content-card-title-text-color
   line-height: 1rem
 @media (min-width: 576px)
   .content-card-title-text
@@ -32,7 +33,7 @@
     font-size: 1rem
 
 .content-card-playing-text-tag
-  color: #4CAFD6
+  color: $content-card-playing-flag-color
   font-weight: 500
   font-size: 1.15rem
   opacity: 0
@@ -40,7 +41,7 @@
   transition: opacity 0.2s ease-in
 @media (min-width: 576px)
   .content-card-playing-text-tag
-    font-size: 0.99rem
+    font-size: 1.05rem
 
 .content-card-playing-text-tag-visible
   opacity: 100%
@@ -57,7 +58,7 @@
 
 // Button
 .content-card-button
-  background: #EBE8C8
+  background: $button-color
   color: #8E8B67
   height: 48px
   width: 140px

@@ -57,6 +57,12 @@ export class AudioGlobal {
     this.eventBus.onLoad.emit(this.content);
   }
 
+  reconnect() {
+    if (this.available()) {
+      this.setSound(this.content.filename);
+    }
+  }
+
   updateQueryParams(mmx: string) {
     this.router.navigate([], {
       relativeTo: this.route,

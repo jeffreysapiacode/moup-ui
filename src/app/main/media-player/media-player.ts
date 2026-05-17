@@ -174,8 +174,13 @@ export class MediaPlayer implements OnInit {
     this.eventBus.onAnimationFrame.subscribe((data: any) => {
       this.seek = data.seek;
     });
-    const params = new URLSearchParams(window.location.search);
-    const mmx = params.get('mmx');
+    this.loadFromQueryParameter();
+  }
+
+  // Load content and auto-play if ?mmx is a query parameter
+  loadFromQueryParameter() {
+    const mmx = new URLSearchParams(window.location.search)
+      .get('mmx');
     if (mmx) {
       const content = this.audioGlobal.contentList
         .find((content: any)=> content.mmx === mmx)
@@ -193,8 +198,8 @@ export class MediaPlayer implements OnInit {
     if (!this.loadErrorIntervalSet) {
       this.loadErrorIntervalId = setInterval(() => {
         if (this.loadError) {
-          console.log('Attempting to retry...');
-          this.audioGlobal.changeContentAndTriggerPlay(this.audioGlobal.content);
+          console.error('Attempting to reconnect...');
+          this.audioGlobal.reconnect();
         }
       }, 1000);
       this.loadErrorIntervalSet = true;

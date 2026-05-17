@@ -41,9 +41,6 @@ export class Main implements OnInit {
 
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
-    if (!this.audioGlobal.available()) {
-      this.router.navigate(['/']);
-    }
     this.handleGetContent();
   }
 
