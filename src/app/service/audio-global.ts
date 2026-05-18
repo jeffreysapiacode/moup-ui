@@ -3,19 +3,21 @@ import {EventBus} from './event-bus';
 import {environment} from '../../environments/environment';
 import {Howl} from 'howler';
 import {ActivatedRoute, Router} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AudioGlobal {
-  public content: any;
-  public contentList: any = [];
-  public sound: any;
-  private apiUrl = environment.apiUrl;
+  content: any;
+  contentList: any = [];
+  sound: any;
+  apiUrl = environment.apiUrl;
 
-  constructor(private eventBus: EventBus,
-              private router: Router,
-              private route: ActivatedRoute) {
+  constructor(protected eventBus: EventBus,
+              protected router: Router,
+              protected http: HttpClient,
+              protected route: ActivatedRoute) {
   }
 
   available() {
@@ -87,7 +89,8 @@ export class AudioGlobal {
       pool: 1
     });
     this.sound.once('load', () => {
-      // Send play count trigger
+      this.http.put(this.apiUrl + '/content/play/increment?uuid=' + this.content.uuid, {})
+        .subscribe(data => {});
       this.eventBus.onLoaded.emit(this.content);
     });
     this.sound.on('play', (() => {
