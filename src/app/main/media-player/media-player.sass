@@ -2,28 +2,28 @@
 
 // Container
 .media-player-container
-  background: rgba(249, 246, 227, 1.0)
-  height: 0
-  max-height: 150px
-  width: 100vw
+  border-top: $media-player-container-border-top
+  background: $media-player-container-background
   position: fixed
+  width: 100vw
+  height: 0
   bottom: 0
-  border-top: solid 6px #EAE8D1CC
+  max-height: 150px
   overflow: visible
-  z-index: 500
   backdrop-filter: blur(30px)
   -webkit-backdrop-filter: blur(30px)
   transition: height 0.2s ease-in
+  z-index: 500
 .media-player-container-open
   height: 100%
 
 // Title
 .media-player-title-text
+  color: $accent-brown
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis
   font-weight: 700
-  color: $card-accent-brown
   font-size: 1.15rem
 @media (min-width: 576px)
   .media-player-title-text
@@ -31,40 +31,39 @@
 
 // Transcript
 .media-player-transcript-container
-  z-index: 0
-  opacity: 0
+  background: $media-player-transcript-container-background
+  color: $media-player-transcript-container-color
   position: absolute
+  width: fit-content
+  height: 45px
   top: 0
   left: 50%
   transform: translateX(-50%)
-  background: #EBE8D0
-  color: #ACA787
-  width: fit-content
+  opacity: 0
   min-width: 200px
   font-weight: 600
-  height: 45px
   transition: bottom 0.2s ease-in, top 0.15s ease, opacity 0.05s ease
-//box-shadow: 5px 5px 0 0 rgba(104, 101, 75, 1.0)
+  z-index: 0
 
 .media-player-transcript-container-visible
   top: -61px
-  z-index: 500
   opacity: 100%
+  z-index: 500
 
 .media-player-transcript-base-text-transition
   transition: color 0.065s ease-in, font-weight 0.075s ease-in !important
 
 .media-player-transcript-text-highlight
+  color: $media-player-transcript-container-color-highlight !important
   font-weight: 600 !important
-  color: #7E7851 !important
 
 // Track Navigation
 .media-player-nav-button-padding
   padding: 5px
-  z-index: 10
   cursor: default
   transform: scale(1.0) translateY(5px)
   transition: transform 0.05s ease-in
+  z-index: 10
 
 .media-player-nav-button-padding:hover
   transform: scale(1.01) translateY(4px)
@@ -84,55 +83,55 @@
 
 // Seek Bar
 .media-player-seek-bar-time-elapsed-text
-  z-index: 5
-  color: $card-accent-brown
+  color: $accent-brown
+  position: absolute
   font-weight: 600
   font-size: 1rem
-  position: absolute
   bottom: -13px
   left: 17px
+  z-index: 5
 
 .media-player-seek-bar-time-total-text
-  z-index: 5
-  color: $card-accent-brown
-  font-weight: 600
-  font-size: 1rem
+  color: $accent-brown
   position: absolute
   bottom: -13px
   right: 17px
+  font-weight: 600
+  font-size: 1rem
+  z-index: 5
 
 .media-player-seek-bar-container
+  background: $media-player-seek-bar-container-background
   position: relative
   width: 100%
   height: 11px
   border-radius: 50px
-  background: rgba(218, 214, 195, 0.6)
-  z-index: 10
   transition: transform 0.2s ease-in
+  z-index: 10
 
 .media-player-seek-bar-placeholder
-  background: #CBD3C2
+  background: $media-player-seek-bar-placeholder-background
+  position: absolute
   height: 100%
   border-radius: 50px
-  position: absolute
   transition: width 0.1s ease-out
   z-index: -1
 
 .media-player-seek-bar-time-elapsed-strip
-  background: #8B957D
+  background: $media-player-seek-bar-time-elapsed-strip-background
   height: 100%
   border-radius: 50px
   transition: width 0.1s ease-out
 
 .media-player-seek-bar-time-elapsed-playhead
+  background: $media-player-seek-bar-time-elapsed-playhead-background
   position: absolute
-  top: 50%
-  transform: translateY(-50%) translateX(-50%)
-  background: #90C298
   width: 27px
   height: 27px
+  top: 50%
   border-radius: 50px
   cursor: default
+  transform: translateY(-50%) translateX(-50%)
   transition: left 0.1s ease-out, transform 0.2s ease-out
 @media (min-width: 576px)
   .media-player-seek-bar-time-elapsed-playhead
@@ -140,17 +139,17 @@
     height: 25px
 
 .media-player-seek-bar-seek-time-display-tag
+  background: $media-player-seek-bar-seek-time-display-tag-background
+  color: $media-player-seek-bar-seek-time-display-tag-color
   position: absolute
-  bottom: 30px
-  height: 35px
   width: 70px
-  background: #F9F6E3
-  z-index: 100 !important
+  height: 35px
+  bottom: 30px
   font-weight: 700
   font-size: 1rem
-  color: #8B957D
   transform: translateX(-70%) !important
   transition: left 0.1s ease-out
+  z-index: 100 !important
 @media (min-width: 576px)
   .media-player-seek-bar-seek-time-display-tag
     height: 35px
@@ -161,17 +160,17 @@
 .media-player-background-svg
   position: absolute
   bottom: 0
-  z-index: -1
   left: 0
   opacity: 0.95
+  z-index: -1
 
 // Loading
 .media-player-loading-title-text
-  transform: translateY(-7px)
-  color: #D1CDB3
+  color: $media-player-loading-title-text-color
   font-weight: 700
   font-size: 1rem
   opacity: 0
+  transform: translateY(-7px)
   transition: opacity 0.3s ease-in
   animation: loading 2s infinite ease-out
 .media-player-loading-title-text-visible
@@ -185,11 +184,11 @@
 
 @keyframes loading
   0%
-    color: #D1CDB3
+    color: $media-player-loading-title-text-color
   50%
-    color: #E6E3CA
+    color: $media-player-loading-title-text-loading-color
   100%
-    color: #D1CDB3
+    color: $media-player-loading-title-text-color
 
 .accent-brown
-  fill: $card-accent-brown
+  fill: $accent-brown

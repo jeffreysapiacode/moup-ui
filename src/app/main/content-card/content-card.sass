@@ -2,20 +2,20 @@
 
 // Container
 .content-card-container
+  background: $content-card-container-background
+  box-shadow: $content-card-container-box-shadow
   width: 550px
-  background: rgba(249,247,239,1.0)
-  z-index: 10
-  box-shadow: 7px 7px 0 0 rgba(104, 101, 75, 1.0)
   opacity: 0
   transition: opacity 0.075s ease-in
+  z-index: 10
 .content-card-container-visible
   opacity: 1.0
 
 // Title
 .content-card-title-text
+  color: $content-card-title-text-color
   font-size: 1.3rem
   font-weight: 700 !important
-  color: $content-card-title-text-color
   line-height: 1rem
 @media (min-width: 576px)
   .content-card-title-text
@@ -25,14 +25,14 @@
 .content-card-description-text
   font-size: 1.0rem
   font-weight: 500 !important
-  color: #A5A190
+  color: $content-card-description-text-color
   line-height: 1rem
 @media (min-width: 576px)
   .content-card-description-text
     font-size: 1rem
 
 .content-card-playing-text-tag
-  color: $content-card-playing-flag-color
+  color: $content-card-playing-text-tag-color
   font-weight: 500
   font-size: 1.15rem
   opacity: 0
@@ -46,7 +46,7 @@
   opacity: 100%
 
 .content-card-elapsed-and-total-time
-  color: #7C7965
+  color: $content-card-elapsed-and-total-time-color
   font-weight: 400
   font-size: 1.1rem
   padding-left: 0
@@ -57,21 +57,21 @@
 
 // Button
 .content-card-button
-  background: $button-color
-  color: #8E8B67
+  background: $content-card-button-background
+  color: $content-card-button-color
+  border: $content-card-button-border-mobile
   height: 48px
   width: 140px
   font-size: 0.97rem
   font-weight: 700
-  border: solid 4px #B8B69D
   text-decoration: none !important
   transform: scale(0.995) translateY(0)
   transition: transform 0.05s ease-in
 @media (min-width: 576px)
   .content-card-button
+    border: $content-card-button-border-desktop
     font-size: 0.94rem
     font-weight: 600
-    border: solid 3.5px #B8B69D
 
 .content-card-button:hover
   cursor: default

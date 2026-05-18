@@ -2,18 +2,18 @@
 
 // Container
 .main-container
-  background: $body-background-color
+  background: $main-container-background
   height: 100dvh
   width: 100vw
 
 // Scroll Box
 .main-content-card-scroll-box
-  overflow-y: scroll
+  position: relative
   height: 100dvh
   width: 100vw
   scrollbar-width: none
+  overflow-y: scroll
   -ms-overflow-style: none
-  position: relative
   overflow-x: clip
   z-index: 10
 
@@ -49,16 +49,16 @@
 
 // Container for when all episode have been deleted
 .main-no-content-display
-  background: $no-content-container-background
+  background: $main-no-content-display-background
+  color: $accent-brown
+  border: $main-no-content-display-border
   height: auto
   max-width: 450px
   font-weight: 700
-  color: $card-accent-brown
-  border: solid 15px $card-accent-brown
 
 // Loading
 .main-title-text
-  color: #AAE5E3
+  color: $main-title-text-color
   font-size: 1.7rem
   font-weight: 600
   letter-spacing: 0.3rem
@@ -75,4 +75,4 @@
   transition: color 0.075s ease-in
 
 .main-error-retry-button-text:hover
-  color: #CCF1F0
+  color: $main-error-retry-button-text-hover-color
