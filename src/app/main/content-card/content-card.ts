@@ -1,4 +1,4 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {EventBus} from '../../service/event-bus';
 import {environment} from '../../../environments/environment';
 import {TimeUtils} from '../../util/time-utils';
@@ -17,9 +17,15 @@ import {AudioGlobal} from '../../service/audio-global';
 })
 export class ContentCard implements OnInit, AfterViewChecked {
 
+  @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
+
   @Input() content: any;
   @Input() innerWidth: any;
   playing: boolean = false;
+  videoPlaying: boolean = false;
+  videoOverlayVisible: boolean = false;
+  videoOverlayTimeoutId: number = 0;
+  videoSeek: number = 0;
   elapsedOrSavedTime: any = TimeUtils.formatTime(0);
   apiUrl = environment.apiUrl;
   visible: boolean = false;
@@ -65,9 +71,9 @@ export class ContentCard implements OnInit, AfterViewChecked {
     }, rnd);
   }
 
-  public handleLoad() {
+  handleLoad() {
     if (this.content !== this.audioGlobal.content) {
-      this.audioGlobal.$changeContentAndPlay(this.content);
+      this.audioGlobal.changeContentAndPlay(this.content);
     } else {
       if (this.playing) {
         this.audioGlobal.pause();
@@ -75,6 +81,88 @@ export class ContentCard implements OnInit, AfterViewChecked {
         this.audioGlobal.play();
       }
     }
+  }
+
+  handleVideoPlay() {
+    this.animate();
+  }
+
+  handleVideoPause() {
+
+  }
+
+  handleVideoLoaded() {
+
+  }
+
+  handleVideoEnd() {
+
+  }
+
+  handleMouseEnter() {
+    this.animate();
+  }
+
+  handleMouseOverlay($event: any) {
+    this.videoOverlayVisible = true;
+  }
+
+  animate() {
+    if (this.videoPlaying && this.videoOverlayVisible) {
+      const video = this.videoPlayer.nativeElement;
+      this.videoSeek = video.currentTime;
+      console.log(video.currentTime);
+      this.cdr.detectChanges();
+      requestAnimationFrame(this.animate.bind(this));
+    }
+  }
+
+  handleMouseMove() {
+    this.videoOverlayVisible = true;
+    this.animate();
+    this.cdr.detectChanges();
+    if (this.videoOverlayTimeoutId) {
+      clearTimeout(this.videoOverlayTimeoutId);
+    }
+    this.videoOverlayTimeoutId = setTimeout(() => {
+      this.videoOverlayVisible = false;
+      this.cdr.detectChanges();
+    }, 3000);
+  }
+
+  toggleFullscreen() {
+    const video = this.videoPlayer.nativeElement;
+
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      if (video.requestFullscreen) {
+        video.requestFullscreen();
+      } else if ((video as any).webkitRequestFullscreen) { /* Safari */
+        (video as any).webkitRequestFullscreen();
+      } else if ((video as any).msRequestFullscreen) { /* IE11 */
+        (video as any).msRequestFullscreen();
+      }
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  }
+
+  toggleVideoPlaying() {
+    this.videoPlaying = !this.videoPlaying;
+    const video = this.videoPlayer.nativeElement;
+    video.paused ? video.play() : video.pause();
+  }
+
+  getThumbnailUrl() {
+    const nameWithoutExtension = this.content.filename.substring(0, this.content.filename.lastIndexOf('.'));
+    return this.apiUrl + '/image/' + nameWithoutExtension + '.png';
+  }
+
+  calculatePosition(seek: number) {
+    return (seek / this.content.duration) * 100;
   }
 
   protected readonly TimeUtils = TimeUtils;

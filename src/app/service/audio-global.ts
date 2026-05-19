@@ -56,12 +56,14 @@ export class AudioGlobal {
     return this.contentList && this.contentList.length === 0;
   }
 
-  $changeContentAndPlay(content: any) {
+  changeContentAndPlay(content: any) {
     if (!content) {
       return;
     }
     this.content = content;
-    this.setSound(this.content.filename);
+    if (this.content.type === 'AUDIO') {
+      this.setSound(this.content.filename);
+    }
     this.router.navigate(['/play']);
     setTimeout(()=>{this.updateQueryParams(this.content.mmx);});
     this.titleService.setTitle(this.content.title);

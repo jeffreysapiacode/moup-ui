@@ -2,57 +2,129 @@
   <div class="content-card-container"
        [ngClass]="{'content-card-container-visible': this.visible}"
        [ngStyle]="{'box-shadow': this.innerWidth < 576 ? '14px 14px 0 0 rgba(104, 101, 75, 1.0)':'7px 7px 0 0 rgba(104, 101, 75, 1.0)'}">
-    <div class="row p-0 m-0">
-      <div class="col p-0 m-0 px-4 py-3">
-        <span class="content-card-title-text">{{ content.title }}</span>
+    @if (this.content.type === 'VIDEO') {
+      <div class="row pb-3 px-4 pt-4 p-0 m-0">
+        <div class="col p-0 m-0 overflow-hidden position-relative d-flex justify-content-center">
+          <video (play)="handleVideoPlay()"
+                 (pause)="handleVideoPause()"
+                 (loadeddata)="handleVideoLoaded()"
+                 (ended)="handleVideoEnd()"
+                 (click)="toggleVideoPlaying()"
+                 (mouseleave)="this.videoOverlayVisible = false"
+                 (mouseenter)="handleMouseEnter()"
+                 (mousemove)="handleMouseMove()"
+                 class="content-card-video" poster="{{getThumbnailUrl()}}" #videoPlayer>
+            <source [src]="apiUrl + '/stream/' + this.content.filename" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <div (mouseleave)="this.videoOverlayVisible = false" (mousemove)="handleMouseOverlay($event)" class="content-card-video-overlay-container" [ngClass]="{'content-card-video-overlay-container-visible': this.videoOverlayVisible}">
+            <div class="row h-100 p-0 m-0">
+              <div class="col-auto px-4 p-0 m-0 d-flex align-items-center">
+                @if (this.videoPlaying) {
+                  <div class="p-1" (click)="toggleVideoPlaying()">
+                    <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path class="content-card-video-overlay-button" d="M9.75 29.25V9.75H29.25V29.25H9.75Z"/>
+                    </svg>
+                  </div>
+                }
+                @if (!this.videoPlaying) {
+                  <div class="p-1" (click)="toggleVideoPlaying()">
+                    <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path class="content-card-video-overlay-button" d="M13 8.35249V31.1025L30.875 19.7275L13 8.35249Z" />
+                    </svg>
+                  </div>
+                }
+              </div>
+              <div class="col p-0 m-0 d-flex align-items-center">
+                <div class="content-card-video-overlay-seek-bar-container">
+                  <div [ngStyle]="{'width': calculatePosition(this.videoSeek) + '%'}" class="content-card-video-overlay-seek-bar-strip"></div>
+                </div>
+              </div>
+              <div class="col-auto ps-3 p-0 m-0 d-flex align-items-center">
+                <span class="content-card-video-overlay-time">{{TimeUtils.formatTime(this.videoSeek)}}/{{TimeUtils.formatTime(this.content.duration)}}</span>
+              </div>
+              <div class="col-auto ps-3 pe-3 p-0 m-0 d-flex align-items-center">
+                <div class="p-1" (click)="toggleFullscreen()">
+                  <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.29167 7.29167H14.5833V4.375H4.375V14.5833H7.29167V7.29167ZM14.5833 27.7083H7.29167V20.4167H4.375V30.625H14.5833V27.7083ZM30.625 20.4167H27.7083V27.7083H20.4167V30.625H30.625V20.4167ZM27.7083 14.5833H30.625V4.375H20.4167V7.29167H27.7083V14.5833Z" fill="#8B897E"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="col-auto p-0 m-0 d-flex justify-content-end align-items-center">
+      <div class="row p-0 m-0">
+        <div class="col p-0 m-0">
+          <div class="row p-0 m-0">
+            <div class="col p-0 m-0 px-4 pt-3 pb-2">
+              <span class="content-card-title-text">{{ content.title }}</span>
+            </div>
+          </div>
+          <div class="row p-0 m-0">
+            <div class="col p-0 m-0 px-4 pb-3">
+              <span class="content-card-description-text">{{ content.description }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-auto p-0 m-0 ps-4 pe-3 d-flex align-items-center"
+             [ngClass]="{'justify-content-end': this.innerWidth >= 576, 'justify-content-start': this.innerWidth < 576}">
+          <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none">
+            <div class="content-card-button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div>
+          </a>
+        </div>
+      </div>
+    }
+    @if (this.content.type === 'AUDIO') {
+      <div class="row p-0 m-0">
+        <div class="col p-0 m-0 px-4 pt-3 pb-2">
+          <span class="content-card-title-text">{{ content.title }}</span>
+        </div>
+        <div class="col-auto p-0 m-0 d-flex justify-content-end align-items-center">
         <span [ngClass]="{'content-card-playing-text-tag-visible':this.audioGlobal.content?.uuid === this.content?.uuid}"
               class="content-card-playing-text-tag pe-4">Playing</span>
-      </div>
-    </div>
-    @if (this.content.type === 'VIDEO') {
-
-    }
-    <div class="row p-0 m-0">
-      <div class="col p-0 m-0 px-4 pb-3">
-        <span class="content-card-description-text">{{ content.description }}</span>
-      </div>
-    </div>
-    <div class="row p-0 m-0 pb-3">
-      <div class="col-auto p-0 m-0 ps-4 d-flex align-items-center">
-        <div class="content-card-button px-3 d-flex justify-content-center align-items-center"
-             (click)="handleLoad()">
-          @if (this.playing && this.audioGlobal.content?.uuid === this.content?.uuid) {
-            PAUSE
-          } @else {
-            PLAY
-          }
         </div>
       </div>
-      <div class="col p-0 m-0 ps-3 d-flex justify-content-start align-items-center">
-        <div class="row p-0 m-0">
-          <div class="col-auto p-0 m-0">
+      <div class="row p-0 m-0">
+        <div class="col p-0 m-0 px-4 pb-3">
+          <span class="content-card-description-text">{{ content.description }}</span>
+        </div>
+      </div>
+      <div class="row p-0 m-0 pb-3">
+        <div class="col-auto p-0 m-0 ps-4 d-flex align-items-center">
+          <div class="content-card-button px-3 d-flex justify-content-center align-items-center"
+               (click)="handleLoad()">
+            @if (this.playing && this.audioGlobal.content?.uuid === this.content?.uuid) {
+              PAUSE
+            } @else {
+              PLAY
+            }
+          </div>
+        </div>
+        <div class="col p-0 m-0 ps-3 d-flex justify-content-start align-items-center">
+          <div class="row p-0 m-0">
+            <div class="col-auto p-0 m-0">
             <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content?.uuid === this.content?.uuid}"
                   class="content-card-elapsed-and-total-time">{{ this.elapsedOrSavedTime }}</span>
-          </div>
-          <div class="col-auto p-0 m-0">
+            </div>
+            <div class="col-auto p-0 m-0">
             <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content?.uuid === this.content?.uuid}"
                   class="content-card-elapsed-and-total-time">/</span>
-          </div>
-          <div class="w-100 d-sm-none d-block"></div>
-          <div class="col-auto p-0 m-0">
+            </div>
+            <div class="w-100 d-sm-none d-block"></div>
+            <div class="col-auto p-0 m-0">
             <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content?.uuid === this.content?.uuid}"
                   class="content-card-elapsed-and-total-time">{{ TimeUtils.formatTime(this.content.duration) }}</span>
+            </div>
           </div>
         </div>
+        <div class="col p-0 m-0 ps-4 pt-1 pe-3 d-flex "
+             [ngClass]="{'justify-content-end': this.innerWidth >= 576, 'justify-content-start': this.innerWidth < 576}">
+          <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none">
+            <div class="content-card-button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div>
+          </a>
+        </div>
       </div>
-      <div class="col p-0 m-0 ps-4 pt-1 pe-3 d-flex "
-           [ngClass]="{'justify-content-end': this.innerWidth >= 576, 'justify-content-start': this.innerWidth < 576}">
-        <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none">
-          <div class="content-card-button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div>
-        </a>
-      </div>
-    </div>
+    }
   </div>
 </div>

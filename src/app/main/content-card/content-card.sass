@@ -79,3 +79,44 @@
 
 .content-card-button:active
   transform: scale(0.995) translateY(1px)
+
+// Video
+.content-card-video
+  //position: absolute
+  height: auto
+  width: 100%
+
+.content-card-video-overlay-container
+  position: absolute
+  background: $content-card-video-overlay-container-background
+  height: 55px
+  width: 100%
+  bottom: 0
+  left: 50%
+  transform: translateX(-50%) translateY(60px)
+  transition: transform 0.07s ease-in
+  overflow: clip !important
+  z-index: 1000
+.content-card-video-overlay-container-visible
+  transform: translateX(-50%) translateY(0)
+
+.content-card-video-overlay-container-overflow
+  overflow: hidden !important
+
+.content-card-video-overlay-button
+  fill: $content-card-video-overlay-button-fill
+
+.content-card-video-overlay-seek-bar-container
+  background: #DCD8C1
+  position: relative
+  height: 10px
+  width: 100%
+
+.content-card-video-overlay-seek-bar-strip
+  background: #56CFCB
+  height: 100%
+
+.content-card-video-overlay-time
+  color: #8B897E
+  font-weight: 800
+  font-size: 1.04rem

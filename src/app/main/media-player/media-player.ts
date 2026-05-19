@@ -190,7 +190,7 @@ export class MediaPlayer implements OnInit {
         this.clearQueryParams();
         return;
       }
-      this.audioGlobal.$changeContentAndPlay(content);
+      this.audioGlobal.changeContentAndPlay(content);
     }
   }
 
@@ -336,7 +336,7 @@ export class MediaPlayer implements OnInit {
   // Seek Bar /////////////////////////////////
   seekToTrack(index: number) {
     const content = this.getContentByIndex(index);
-    this.audioGlobal.$changeContentAndPlay(content);
+    this.audioGlobal.changeContentAndPlay(content);
     const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
     // Check if there is a saved start time
     if (storedInfo) {
