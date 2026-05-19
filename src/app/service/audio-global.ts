@@ -42,13 +42,6 @@ export class AudioGlobal {
     return this.sound.duration();
   }
 
-  playing() {
-    if (this.sound) {
-      return this.sound.playing();
-    }
-    return false;
-  }
-
   type() {
     if (this.content) {
       return this.content.type;
@@ -63,7 +56,7 @@ export class AudioGlobal {
     return this.contentList && this.contentList.length === 0;
   }
 
-  changeContentAndTriggerPlay(content: any) {
+  $changeContentAndPlay(content: any) {
     if (!content) {
       return;
     }

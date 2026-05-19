@@ -121,12 +121,14 @@ export class MediaPlayer implements OnInit {
 
   ngOnInit(): void {
     this.eventBus.onLoaded.subscribe(() => {
-      this.loading = false;
-      this.cdr.detectChanges();
+      setTimeout(()=> {
+        this.loading = false;
+        this.cdr.detectChanges();
+      });
     });
     this.eventBus.onLoad.subscribe((content: any) => {
       this.loading = true;
-      this.open = true;
+      this.open = !(this.audioGlobal.type() === 'VIDEO');
       const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
       if (storedInfo && !this.loadError) {
         this.seekToTime(storedInfo.seek);
@@ -188,7 +190,7 @@ export class MediaPlayer implements OnInit {
         this.clearQueryParams();
         return;
       }
-      this.audioGlobal.changeContentAndTriggerPlay(content);
+      this.audioGlobal.$changeContentAndPlay(content);
     }
   }
 
@@ -334,7 +336,7 @@ export class MediaPlayer implements OnInit {
   // Seek Bar /////////////////////////////////
   seekToTrack(index: number) {
     const content = this.getContentByIndex(index);
-    this.audioGlobal.changeContentAndTriggerPlay(content);
+    this.audioGlobal.$changeContentAndPlay(content);
     const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
     // Check if there is a saved start time
     if (storedInfo) {
