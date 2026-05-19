@@ -4,6 +4,7 @@ import {environment} from '../../environments/environment';
 import {Howl} from 'howler';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
+import {Title} from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ export class AudioGlobal {
   constructor(protected eventBus: EventBus,
               protected router: Router,
               protected http: HttpClient,
+              private titleService: Title,
               protected route: ActivatedRoute) {
   }
 
@@ -56,6 +58,7 @@ export class AudioGlobal {
     this.setSound(this.content.filename);
     this.router.navigate(['/play']);
     setTimeout(()=>{this.updateQueryParams(this.content.mmx);});
+    this.titleService.setTitle(this.content.title);
     this.eventBus.onLoad.emit(this.content);
   }
 

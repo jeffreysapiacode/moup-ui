@@ -42,9 +42,6 @@ export class Main implements OnInit {
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
     this.handleGetContent();
-    setInterval(() => {
-      this.handleGetContent();
-    }, 60000);
   }
 
   handleGetContent() {
