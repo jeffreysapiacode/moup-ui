@@ -7,10 +7,13 @@
         <span class="content-card-title-text">{{ content.title }}</span>
       </div>
       <div class="col-auto p-0 m-0 d-flex justify-content-end align-items-center">
-        <span [ngClass]="{'content-card-playing-text-tag-visible':this.audioGlobal.content === this.content}"
+        <span [ngClass]="{'content-card-playing-text-tag-visible':this.audioGlobal.content?.uuid === this.content?.uuid}"
               class="content-card-playing-text-tag pe-4">Playing</span>
       </div>
     </div>
+    @if (this.content.type === 'VIDEO') {
+
+    }
     <div class="row p-0 m-0">
       <div class="col p-0 m-0 px-4 pb-3">
         <span class="content-card-description-text">{{ content.description }}</span>
@@ -20,7 +23,7 @@
       <div class="col-auto p-0 m-0 ps-4 d-flex align-items-center">
         <div class="content-card-button px-3 d-flex justify-content-center align-items-center"
              (click)="handleLoad()">
-          @if (this.playing && this.content === this.audioGlobal.content) {
+          @if (this.playing && this.audioGlobal.content?.uuid === this.content?.uuid) {
             PAUSE
           } @else {
             PLAY
@@ -30,16 +33,16 @@
       <div class="col p-0 m-0 ps-3 d-flex justify-content-start align-items-center">
         <div class="row p-0 m-0">
           <div class="col-auto p-0 m-0">
-            <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content === this.content}"
+            <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content?.uuid === this.content?.uuid}"
                   class="content-card-elapsed-and-total-time">{{ this.elapsedOrSavedTime }}</span>
           </div>
           <div class="col-auto p-0 m-0">
-            <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content === this.content}"
+            <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content?.uuid === this.content?.uuid}"
                   class="content-card-elapsed-and-total-time">/</span>
           </div>
           <div class="w-100 d-sm-none d-block"></div>
           <div class="col-auto p-0 m-0">
-            <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content === this.content}"
+            <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content?.uuid === this.content?.uuid}"
                   class="content-card-elapsed-and-total-time">{{ TimeUtils.formatTime(this.content.duration) }}</span>
           </div>
         </div>

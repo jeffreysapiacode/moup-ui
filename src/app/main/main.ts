@@ -35,13 +35,19 @@ export class Main implements OnInit {
 
   constructor(protected http: HttpClient,
               protected audioGlobal: AudioGlobal,
-              private router: Router,
               protected cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
     this.handleGetContent();
+    setInterval(() => {
+      this.http.get(this.apiUrl + '/content')
+        .subscribe((response: any) => {
+          this.audioGlobal.contentList = response;
+          this.cdr.detectChanges();
+        }, (error: any) => {});
+    }, 60000);
   }
 
   handleGetContent() {
