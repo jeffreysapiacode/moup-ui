@@ -100,7 +100,7 @@
           <div class="media-player-transcript-container px-3 d-flex justify-content-center align-items-center"
                [ngClass]="{'media-player-transcript-container-visible': this.transcriptVisible}">
             @if (this.displaySegment) {
-              @for (chunk of this.displaySegment; track chunk.start) {
+              @for (chunk of this.displaySegment; track chunk.uuid) {
                 <span class="media-player-transcript-base-text-transition"
                       [ngClass]="{'media-player-transcript-text-highlight': this.audioGlobal.seek() >= chunk.start && this.audioGlobal.seek() < chunk.end}">{{ chunk.word }}</span>&nbsp;
               }

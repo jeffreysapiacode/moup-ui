@@ -128,7 +128,6 @@ export class MediaPlayer implements OnInit {
     });
     this.eventBus.onLoad.subscribe((content: any) => {
       this.loading = true;
-      // this.open = !(this.audioGlobal.type() === 'VIDEO');
       this.open = true;
       const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
       if (storedInfo && !this.loadError) {
@@ -142,8 +141,8 @@ export class MediaPlayer implements OnInit {
       this.cdr.detectChanges();
     });
     this.eventBus.onPlay.subscribe((content: any) => {
-      this.animate();
       this.playing = true;
+      this.animate();
       this.loading = false;
       this.loadError = false;
       this.loadErrorIntervalSet = false;
@@ -175,9 +174,6 @@ export class MediaPlayer implements OnInit {
       this.playRetry();
     });
     this.eventBus.onAnimationFrame.subscribe((data: any) => {
-      this.animateTranscript(data.seek);
-      this.updateSeekBarPosition(data.seek);
-      this.seekFloor = Math.floor(data.seek);
       this.cdr.detectChanges();
     });
     this.loadFromQueryParameter();
@@ -218,11 +214,6 @@ export class MediaPlayer implements OnInit {
     this.displaySegments = this.toSegments(this.wordList);
     this.displaySegment = this.getCurrentDisplaySegment(this.displaySegments, seek);
     this.transcriptVisible = !!(this.displaySegment && this.displaySegment.length > 0);
-    if (this.seekFloor !== this.seekFloorStored ) {
-      if (this.transcriptEnabled && this.screenVisible) {
-        this.cacheTranscript();
-      }
-    }
   }
 
   // Seek Bar
@@ -239,6 +230,9 @@ export class MediaPlayer implements OnInit {
   animate() {
     if (this.playing) {
       this.eventBus.onAnimationFrame.emit({content: this.audioGlobal.content, seek: this.audioGlobal.seek()});
+      this.animateTranscript(this.audioGlobal.seek());
+      this.updateSeekBarPosition(this.audioGlobal.seek());
+      this.seekFloor = Math.floor(this.audioGlobal.seek());
       // Happens every 1 second of play time
       if (this.seekFloor !== this.seekFloorStored ) {
         if (this.previousHold) {
@@ -248,7 +242,9 @@ export class MediaPlayer implements OnInit {
           this.audioGlobal.sound.seek(this.audioGlobal.seek() + this.seekAmountSeconds);
         }
         this.seekFloorStored = this.seekFloor;
-        console.log('Should happen once per second');
+        if (this.transcriptEnabled && this.screenVisible) {
+          this.cacheTranscript();
+        }
         this.saveToLocalStorage(this.seekFloor);
       }
       requestAnimationFrame(this.animate.bind(this));
