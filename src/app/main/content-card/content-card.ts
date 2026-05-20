@@ -22,14 +22,9 @@ export class ContentCard implements OnInit, AfterViewChecked {
   @Input() content: any;
   @Input() innerWidth: any;
   playing: boolean = false;
-  videoPlaying: boolean = false;
-  videoOverlayVisible: boolean = false;
-  videoOverlayTimeoutId: number = 0;
-  videoSeek: number = 0;
   elapsedOrSavedTime: any = TimeUtils.formatTime(0);
   apiUrl = environment.apiUrl;
   visible: boolean = false;
-  video: any;
 
   constructor(protected eventBus: EventBus,
               protected audioGlobal: AudioGlobal,
@@ -84,80 +79,5 @@ export class ContentCard implements OnInit, AfterViewChecked {
     }
   }
 
-  handleVideoLoaded() {
-    // Call play increment endpoint
-    this.eventBus.onLoaded.emit(this.content);
-  }
-
-  handleVideoPlay() {
-    this.animate();
-    this.eventBus.onPlay.emit(this.content);
-    if (this.audioGlobal.content?.uuid !== this.content?.uuid) {
-      this.audioGlobal.changeContentAndPlay(this.content);
-    }
-  }
-
-  handleVideoPause() {
-    this.eventBus.onPause.emit(this.content);
-  }
-
-  handleVideoEnd() {
-    this.eventBus.onEnd.emit(this.content);
-  }
-
-  handleMouseMove() {
-    this.videoOverlayVisible = true;
-    if (this.videoOverlayTimeoutId) {
-      clearTimeout(this.videoOverlayTimeoutId);
-    }
-    this.videoOverlayTimeoutId = setTimeout(() => {
-      this.videoOverlayVisible = false;
-      this.cdr.detectChanges();
-    }, 3000);
-  }
-
-  toggleFullscreen() {
-    console.log('Toggle Fullscreen');
-    const video = this.videoPlayer.nativeElement;
-
-    if (!document.fullscreenElement) {
-      // Enter fullscreen
-      if (video.requestFullscreen) {
-        video.requestFullscreen();
-      } else if ((video as any).webkitRequestFullscreen) { /* Safari */
-        (video as any).webkitRequestFullscreen();
-      } else if ((video as any).msRequestFullscreen) { /* IE11 */
-        (video as any).msRequestFullscreen();
-      }
-    } else {
-      // Exit fullscreen
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
-    }
-  }
-
-  toggleVideoPlaying() {
-    this.videoPlaying = !this.videoPlaying;
-    const video = this.videoPlayer.nativeElement;
-    video.paused ? video.play() : video.pause();
-  }
-
-  animate() {
-    if (this.videoPlaying) {
-      this.video = this.videoPlayer.nativeElement;
-      this.videoSeek = this.video.currentTime;
-      this.eventBus.onAnimationFrame.emit({content: this.audioGlobal.content, seek: this.videoSeek});
-      this.cdr.detectChanges();
-      requestAnimationFrame(this.animate.bind(this));
-    }
-  }
-
-  getThumbnailUrl() {
-    const nameWithoutExtension = this.content.filename.substring(0, this.content.filename.lastIndexOf('.'));
-    return this.apiUrl + '/image/' + nameWithoutExtension + '.png';
-  }
-
   protected readonly TimeUtils = TimeUtils;
-  protected readonly console = console;
 }

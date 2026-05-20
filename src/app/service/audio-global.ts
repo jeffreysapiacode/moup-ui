@@ -42,12 +42,6 @@ export class AudioGlobal {
     return this.content.duration;
   }
 
-  type() {
-    if (this.content) {
-      return this.content.type;
-    }
-  }
-
   contentExists() {
     return this.contentList && this.contentList.length > 0;
   }
@@ -66,18 +60,9 @@ export class AudioGlobal {
       this.sound.stop();
       this.sound.unload();
     }
-    const videos = document.querySelectorAll('video');
-    videos.forEach(video => {
-      if (video.id !== content.uuid) {
-        video.pause();
-      }
-    });
-    if (this.content.type === 'AUDIO') {
-      this.setSound(this.content.filename);
-    }
-    // Check if video is playing and stop it
-    // this.router.navigate(['/play']);
-    // setTimeout(()=>{this.updateQueryParams(this.content.mmx);});
+    this.setSound(this.content.filename);
+    this.router.navigate(['/play']);
+    setTimeout(()=>{this.updateQueryParams(this.content.mmx);});
     this.titleService.setTitle(this.content.title);
     this.eventBus.onLoad.emit(this.content);
   }

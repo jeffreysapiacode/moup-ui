@@ -130,17 +130,15 @@ export class MediaPlayer implements OnInit {
       this.loading = true;
       // this.open = !(this.audioGlobal.type() === 'VIDEO');
       this.open = true;
-      if (this.audioGlobal.type() === 'AUDIO') {
-        const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
-        if (storedInfo && !this.loadError) {
-          this.seekToTime(storedInfo.seek);
-        }
-        if (this.loadError) {
-          this.audioGlobal.sound.stop();
-          this.seekToTime(this.loadErrorSeekStored);
-        }
-        this.audioGlobal.play();
+      const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
+      if (storedInfo && !this.loadError) {
+        this.seekToTime(storedInfo.seek);
       }
+      if (this.loadError) {
+        this.audioGlobal.sound.stop();
+        this.seekToTime(this.loadErrorSeekStored);
+      }
+      this.audioGlobal.play();
       this.cdr.detectChanges();
     });
     this.eventBus.onPlay.subscribe((content: any) => {
@@ -177,24 +175,9 @@ export class MediaPlayer implements OnInit {
       this.playRetry();
     });
     this.eventBus.onAnimationFrame.subscribe((data: any) => {
-      // Run bare-bones logic for transcript and nothing else
       this.animateTranscript(data.seek);
       this.updateSeekBarPosition(data.seek);
       this.seekFloor = Math.floor(data.seek);
-      // Happens every 1 second of play time
-      if (this.seekFloor !== this.seekFloorStored ) {
-        if (this.audioGlobal.type() === 'AUDIO') {
-          if (this.previousHold) {
-            this.audioGlobal.sound.seek(this.audioGlobal.seek() - this.seekAmountSeconds);
-          }
-          if (this.nextHold) {
-            this.audioGlobal.sound.seek(this.audioGlobal.seek() + this.seekAmountSeconds);
-          }
-        }
-        this.seekFloorStored = this.seekFloor;
-        console.log('Should happen once per second');
-        this.saveToLocalStorage(this.seekFloor);
-      }
       this.cdr.detectChanges();
     });
     this.loadFromQueryParameter();
@@ -245,17 +228,29 @@ export class MediaPlayer implements OnInit {
   // Seek Bar
   updateSeekBarPosition(seek: any) {
     this.seek = seek;
-    console.log(seek);
     const percentProgress = (seek / this.audioGlobal.duration()) * 100;
     this.seekBarMouseMode || this.seekBarTouchMode ?
       this.percentProgressPlaceholder = percentProgress:
       this.percentProgress = percentProgress;
+    this.cdr.detectChanges();
   }
 
   // Animation Loop
   animate() {
     if (this.playing) {
       this.eventBus.onAnimationFrame.emit({content: this.audioGlobal.content, seek: this.audioGlobal.seek()});
+      // Happens every 1 second of play time
+      if (this.seekFloor !== this.seekFloorStored ) {
+        if (this.previousHold) {
+          this.audioGlobal.sound.seek(this.audioGlobal.seek() - this.seekAmountSeconds);
+        }
+        if (this.nextHold) {
+          this.audioGlobal.sound.seek(this.audioGlobal.seek() + this.seekAmountSeconds);
+        }
+        this.seekFloorStored = this.seekFloor;
+        console.log('Should happen once per second');
+        this.saveToLocalStorage(this.seekFloor);
+      }
       requestAnimationFrame(this.animate.bind(this));
     }
   }
