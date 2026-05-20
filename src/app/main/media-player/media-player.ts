@@ -128,21 +128,25 @@ export class MediaPlayer implements OnInit {
     });
     this.eventBus.onLoad.subscribe((content: any) => {
       this.loading = true;
-      this.open = !(this.audioGlobal.type() === 'VIDEO');
-      const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
-      if (storedInfo && !this.loadError) {
-        this.seekToTime(storedInfo.seek);
+      // this.open = !(this.audioGlobal.type() === 'VIDEO');
+      this.open = true;
+      if (this.audioGlobal.type() === 'AUDIO') {
+        const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
+        if (storedInfo && !this.loadError) {
+          this.seekToTime(storedInfo.seek);
+        }
+        if (this.loadError) {
+          this.audioGlobal.sound.stop();
+          this.seekToTime(this.loadErrorSeekStored);
+        }
+        this.audioGlobal.play();
       }
-      if (this.loadError) {
-        this.audioGlobal.sound.stop();
-        this.seekToTime(this.loadErrorSeekStored);
-      }
-      this.audioGlobal.play();
       this.cdr.detectChanges();
     });
     this.eventBus.onPlay.subscribe((content: any) => {
       this.animate();
       this.playing = true;
+      this.loading = false;
       this.loadError = false;
       this.loadErrorIntervalSet = false;
       clearInterval(this.loadErrorIntervalId);
@@ -167,14 +171,31 @@ export class MediaPlayer implements OnInit {
       if (storedInfo) {
         if (storedInfo.seek > 0) {
           this.loadErrorSeekStored = storedInfo.seek;
-          console.log(storedInfo.seek);
         }
       }
       this.loadError = true;
       this.playRetry();
-    })
+    });
     this.eventBus.onAnimationFrame.subscribe((data: any) => {
-      this.seek = data.seek;
+      // Run bare-bones logic for transcript and nothing else
+      this.animateTranscript(data.seek);
+      this.updateSeekBarPosition(data.seek);
+      this.seekFloor = Math.floor(data.seek);
+      // Happens every 1 second of play time
+      if (this.seekFloor !== this.seekFloorStored ) {
+        if (this.audioGlobal.type() === 'AUDIO') {
+          if (this.previousHold) {
+            this.audioGlobal.sound.seek(this.audioGlobal.seek() - this.seekAmountSeconds);
+          }
+          if (this.nextHold) {
+            this.audioGlobal.sound.seek(this.audioGlobal.seek() + this.seekAmountSeconds);
+          }
+        }
+        this.seekFloorStored = this.seekFloor;
+        console.log('Should happen once per second');
+        this.saveToLocalStorage(this.seekFloor);
+      }
+      this.cdr.detectChanges();
     });
     this.loadFromQueryParameter();
   }
@@ -208,41 +229,35 @@ export class MediaPlayer implements OnInit {
     }
   }
 
+  // Transcript
+  animateTranscript(seek: any) {
+    this.wordList = this.getTranscript(seek);
+    this.displaySegments = this.toSegments(this.wordList);
+    this.displaySegment = this.getCurrentDisplaySegment(this.displaySegments, seek);
+    this.transcriptVisible = !!(this.displaySegment && this.displaySegment.length > 0);
+    if (this.seekFloor !== this.seekFloorStored ) {
+      if (this.transcriptEnabled && this.screenVisible) {
+        this.cacheTranscript();
+      }
+    }
+  }
+
+  // Seek Bar
+  updateSeekBarPosition(seek: any) {
+    this.seek = seek;
+    console.log(seek);
+    const percentProgress = (seek / this.audioGlobal.duration()) * 100;
+    this.seekBarMouseMode || this.seekBarTouchMode ?
+      this.percentProgressPlaceholder = percentProgress:
+      this.percentProgress = percentProgress;
+  }
+
   // Animation Loop
   animate() {
     if (this.playing) {
       this.eventBus.onAnimationFrame.emit({content: this.audioGlobal.content, seek: this.audioGlobal.seek()});
-      const percentProgress = (this.audioGlobal.seek() / this.audioGlobal.duration()) * 100;
-      this.seekBarMouseMode || this.seekBarTouchMode ?
-        this.percentProgressPlaceholder = percentProgress:
-        this.percentProgress = percentProgress;
-
-      const wordList = this.getTranscript(this.seekFloor + 10);
-      const nextDisplaySegments = this.toSegments(wordList);
-
-      this.wordList = this.getTranscript(this.seekFloor);
-      this.displaySegments = this.toSegments(this.wordList);
-
-      this.displaySegment = this.getCurrentDisplaySegment(this.displaySegments, nextDisplaySegments, this.audioGlobal.seek());
-      this.transcriptVisible = !!(this.displaySegment && this.displaySegment.length > 0);
-      this.seekFloor = Math.floor(this.audioGlobal.seek());
-      // Happens every 1 second of play time
-      if (this.seekFloor !== this.seekFloorStored ) {
-        if (this.previousHold) {
-          this.audioGlobal.sound.seek(this.audioGlobal.seek() - this.seekAmountSeconds);
-        }
-        if (this.nextHold) {
-          this.audioGlobal.sound.seek(this.audioGlobal.seek() + this.seekAmountSeconds);
-        }
-        if (this.transcriptEnabled && this.screenVisible) {
-          this.cacheTranscript();
-        }
-        this.saveToLocalStorage(this.seekFloor);
-        this.seekFloorStored = this.seekFloor;
-      }
-      this.cdr.detectChanges();
+      requestAnimationFrame(this.animate.bind(this));
     }
-    requestAnimationFrame(this.animate.bind(this));
   }
 
   // Track Navigation
@@ -439,7 +454,7 @@ export class MediaPlayer implements OnInit {
   }
 
   // Transcript
-  getCurrentDisplaySegment(displaySegments: any, nextDisplaySegments: any, seek: number) {
+  getCurrentDisplaySegment(displaySegments: any, seek: number) {
     if (!displaySegments || displaySegments.length === 0) {
       return;
     }
@@ -453,16 +468,8 @@ export class MediaPlayer implements OnInit {
       if (i < displaySegments.length - 1) {
         nextSegment = displaySegments[i+1][0];
       }
-
-      let nextEnd: any;
-      if (nextDisplaySegments && !nextSegment) {
-         nextEnd = nextDisplaySegments[0][0].start;
-      } else {
-        nextEnd = displaySegment[displaySegment.length - 1].end;
-      }
-
       let start = previousSegment ? previousSegment.end : displaySegment[0].start;
-      let end = nextSegment ? nextSegment.start : nextEnd;
+      let end = nextSegment ? nextSegment.start : displaySegment[displaySegment.length - 1].end;
       if (seek > start && seek < end) {
         if (!displaySegment && this.displaySegmentStored) {
           return this.displaySegmentStored
@@ -526,8 +533,8 @@ export class MediaPlayer implements OnInit {
     return nestedArray;
   }
 
-  getTranscript(seekFloor: any) {
-    return this.wordMap.get(this.buildCacheKey(seekFloor, this.audioGlobal.content.uuid));
+  getTranscript(seek: any) {
+    return this.wordMap.get(this.buildCacheKey(seek, this.audioGlobal.content.uuid));
   }
 
   cacheTranscript() {
@@ -546,26 +553,26 @@ export class MediaPlayer implements OnInit {
   }
 
   // Local Storage
-  saveToLocalStorage(seekFloor: any) {
+  saveToLocalStorage(seek: any) {
     if (!this.audioGlobal.content) {
       return;
     }
     let storage: any;
     if (!localStorage.getItem('moup') || localStorage.getItem('moup') === 'undefined') {
       storage = [];
-      storage.push({contentUuid: this.audioGlobal.content.uuid, seek: seekFloor});
+      storage.push({contentUuid: this.audioGlobal.content.uuid, seek: Math.floor(seek)});
       localStorage.setItem('moup', JSON.stringify(storage));
     }
     storage = JSON.parse(<string>localStorage.getItem('moup'));
     for (let storedInfo of storage) {
       if (storedInfo.contentUuid === this.audioGlobal.content?.uuid) {
-        storedInfo.seek = seekFloor;
+        storedInfo.seek = Math.floor(seek);
         localStorage.setItem('moup', JSON.stringify(storage));
         return;
       }
     }
     // Not found
-    storage.push({contentUuid: this.audioGlobal.content?.uuid, seek: seekFloor});
+    storage.push({contentUuid: this.audioGlobal.content?.uuid, seek: Math.floor(seek)});
     localStorage.setItem('moup', JSON.stringify(storage));
   }
 

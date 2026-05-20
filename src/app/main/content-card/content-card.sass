@@ -88,17 +88,17 @@
 
 .content-card-video-overlay-container
   position: absolute
-  background: $content-card-video-overlay-container-background
-  height: 55px
+  //background: $content-card-video-overlay-container-background
+  height: 100%
   width: 100%
   bottom: 0
-  left: 50%
-  transform: translateX(-50%) translateY(60px)
-  transition: transform 0.07s ease-in
-  overflow: clip !important
+  left: 0
+  opacity: 0
+  transition: opacity 0.07s ease-in
+  overflow: hidden !important
   z-index: 1000
 .content-card-video-overlay-container-visible
-  transform: translateX(-50%) translateY(0)
+  opacity: 100%
 
 .content-card-video-overlay-container-overflow
   overflow: hidden !important
@@ -120,3 +120,9 @@
   color: #8B897E
   font-weight: 800
   font-size: 1.04rem
+
+.content-card-video-overlay-center-button
+  background: #F1EFDB
+  width: 100px
+  height: 100px
+  z-index: 1000

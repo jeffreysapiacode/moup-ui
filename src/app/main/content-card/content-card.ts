@@ -29,6 +29,7 @@ export class ContentCard implements OnInit, AfterViewChecked {
   elapsedOrSavedTime: any = TimeUtils.formatTime(0);
   apiUrl = environment.apiUrl;
   visible: boolean = false;
+  video: any;
 
   constructor(protected eventBus: EventBus,
               protected audioGlobal: AudioGlobal,
@@ -83,44 +84,29 @@ export class ContentCard implements OnInit, AfterViewChecked {
     }
   }
 
+  handleVideoLoaded() {
+    // Call play increment endpoint
+    this.eventBus.onLoaded.emit(this.content);
+  }
+
   handleVideoPlay() {
     this.animate();
+    this.eventBus.onPlay.emit(this.content);
+    if (this.audioGlobal.content?.uuid !== this.content?.uuid) {
+      this.audioGlobal.changeContentAndPlay(this.content);
+    }
   }
 
   handleVideoPause() {
-
-  }
-
-  handleVideoLoaded() {
-
+    this.eventBus.onPause.emit(this.content);
   }
 
   handleVideoEnd() {
-
-  }
-
-  handleMouseEnter() {
-    this.animate();
-  }
-
-  handleMouseOverlay($event: any) {
-    this.videoOverlayVisible = true;
-  }
-
-  animate() {
-    if (this.videoPlaying && this.videoOverlayVisible) {
-      const video = this.videoPlayer.nativeElement;
-      this.videoSeek = video.currentTime;
-      console.log(video.currentTime);
-      this.cdr.detectChanges();
-      requestAnimationFrame(this.animate.bind(this));
-    }
+    this.eventBus.onEnd.emit(this.content);
   }
 
   handleMouseMove() {
     this.videoOverlayVisible = true;
-    this.animate();
-    this.cdr.detectChanges();
     if (this.videoOverlayTimeoutId) {
       clearTimeout(this.videoOverlayTimeoutId);
     }
@@ -131,6 +117,7 @@ export class ContentCard implements OnInit, AfterViewChecked {
   }
 
   toggleFullscreen() {
+    console.log('Toggle Fullscreen');
     const video = this.videoPlayer.nativeElement;
 
     if (!document.fullscreenElement) {
@@ -156,14 +143,21 @@ export class ContentCard implements OnInit, AfterViewChecked {
     video.paused ? video.play() : video.pause();
   }
 
+  animate() {
+    if (this.videoPlaying) {
+      this.video = this.videoPlayer.nativeElement;
+      this.videoSeek = this.video.currentTime;
+      this.eventBus.onAnimationFrame.emit({content: this.audioGlobal.content, seek: this.videoSeek});
+      this.cdr.detectChanges();
+      requestAnimationFrame(this.animate.bind(this));
+    }
+  }
+
   getThumbnailUrl() {
     const nameWithoutExtension = this.content.filename.substring(0, this.content.filename.lastIndexOf('.'));
     return this.apiUrl + '/image/' + nameWithoutExtension + '.png';
   }
 
-  calculatePosition(seek: number) {
-    return (seek / this.content.duration) * 100;
-  }
-
   protected readonly TimeUtils = TimeUtils;
+  protected readonly console = console;
 }
