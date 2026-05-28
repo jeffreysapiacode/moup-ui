@@ -29,7 +29,7 @@
                 @if (this.audioGlobal.contentExists()) {
                   <div class="">
                     @for (content of this.audioGlobal.contentList; track content.uuid) {
-                      <div class="row p-0 m-0 pb-3 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
+                      <div class="row p-0 m-0 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
                         <div class="col p-0 m-0">
                           <app-content-card [innerWidth]="innerWidth" [content]="content"></app-content-card>
                         </div>
