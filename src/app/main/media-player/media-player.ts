@@ -158,7 +158,7 @@ export class MediaPlayer implements OnInit {
       this.percentProgress = 0;
       this.seek = 0;
       this.playing = false;
-      this.handleNext();
+      // this.handleNext();
       this.cdr.detectChanges();
     });
     this.eventBus.onPlayError.subscribe((content: any) => {
