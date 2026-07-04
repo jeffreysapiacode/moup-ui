@@ -17,6 +17,9 @@ CMD ["nginx", "-g", "daemon off;"]
 # docker tag moup-ui:latest registry.moup.io/moup-ui:latest
 # docker push registry.moup.io/moup-ui:latest
 
+# Build and Deploy Locally
+# ng build --configuration=production && cp /etc/letsencrypt/archive/moup.io/fullchain1.pem ~/Code/moup-ui && cp /etc/letsencrypt/archive/moup.io/privkey1.pem ~/Code/moup-ui && docker build --platform linux/amd64,linux/arm64 -t moup-ui . && rm ~/Code/moup-ui/fullchain1.pem && rm ~/Code/moup-ui/privkey1.pem && docker run -d --name moup-ui -p 80:80 -p 443:443 --restart always moup-ui:latest
+
 # ON REMOTE INSTANCE
 # ssh -i "~/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker pull registry.moup.io/moup-ui:latest
 # ssh -i "~/moup-macbook-air.pem" ec2-user@3.147.184.206 sudo docker kill moup-ui
