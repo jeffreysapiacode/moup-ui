@@ -1,21 +1,21 @@
-<div class="container-fluid p-0 m-0">
+<div class="container-fluid no-gutters">
   <div class="media-player-container" [ngClass]="{'media-player-container-open': open}">
-    <div class="row w-100 h-100 p-0 m-0 position-absolute">
-      <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
+    <div class="row w-100 h-100 no-gutters position-absolute">
+      <div class="col no-gutters d-flex justify-content-center align-items-center">
         <span class="media-player-loading-title-text" [ngClass]="{'media-player-loading-title-text-visible': this.loading || this.loadError}">Loading...</span>
       </div>
     </div>
     <div class="media-player-visibility-control" [ngClass]="{'media-player-visibility-control-visible': !this.loading && !this.loadError}">
-      <div class="row p-0 m-0 pt-2 px-5">
-        <div class="col p-0 m-0 d-flex justify-content-center">
+      <div class="row no-gutters pt-2 px-5">
+        <div class="col no-gutters d-flex justify-content-center">
           <span class="media-player-title-text">{{this.audioGlobal.content?.title}}</span>
         </div>
       </div>
-      <div class="row p-0 m-0">
-        <div class="col p-0 m-0 ps-4 d-flex justify-content-start align-items-end position-relative">
+      <div class="row no-gutters">
+        <div class="col no-gutters ps-4 d-flex justify-content-start align-items-end position-relative">
           <span class="media-player-seek-bar-time-elapsed-text">{{TimeUtils.formatTime(this.seek)}}</span>
         </div>
-        <div class="col p-0 m-0 pe-sm-3 d-flex justify-content-end d-flex align-items-center">
+        <div class="col no-gutters pe-sm-3 d-flex justify-content-end d-flex align-items-center">
           <div class="media-player-nav-button-previous media-player-nav-button-padding" style="z-index: 5;"
                (touchstart)="handlePreviousTouchStart($event)"
                (touchend)="handlePreviousTouchEnd($event)"
@@ -25,7 +25,7 @@
             </svg>
           </div>
         </div>
-        <div class="col-auto p-0 m-0 d-flex justify-content-center">
+        <div class="col-auto no-gutters d-flex justify-content-center">
           <div class="media-player-nav-button-padding" (click)="handlePlay()" #playButton>
             @if (this.playing) {
               <svg class="media-player-nav-button-svg" width="55" height="55" viewBox="0 0 55 55" fill="none"
@@ -54,7 +54,7 @@
             }
           </div>
         </div>
-        <div class="col p-0 m-0 ps-sm-3 d-flex align-items-center">
+        <div class="col no-gutters ps-sm-3 d-flex align-items-center">
           <div class="media-player-nav-button-next media-player-nav-button-padding" style="z-index: 5;"
                (touchstart)="handleNextTouchStart($event)"
                (touchend)="handleNextTouchEnd($event)"
@@ -64,12 +64,12 @@
             </svg>
           </div>
         </div>
-        <div class="col p-0 m-0 pe-4 d-flex justify-content-end align-items-end position-relative">
+        <div class="col no-gutters pe-4 d-flex justify-content-end align-items-end position-relative">
           <span class="media-player-seek-bar-time-total-text">{{TimeUtils.formatTime(this.audioGlobal.content?.duration)}}</span>
         </div>
       </div>
-      <div class="row p-0 m-0 d-flex justify-content-center align-items-center">
-        <div class="col p-0 m-0 pt-3 pb-5 px-3"
+      <div class="row no-gutters d-flex justify-content-center align-items-center">
+        <div class="col no-gutters pt-3 pb-5 px-3"
              (mouseenter)="handleSeekBarMouseEnter()"
              (mouseleave)="handleSeekBarMouseLeave()"
              (mousemove)="handleSeekBarMouseMove($event)"
@@ -109,7 +109,7 @@
         }
       </div>
       @if (this.audioGlobal.available()) {
-        <img class="media-player-background-svg p-0 m-0" src="assets/img/svg/wave-sand.svg" />
+        <img class="media-player-background-svg no-gutters" src="assets/img/svg/wave-sand.svg" />
       }
     </div>
   </div>

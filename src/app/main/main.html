@@ -1,8 +1,8 @@
-<div class="container-fluid p-0 m-0">
+<div class="container-fluid no-gutters">
   <!--  {{ this.innerWidth }}-->
   <div class="main-container">
-    <div class="row p-0 m-0">
-      <div class="col p-0 m-0">
+    <div class="row no-gutters">
+      <div class="col no-gutters">
         <div class="main-content-card-scroll-box" [style]="{'z-index': 50}"
              [ngClass]="{'main-content-card-scroll-box-padding': this.audioGlobal.available()}">
           <!-- Main Loading -->
@@ -17,8 +17,8 @@
               }
               @else {
                 @if (this.audioGlobal.contentNotExists()) {
-                  <div class="row p-0 m-0 w-100 h-100">
-                    <div class="col p-0 m-0 d-flex justify-content-center align-items-center">
+                  <div class="row no-gutters w-100 h-100">
+                    <div class="col no-gutters d-flex justify-content-center align-items-center">
                       <div class="main-no-content-display text-center px-5 py-5 mx-3">I have decided to delete all of the episodes. It is
                         nothing personal. In fact, I did it because I love you, and just as importantly, I want you to love
                         me. <br><br> Please do not worry. I will be back very soon.
@@ -29,8 +29,8 @@
                 @if (this.audioGlobal.contentExists()) {
                   <div class="">
                     @for (content of this.audioGlobal.contentList; track content.uuid) {
-                      <div class="row p-0 m-0 px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
-                        <div class="col p-0 m-0">
+                      <div class="row no-gutters px-3" [ngClass]="{'pb-4 px-4': this.innerWidth < 576}">
+                        <div class="col no-gutters">
                           <app-content-card [innerWidth]="innerWidth" [content]="content"></app-content-card>
                         </div>
                       </div>

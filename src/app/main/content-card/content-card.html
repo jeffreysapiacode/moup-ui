@@ -1,23 +1,23 @@
-<div class="container-fluid pt-3 p-0 m-0 d-flex justify-content-center">
+<div class="container-fluid pt-3 no-gutters d-flex justify-content-center">
   <div class="content-card-container"
        [ngClass]="{'content-card-container-visible': this.visible}"
        [ngStyle]="{'box-shadow': this.innerWidth < 576 ? '14px 14px 0 0 rgba(104, 101, 75, 1.0)':'7px 7px 0 0 rgba(104, 101, 75, 1.0)'}">
-    <div class="row p-0 m-0">
-      <div class="col p-0 m-0 px-4 pt-3 pb-2">
+    <div class="row no-gutters">
+      <div class="col no-gutters px-4 pt-3 pb-2">
         <span class="content-card-title-text">{{ content.title }}</span>
       </div>
-      <div class="col-auto p-0 m-0 d-flex justify-content-end align-items-center">
+      <div class="col-auto no-gutters d-flex justify-content-end align-items-center">
       <span [ngClass]="{'content-card-playing-text-tag-visible':this.audioGlobal.content?.uuid === this.content?.uuid}"
             class="content-card-playing-text-tag pe-4">Playing</span>
       </div>
     </div>
-    <div class="row p-0 m-0">
-      <div class="col p-0 m-0 px-4 pb-3">
+    <div class="row no-gutters">
+      <div class="col no-gutters px-4 pb-3">
         <span class="content-card-description-text">{{ content.description }}</span>
       </div>
     </div>
-    <div class="row p-0 m-0 pb-3">
-      <div class="col-auto p-0 m-0 ps-4 d-flex align-items-center">
+    <div class="row no-gutters pb-3">
+      <div class="col-auto no-gutters ps-4 d-flex align-items-center">
         <div class="content-card-button px-3 d-flex justify-content-center align-items-center"
              (click)="handleLoad()">
           @if (this.playing && this.audioGlobal.content?.uuid === this.content?.uuid) {
@@ -27,24 +27,24 @@
           }
         </div>
       </div>
-      <div class="col p-0 m-0 ps-3 d-flex justify-content-start align-items-center">
-        <div class="row p-0 m-0">
-          <div class="col-auto p-0 m-0">
+      <div class="col no-gutters ps-3 d-flex justify-content-start align-items-center">
+        <div class="row no-gutters">
+          <div class="col-auto no-gutters">
           <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content?.uuid === this.content?.uuid}"
                 class="content-card-elapsed-and-total-time">{{ this.elapsedOrSavedTime }}</span>
           </div>
-          <div class="col-auto p-0 m-0">
+          <div class="col-auto no-gutters">
           <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content?.uuid === this.content?.uuid}"
                 class="content-card-elapsed-and-total-time">/</span>
           </div>
           <div class="w-100 d-sm-none d-block"></div>
-          <div class="col-auto p-0 m-0">
+          <div class="col-auto no-gutters">
           <span [ngClass]="{'content-card-elapsed-and-total-time-active': this.audioGlobal.content?.uuid === this.content?.uuid}"
                 class="content-card-elapsed-and-total-time">{{ TimeUtils.formatTime(this.content.duration) }}</span>
           </div>
         </div>
       </div>
-      <div class="col p-0 m-0 ps-4 pt-1 pe-3 d-flex "
+      <div class="col no-gutters ps-4 pt-1 pe-3 d-flex "
            [ngClass]="{'justify-content-end': this.innerWidth >= 576, 'justify-content-start': this.innerWidth < 576}">
         <a [href]="this.apiUrl + '/download/' + this.content.filename" style="text-decoration: none">
           <div class="content-card-button px-3 d-flex justify-content-center align-items-center">DOWNLOAD</div>
