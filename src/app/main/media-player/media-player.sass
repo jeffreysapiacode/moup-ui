@@ -16,17 +16,17 @@
   transition: transform 0.075s ease-in
   z-index: 500
 .media-player-container-open
-  //height: 100%
   transform: translateY(0)
 
 // Title
 .media-player-title-text
-  color: $accent-brown
+  color: $media-player-title-text-color
   white-space: nowrap
   overflow-x: hidden
   text-overflow: ellipsis
   font-weight: 700
   font-size: 1.15rem
+  letter-spacing: 0.07rem
 @media (min-width: 576px)
   .media-player-title-text
     font-size: 1.2rem
@@ -74,8 +74,8 @@
   transform: scale(1.0) translateY(6px)
 
 .media-player-nav-button-svg
-  width: 55px
-  height: 55px
+  width: 60px
+  height: 60px
 
 .media-player-nav-button-previous
   z-index: 500
@@ -85,21 +85,23 @@
 
 // Seek Bar
 .media-player-seek-bar-time-elapsed-text
-  color: $accent-brown
+  color: $media-player-seek-bar-time-total-text-color
   position: absolute
-  font-weight: 600
-  font-size: 1rem
   bottom: -13px
   left: 17px
+  font-weight: 700
+  font-size: 1.05rem
+  letter-spacing: 0.07rem
   z-index: 5
 
 .media-player-seek-bar-time-total-text
-  color: $accent-brown
+  color: $media-player-seek-bar-time-total-text-color
   position: absolute
   bottom: -13px
   right: 17px
-  font-weight: 600
-  font-size: 1rem
+  font-weight: 700
+  font-size: 1.05rem
+  letter-spacing: 0.07rem
   z-index: 5
 
 .media-player-seek-bar-container
@@ -158,6 +160,10 @@
     width: 70px
     font-size: 1rem
 
+// Audio Controls
+.media-player-audio-controls-fill
+  fill: #535141
+
 // Global
 .media-player-background-svg
   position: absolute
@@ -192,5 +198,3 @@
   100%
     color: $media-player-loading-title-text-color
 
-.accent-brown
-  fill: $accent-brown

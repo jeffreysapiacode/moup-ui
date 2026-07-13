@@ -26,6 +26,10 @@ export class AudioGlobal {
     return this.content && this.sound;
   }
 
+  showTranscript() {
+    return this.content && this.content.transcript;
+  }
+
   play() {
     this.sound.play();
   }
@@ -61,8 +65,8 @@ export class AudioGlobal {
       this.sound.unload();
     }
     this.setSound(this.content.filename);
-    this.router.navigate(['/play']);
-    setTimeout(()=>{this.updateQueryParams(this.content.mmx);});
+    // this.router.navigate(['/play']);
+    // setTimeout(()=>{this.updateQueryParams(this.content.mmx);});
     this.titleService.setTitle(this.content.title);
     this.eventBus.onLoad.emit(this.content);
   }

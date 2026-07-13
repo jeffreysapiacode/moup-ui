@@ -19,15 +19,11 @@ import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-media-player',
-  imports: [
-    NgClass,
-    NgStyle
-  ],
+  imports: [NgClass, NgStyle],
   templateUrl: './media-player.html',
   styleUrl: './media-player.sass',
 })
 export class MediaPlayer implements OnInit {
-
   @ViewChild('trackBarContainer') trackBarContainer!: ElementRef;
   @ViewChild('trackBar') trackBar!: ElementRef;
   @ViewChild('playheadTimer') playheadTimer!: ElementRef;
@@ -45,7 +41,6 @@ export class MediaPlayer implements OnInit {
   loadErrorSeekStored: number = 0;
 
   // Transcript
-  transcriptEnabled: boolean = true;
   transcriptVisible: boolean = false;
   maxWordsOnScreen: number = 3;
   lookaheadSeconds: number = 10;
@@ -82,7 +77,9 @@ export class MediaPlayer implements OnInit {
   handleGlobalSpaceBar(event: any) {
     event.preventDefault();
     this.playButton.nativeElement.focus();
-    setTimeout(() => {this.playButton.nativeElement.blur();}, 500)
+    setTimeout(() => {
+      this.playButton.nativeElement.blur();
+    }, 500);
     this.handlePlay();
   }
 
@@ -104,24 +101,25 @@ export class MediaPlayer implements OnInit {
       this.screenVisible = false;
     } else {
       this.screenVisible = true;
-      if (this.transcriptEnabled && this.playing) {
+      if (this.audioGlobal.showTranscript() && this.playing) {
         this.cacheTranscript();
       }
       this.cdr.detectChanges();
     }
   }
 
-  constructor(protected eventBus: EventBus,
-              protected audioGlobal: AudioGlobal,
-              protected http: HttpClient,
-              protected router: Router,
-              @Inject(DOCUMENT) private document: Document,
-              protected cdr: ChangeDetectorRef) {
-  }
+  constructor(
+    @Inject(DOCUMENT) private document: Document,
+    protected eventBus: EventBus,
+    protected audioGlobal: AudioGlobal,
+    protected http: HttpClient,
+    protected router: Router,
+    protected cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.eventBus.onLoaded.subscribe(() => {
-      setTimeout(()=> {
+      setTimeout(() => {
         this.loading = false;
         this.cdr.detectChanges();
       });
@@ -161,8 +159,7 @@ export class MediaPlayer implements OnInit {
       // this.handleNext();
       this.cdr.detectChanges();
     });
-    this.eventBus.onPlayError.subscribe((content: any) => {
-    });
+    this.eventBus.onPlayError.subscribe((content: any) => {});
     this.eventBus.onLoadError.subscribe((content: any) => {
       const storedInfo = LocalStorageUtil.getStorage(this.audioGlobal.content.uuid);
       if (storedInfo) {
@@ -181,11 +178,9 @@ export class MediaPlayer implements OnInit {
 
   // Load content and auto-play if ?mmx is a query parameter
   loadFromQueryParameter() {
-    const mmx = new URLSearchParams(window.location.search)
-      .get('mmx');
+    const mmx = new URLSearchParams(window.location.search).get('mmx');
     if (mmx) {
-      const content = this.audioGlobal.contentList
-        .find((content: any)=> content.mmx === mmx)
+      const content = this.audioGlobal.contentList.find((content: any) => content.mmx === mmx);
       if (!content) {
         this.clearQueryParams();
         return;
@@ -220,21 +215,26 @@ export class MediaPlayer implements OnInit {
   updateSeekBarPosition(seek: any) {
     this.seek = seek;
     const percentProgress = (seek / this.audioGlobal.duration()) * 100;
-    this.seekBarMouseMode || this.seekBarTouchMode ?
-      this.percentProgressPlaceholder = percentProgress:
-      this.percentProgress = percentProgress;
+    this.seekBarMouseMode || this.seekBarTouchMode
+      ? (this.percentProgressPlaceholder = percentProgress)
+      : (this.percentProgress = percentProgress);
     this.cdr.detectChanges();
   }
 
   // Animation Loop
   animate() {
     if (this.playing) {
-      this.eventBus.onAnimationFrame.emit({content: this.audioGlobal.content, seek: this.audioGlobal.seek()});
-      this.animateTranscript(this.audioGlobal.seek());
+      this.eventBus.onAnimationFrame.emit({
+        content: this.audioGlobal.content,
+        seek: this.audioGlobal.seek(),
+      });
+      if (this.audioGlobal.showTranscript()) {
+        this.animateTranscript(this.audioGlobal.seek());
+      }
       this.updateSeekBarPosition(this.audioGlobal.seek());
       this.seekFloor = Math.floor(this.audioGlobal.seek());
       // Happens every 1 second of play time
-      if (this.seekFloor !== this.seekFloorStored ) {
+      if (this.seekFloor !== this.seekFloorStored) {
         if (this.previousHold) {
           this.audioGlobal.sound.seek(this.audioGlobal.seek() - this.seekAmountSeconds);
         }
@@ -242,7 +242,7 @@ export class MediaPlayer implements OnInit {
           this.audioGlobal.sound.seek(this.audioGlobal.seek() + this.seekAmountSeconds);
         }
         this.seekFloorStored = this.seekFloor;
-        if (this.transcriptEnabled && this.screenVisible) {
+        if (this.audioGlobal.showTranscript() && this.screenVisible) {
           this.cacheTranscript();
         }
         this.saveToLocalStorage(this.seekFloor);
@@ -254,7 +254,7 @@ export class MediaPlayer implements OnInit {
   // Track Navigation
   handlePreviousTouchStart($event: TouchEvent) {
     $event.preventDefault();
-    this.previousHoldTimeoutId = setTimeout(()=> {
+    this.previousHoldTimeoutId = setTimeout(() => {
       this.previousHold = true;
     }, this.seekButtonHoldDelay);
   }
@@ -266,7 +266,7 @@ export class MediaPlayer implements OnInit {
 
   handleNextTouchStart($event: TouchEvent) {
     $event.preventDefault();
-    this.nextHoldTimeoutId = setTimeout(()=> {
+    this.nextHoldTimeoutId = setTimeout(() => {
       this.nextHold = true;
     }, this.seekButtonHoldDelay);
   }
@@ -292,7 +292,7 @@ export class MediaPlayer implements OnInit {
 
   handleNext() {
     const index = this.getTrackIndex(this.audioGlobal.content.uuid);
-    if (index < (this.audioGlobal.contentList.length - 1)) {
+    if (index < this.audioGlobal.contentList.length - 1) {
       this.seekToTrack(index + 1);
     }
   }
@@ -348,7 +348,7 @@ export class MediaPlayer implements OnInit {
     if (storedInfo) {
       this.seekToTime(storedInfo.seek);
     }
-    this.audioGlobal.play()
+    this.audioGlobal.play();
   }
 
   seekToTime(seek: any) {
@@ -425,7 +425,6 @@ export class MediaPlayer implements OnInit {
   }
 
   handleSeekBarTouchEnd(event: TouchEvent) {
-
     // Determine what is a drag and what is a tap do this by timing the start to end. if 0.3 or less then its a tap, more then its a drag
 
     if (this.seekBarTouchMode) {
@@ -449,21 +448,21 @@ export class MediaPlayer implements OnInit {
     if (!displaySegments || displaySegments.length === 0) {
       return;
     }
-    for (let i = 0; i<displaySegments.length; i++) {
+    for (let i = 0; i < displaySegments.length; i++) {
       let displaySegment = displaySegments[i];
       let previousSegment;
       let nextSegment;
       if (i > 0) {
-        previousSegment = displaySegments[i-1][displaySegments[i-1].length - 1];
+        previousSegment = displaySegments[i - 1][displaySegments[i - 1].length - 1];
       }
       if (i < displaySegments.length - 1) {
-        nextSegment = displaySegments[i+1][0];
+        nextSegment = displaySegments[i + 1][0];
       }
       let start = previousSegment ? previousSegment.end : displaySegment[0].start;
       let end = nextSegment ? nextSegment.start : displaySegment[displaySegment.length - 1].end;
       if (seek > start && seek < end) {
         if (!displaySegment && this.displaySegmentStored) {
-          return this.displaySegmentStored
+          return this.displaySegmentStored;
         }
         this.displaySegmentStored = displaySegment;
         return displaySegment;
@@ -481,11 +480,14 @@ export class MediaPlayer implements OnInit {
   }
 
   getWordsFromAPI(start: number, key: string) {
-    this.http.get(this.apiUrl + '/auto-dictate',
-      { params: {
+    this.http
+      .get(this.apiUrl + '/auto-dictate', {
+        params: {
           contentUuid: this.audioGlobal.content.uuid,
           start: start,
-          end: (start + this.lookaheadSeconds)}})
+          end: start + this.lookaheadSeconds,
+        },
+      })
       .subscribe((response: any) => {
         if (response.length > 0) {
           this.wordMap.set(key, response);
@@ -505,15 +507,15 @@ export class MediaPlayer implements OnInit {
     const length = wordList.length;
     for (const [index, word] of wordList.entries()) {
       tempArray.push(word);
-      if (index === (length - 1) && tempArray.length < this.maxWordsOnScreen) {
-        const array = nestedArray.at(nestedArray.length - 1)
+      if (index === length - 1 && tempArray.length < this.maxWordsOnScreen) {
+        const array = nestedArray.at(nestedArray.length - 1);
         if (tempArray.length === 1) {
           array.push(tempArray[0]);
         } else {
           nestedArray.push(tempArray);
         }
       }
-      if (counter >= (this.maxWordsOnScreen - 1)) {
+      if (counter >= this.maxWordsOnScreen - 1) {
         counter = 0;
         nestedArray.push(tempArray);
         tempArray = [];
@@ -538,7 +540,10 @@ export class MediaPlayer implements OnInit {
     }
     const preCacheSeconds = this.seekFloor + this.lookaheadSeconds;
     const cacheKey2 = this.buildCacheKey(preCacheSeconds, this.audioGlobal.content.uuid);
-    if (!this.wordMap.has(cacheKey2) && ((this.seekFloor + this.lookaheadSeconds) < this.audioGlobal.content.duration)) {
+    if (
+      !this.wordMap.has(cacheKey2) &&
+      this.seekFloor + this.lookaheadSeconds < this.audioGlobal.content.duration
+    ) {
       this.getWordsFromAPI(this.calculateSeekFloorMultiple(preCacheSeconds), cacheKey2);
     }
   }
@@ -551,7 +556,7 @@ export class MediaPlayer implements OnInit {
     let storage: any;
     if (!localStorage.getItem('moup') || localStorage.getItem('moup') === 'undefined') {
       storage = [];
-      storage.push({contentUuid: this.audioGlobal.content.uuid, seek: Math.floor(seek)});
+      storage.push({ contentUuid: this.audioGlobal.content.uuid, seek: Math.floor(seek) });
       localStorage.setItem('moup', JSON.stringify(storage));
     }
     storage = JSON.parse(<string>localStorage.getItem('moup'));
@@ -563,23 +568,23 @@ export class MediaPlayer implements OnInit {
       }
     }
     // Not found
-    storage.push({contentUuid: this.audioGlobal.content?.uuid, seek: Math.floor(seek)});
+    storage.push({ contentUuid: this.audioGlobal.content?.uuid, seek: Math.floor(seek) });
     localStorage.setItem('moup', JSON.stringify(storage));
   }
 
   // Utilities
   buildCacheKey(seek: number, contentUuid: string) {
-    return `${(Math.floor(seek / 10) * 10)}-${contentUuid}`;
+    return `${Math.floor(seek / 10) * 10}-${contentUuid}`;
   }
 
   calculateSeekFloorMultiple(seekFloor: number) {
-    return (Math.floor(seekFloor / this.lookaheadSeconds) * this.lookaheadSeconds)
+    return Math.floor(seekFloor / this.lookaheadSeconds) * this.lookaheadSeconds;
   }
 
   clearQueryParams() {
     this.router.navigate([], {
       queryParams: {},
-      replaceUrl: true // Optional: replaces current history entry instead of adding a new one
+      replaceUrl: true, // Optional: replaces current history entry instead of adding a new one
     });
   }
 

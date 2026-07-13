@@ -3,7 +3,6 @@
 // Container
 .content-card-container
   background: $content-card-container-background
-  box-shadow: $content-card-container-box-shadow
   width: 550px
   opacity: 0
   transition: opacity 0.075s ease-in
@@ -11,22 +10,29 @@
 .content-card-container-visible
   opacity: 1.0
 
+.content-card-play-hook
+  background: $content-card-play-hook-background
+  width: 4px
+  height: 95%
+
 // Title
 .content-card-title-text
   color: $content-card-title-text-color
   font-size: 1.3rem
   font-weight: 700 !important
   line-height: 1rem
+  letter-spacing: 0.07rem
 @media (min-width: 576px)
   .content-card-title-text
     font-size: 1.15rem
 
 // Description
 .content-card-description-text
-  font-size: 1.0rem
+  font-size: 1.1rem
   font-weight: 500 !important
   color: $content-card-description-text-color
   line-height: 1rem
+  letter-spacing: 0.07rem
 @media (min-width: 576px)
   .content-card-description-text
     font-size: 1rem

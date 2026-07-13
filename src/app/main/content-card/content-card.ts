@@ -79,5 +79,9 @@ export class ContentCard implements OnInit, AfterViewChecked {
     }
   }
 
+  currentContent() {
+    return this.content?.uuid === this.audioGlobal.content?.uuid;
+  }
+
   protected readonly TimeUtils = TimeUtils;
 }
