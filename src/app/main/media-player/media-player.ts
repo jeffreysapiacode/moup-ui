@@ -242,8 +242,11 @@ export class MediaPlayer implements OnInit {
           this.audioGlobal.sound.seek(this.audioGlobal.seek() + this.seekAmountSeconds);
         }
         this.seekFloorStored = this.seekFloor;
-        if (this.audioGlobal.showTranscript() && this.screenVisible) {
-          this.cacheTranscript();
+        if (this.seekFloor % 10 === 0) {
+          // Will happen every 10 seconds
+          if (this.audioGlobal.showTranscript() && this.screenVisible) {
+            this.cacheTranscript();
+          }
         }
         this.saveToLocalStorage(this.seekFloor);
       }
@@ -578,6 +581,7 @@ export class MediaPlayer implements OnInit {
   }
 
   calculateSeekFloorMultiple(seekFloor: number) {
+    // Rounds down to the nearest 10's value of seekFloor. Ex. 149 -> 140, 155 -> 150
     return Math.floor(seekFloor / this.lookaheadSeconds) * this.lookaheadSeconds;
   }
 

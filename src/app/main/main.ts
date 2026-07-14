@@ -1,4 +1,4 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, HostListener, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, OnInit} from '@angular/core';
 import {ContentCard} from './content-card/content-card';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
@@ -6,7 +6,6 @@ import {MediaPlayer} from './media-player/media-player';
 import {NgClass} from '@angular/common';
 import {AudioGlobal} from '../service/audio-global';
 import {Subscription} from 'rxjs';
-import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -19,7 +18,6 @@ import {ActivatedRoute, Router} from '@angular/router';
   styleUrl: './main.sass',
 })
 export class Main implements OnInit {
-
   innerWidth: any;
   loading: boolean = false;
   apiUrl = environment.apiUrl;
@@ -43,10 +41,13 @@ export class Main implements OnInit {
     this.handleGetContent();
     setInterval(() => {
       this.http.get(this.apiUrl + '/content')
-        .subscribe((response: any) => {
-          this.audioGlobal.contentList = response;
-          this.cdr.detectChanges();
-        }, (error: any) => {});
+        .subscribe({
+          next: response => {
+            this.audioGlobal.contentList = response;
+            this.cdr.detectChanges();
+          },
+          error: error => {}
+        })
     }, 60000);
   }
 
@@ -76,16 +77,21 @@ export class Main implements OnInit {
         })
       }
     }, 10000);
-    this.contentSubscription = this.http.get(this.apiUrl + '/content', { observe: 'response' })
-      .subscribe((response: any) => {
-        this.statusCode = response.status;
-        clearTimeout(timeoutId);
-        this.audioGlobal.contentList = response.body;
-      }, (error: any) => {
-        this.statusCode = error.status;
-        this.error = true;
-      }, () => {
-        this.loading = false;
+    this.contentSubscription = this.http
+      .get(this.apiUrl + '/content', { observe: 'response' })
+      .subscribe({
+        next: (response: any) => {
+          this.statusCode = response.status;
+          clearTimeout(timeoutId);
+          this.audioGlobal.contentList = response.body;
+        },
+        error: (error: any) => {
+          this.statusCode = error.status;
+          this.error = true;
+        },
+        complete: () => {
+          this.loading = false;
+        }
       });
   }
 

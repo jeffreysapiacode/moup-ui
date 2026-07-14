@@ -29,4 +29,4 @@ CMD ["nginx", "-g", "daemon off;"]
 # Build and Deploy Locally
 
 # ON LOCAL INSTANCE
-# ng build --configuration=production && cp /etc/letsencrypt/archive/moup.io/fullchain1.pem ~/Code/moup-ui && cp /etc/letsencrypt/archive/moup.io/privkey1.pem ~/Code/moup-ui && docker build --platform linux/amd64,linux/arm64 -t moup-ui . && rm ~/Code/moup-ui/fullchain1.pem && rm ~/Code/moup-ui/privkey1.pem && docker run -d --name moup-ui -p 80:80 -p 443:443 --restart always moup-ui:latest
+# ng build --configuration=production && cp /etc/letsencrypt/archive/moup.io/fullchain1.pem ~/Code/moup-ui && cp /etc/letsencrypt/archive/moup.io/privkey1.pem ~/Code/moup-ui && docker build --platform linux/amd64,linux/arm64 -t moup-ui . && rm ~/Code/moup-ui/fullchain1.pem && rm ~/Code/moup-ui/privkey1.pem && docker kill moup-ui && docker rm moup-ui && docker run -d --name moup-ui -p 80:80 -p 443:443 --restart always moup-ui:latest
