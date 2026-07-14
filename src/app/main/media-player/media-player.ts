@@ -241,7 +241,6 @@ export class MediaPlayer implements OnInit {
         if (this.nextHold) {
           this.audioGlobal.sound.seek(this.audioGlobal.seek() + this.seekAmountSeconds);
         }
-        this.seekFloorStored = this.seekFloor;
         if (this.seekFloor % 10 === 0) {
           // Will happen every 10 seconds
           if (this.audioGlobal.showTranscript() && this.screenVisible) {
@@ -249,6 +248,7 @@ export class MediaPlayer implements OnInit {
           }
         }
         this.saveToLocalStorage(this.seekFloor);
+        this.seekFloorStored = this.seekFloor;
       }
       requestAnimationFrame(this.animate.bind(this));
     }
